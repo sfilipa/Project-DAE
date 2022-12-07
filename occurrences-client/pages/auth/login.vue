@@ -1,6 +1,6 @@
 <template>
   <b-container>
-    <h3>Login into Academics Management</h3>
+    <h3>Login into Occurrences Management</h3>
     <b-form @submit.prevent="onSubmit" @reset="onReset">
       <b-form-group label="Username" description="Enter your username">
         <b-input

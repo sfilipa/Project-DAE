@@ -34,7 +34,7 @@ export default {
       .then((teachers) => {
         this.teachers = teachers
       })
-    // this.$axios.$get('http://localhost:8080/academics/api/students')
+    // this.$axios.$get('http://localhost:8080/occurrences/api/students')
   }
 }
 </script>

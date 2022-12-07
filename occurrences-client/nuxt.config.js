@@ -1,7 +1,7 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: "academics-client",
+    title: "occurrences-client",
     htmlAttrs: {
       lang: "en",
     },
@@ -79,7 +79,7 @@ export default {
 
   proxy: {
     "/api/": {
-      target: "http://localhost:8080/academics/api/",
+      target: "http://localhost:8080/occurrences/api/",
       pathRewrite: {
         "^/api/": "",
       },

@@ -4,9 +4,9 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence
 https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
-    <persistence-unit name="AcademicsPersistenceUnit" transaction-type="JTA">
+    <persistence-unit name="OccurrencesPersistenceUnit" transaction-type="JTA">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <jta-data-source>java:/AcademicsDS</jta-data-source>
+        <jta-data-source>java:/OccurrencesDS</jta-data-source>
         <properties>
             <property
                     name="javax.persistence.schema-generation.database.action"
