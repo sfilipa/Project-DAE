@@ -1,0 +1,153 @@
+##### Students
+GET http://localhost:8080/academics/api/students/all
+Accept: application/json
+
+### Create Student
+POST http://localhost:8080/academics/api/students
+Content-Type: application/json
+
+{
+  "email": "johndoe@mail.com",
+  "name": "John Doe",
+  "username": "ivoafonsobispo",
+  "password": "jd",
+  "courseCode": 9119
+}
+
+##### Courses
+GET http://localhost:8080/academics/api/courses/all
+Accept: application/json
+
+### Add Course
+POST http://localhost:8080/academics/api/courses
+Content-Type: application/json
+
+{
+  "code": 3,
+  "name": "New Course Clean Code"
+}
+
+##### Student Details
+GET http://localhost:8080/academics/api/students/ivoafonsobispo
+Accept: application/json
+
+##### Student Subjects
+GET http://localhost:8080/academics/api/students/ivoafonsobispo/subjects
+Accept: application/json
+
+##### Subjects
+GET http://localhost:8080/academics/api/subjects/all
+Accept: application/json
+
+##### Specific Subject
+GET http://localhost:8080/academics/api/subjects/1
+Accept: application/json
+
+##### Subject Students
+GET http://localhost:8080/academics/api/subjects/1/students
+Accept: application/json
+
+##### Teachers
+GET http://localhost:8080/academics/api/teachers/all
+Accept: application/json
+
+##### Associate Subject to Teacher
+POST http://localhost:8080/academics/api/teachers/mariajoana/2
+Content-Type: application/json
+
+##### GET Teacher Subjects
+GET http://localhost:8080/academics/api/teachers/mariajoana/subjects
+Accept: application/json
+
+##### GET Subject Teachers
+GET http://localhost:8080/academics/api/subjects/1/teachers
+Accept: application/json
+
+### Create Teacher
+POST http://localhost:8080/academics/api/teachers
+Content-Type: application/json
+
+{
+  "email": "ivo@mail.pt",
+  "name": "Ivo Bispo",
+  "office": "L-33",
+  "password": "ivoivo",
+  "username": "ivoafobispo"
+}
+
+##### Find Teacher
+GET http://localhost:8080/academics/api/teachers/ivoafobispo
+Content-Type: application/json
+
+##### Update Teacher
+PUT http://localhost:8080/academics/api/teachers/ivoafobispo
+Content-Type: application/json
+
+{
+  "email": "ivo@mail.pt",
+  "name": "Jose Areia",
+  "office": "L-33",
+  "password": "ivoivo",
+  "username": "ivoafobispo"
+}
+
+##### Delete Teacher
+DELETE http://localhost:8080/academics/api/teachers/ivoafobispo
+Content-Type: application/json
+
+##### Update Student
+PUT http://localhost:8080/academics/api/students/ivoafonsobispo
+Content-Type: application/json
+
+{
+  "email": "ivo@mail.pt",
+  "name": "Ivo Bispo Alterado",
+  "office": "L-33",
+  "password": "ivoivo",
+  "courseCode": 9119
+}
+
+### Send Email
+POST http://localhost:8080/academics/api/students/ivoafonsobispo/email/send
+Content-Type: application/json
+
+{
+  "subject": "This is the subject",
+  "message": "This is the message"
+}
+
+### REQUEST JWT TOKEN
+POST http://localhost:8080/academics/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+ "username": "ivoafonsobispo",
+ "password": "password"
+}
+
+### GET ALL STUDENTS
+GET http://localhost:8080/academics/api/students
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdm9hZm9uc29iaXNwbyIsImlhdCI6MTY2OTgxMDA5NSwiZXhwIjoxNjY5ODEzNjk1fQ.GJsNqpvnKIETcC5WtfrA0p6KzLQ-Ted09mbHjELVRl0
+
+### GET SPECIFIC STUDENT
+GET http://localhost:8080/academics/api/students/ivoafonsobispo
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdm9hZm9uc29iaXNwbyIsImlhdCI6MTY2OTIxMTE3MywiZXhwIjoxNjY5MjE0NzczfQ.kXw-GpzguUWOtYdogL06KgObi20eq3xbjwKpSgkTh2A
+
+### POST FILE
+POST http://localhost:8080/academics/api/documents HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdm9hZm9uc29iaXNwbyIsImlhdCI6MTY2OTg5Mzk0MCwiZXhwIjoxNjY5ODk3NTQwfQ.tyvv9K4Ehhk5ukeOdJrzuuXsfxbkCY6fygov-XFTwrA
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="test.txt"
+
+</home/ivoafonsobispo/Development/dae-ipleiria/academics/HTTPRequests.http
+
+--boundary
+
+### GET FILE
+GET http://localhost:8080/academics/api/documents/download/1 HTTP/1.1
+Content-Type: application/x-www-form-urlencoded
