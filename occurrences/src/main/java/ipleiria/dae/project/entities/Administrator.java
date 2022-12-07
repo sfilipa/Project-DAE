@@ -8,7 +8,7 @@ public class Administrator extends User implements Serializable {
     public Administrator() {
     }
 
-    public Administrator(String username, String password, String name, String email) {
-        super(username, password, name, email);
+    public Administrator(String password, String name, String email) {
+        super(password, name, email);
     }
 }

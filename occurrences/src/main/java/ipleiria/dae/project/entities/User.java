@@ -5,40 +5,29 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
-@Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 
+@Entity
 public class User extends Versionable implements Serializable {
     @Id
-    private String username;
+    @Email
+    @NotNull
+    private String email;
     @NotNull
     private String password;
     @NotNull
     private String name;
-    @Email
-    @NotNull
-    private String email;
-
     @Version
     private int version;
 
     public User() {
     }
 
-    public User(String username, String password, String name, String email) {
-        this.username = username;
+    public User(String password, String name, String email) {
         this.password = password;
         this.name = name;
         this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
