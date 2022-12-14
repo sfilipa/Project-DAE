@@ -35,7 +35,7 @@ public class ExpertBean {
         }
         expert = new Expert(username, hasher.hash(password), name, email, company);
         em.persist(expert);
-        company.add(expert);
+        company.addExpert(expert);
         return find(username);
     }
 
@@ -67,7 +67,7 @@ public class ExpertBean {
         }
 
         Company company = expert.getCompany();
-        company.remove(expert);
+        company.removeExpert(expert);
         em.remove(expert);
     }
 

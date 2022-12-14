@@ -19,11 +19,15 @@ public class Company extends Client implements Serializable {
     @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE)
     List<Expert> experts;
 
+    @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE)
+    List<Repairer> repairers;
+
     @NotNull
     long nipc;
 
     public Company() {
         experts = new LinkedList<>();
+        repairers = new LinkedList<>();
     }
 
     public Company(String password, String name, String email, String address, long phoneNumber, long nipc) {
@@ -31,19 +35,34 @@ public class Company extends Client implements Serializable {
         this.nipc = nipc;
     }
 
-    public void add(Expert expert) {
+    public void addExpert(Expert expert) {
         if (expert == null || experts.contains(expert)) {
             return;
         }
         experts.add(expert);
     }
 
-    public void remove(Expert expert) {
+    public void removeExpert(Expert expert) {
         if (expert == null || !experts.contains(expert)) {
             return;
         }
         experts.remove(expert);
     }
+
+    public void removeRepairer(Repairer repairer) {
+        if (repairer == null || !repairers.contains(repairer)) {
+            return;
+        }
+        experts.remove(repairer);
+    }
+
+    public void addRepairer(Repairer repairer) {
+        if (repairer == null || repairers.contains(repairer)) {
+            return;
+        }
+        repairers.add(repairer);
+    }
+
 
     public long getNipc() {
         return nipc;
