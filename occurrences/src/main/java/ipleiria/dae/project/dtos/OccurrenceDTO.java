@@ -15,9 +15,7 @@ public class OccurrenceDTO implements Serializable {
     private State state;
     private String insuredAssetType;
 
-    public OccurrenceDTO() {
-
-    }
+    public OccurrenceDTO() {}
 
     public OccurrenceDTO(long id, Client client, Date date, State state, String insuredAssetType) {
         this.id = id;
