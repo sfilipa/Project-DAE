@@ -7,11 +7,13 @@ import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
 import org.hibernate.Hibernate;
 
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Date;
 import java.util.List;
 
+@Stateless
 public class OccurrenceBean {
     @PersistenceContext
     private EntityManager em;
