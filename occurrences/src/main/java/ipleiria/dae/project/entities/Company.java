@@ -1,29 +1,47 @@
 package ipleiria.dae.project.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 @NamedQueries({
         @NamedQuery(
-                name = "getAllClients",
+                name = "getAllCompanies",
                 query = "SELECT c FROM Company c ORDER BY c.name" // JPQL
         ),
 })
 
 @Entity
 public class Company extends Client implements Serializable {
-    @NotNull
+    @Id
     private long nipc;
 
+    @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE)
+    List<Expert> experts;
+
     public Company() {
+        experts = new LinkedList<>();
     }
 
     public Company(String password, String name, String email, String address, long phoneNumber, long nipc) {
         super(password, name, email, address, phoneNumber);
         this.nipc = nipc;
+    }
+
+    public void add(Expert expert) {
+        if (expert == null || experts.contains(expert)) {
+            return;
+        }
+        experts.add(expert);
+    }
+
+    public void remove(Expert expert) {
+        if (expert == null || !experts.contains(expert)) {
+            return;
+        }
+        experts.remove(expert);
     }
 
     public long getNipc() {
@@ -32,5 +50,13 @@ public class Company extends Client implements Serializable {
 
     public void setNipc(long nipc) {
         this.nipc = nipc;
+    }
+
+    public List<Expert> getExperts() {
+        return experts;
+    }
+
+    public void setExperts(List<Expert> experts) {
+        this.experts = experts;
     }
 }
