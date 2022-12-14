@@ -38,6 +38,8 @@ public class Occurrence implements Serializable {
     private InsuredAssetType insuredAssetType;
     @NotNull
     private Insurance insurance;
+    @NotNull
+    private String description;
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.REMOVE)
     List<Document> documents;
@@ -49,7 +51,7 @@ public class Occurrence implements Serializable {
         documents = new LinkedList<>();
     }
 
-    public Occurrence(Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance) {
+    public Occurrence(Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description) {
         this.client = client;
         this.date = date;
         this.state = state;
@@ -57,6 +59,7 @@ public class Occurrence implements Serializable {
         this.insurance = insurance;
         this.experts = new LinkedList<>();
         this.documents = new LinkedList<>();
+        this.description = description;
     }
 
     public long getId() {
@@ -117,5 +120,13 @@ public class Occurrence implements Serializable {
 
     public void setExperts(List<Expert> experts) {
         this.experts = experts;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

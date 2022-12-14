@@ -16,11 +16,11 @@ public class OccurrenceBean {
     @PersistenceContext
     private EntityManager em;
 
-    public Occurrence find(long id){
+    public Occurrence find(long id) {
         return em.find(Occurrence.class, id);
     }
 
-    public Occurrence findOrFail(long code){
+    public Occurrence findOrFail(long code) {
         Occurrence occurrence = em.getReference(Occurrence.class, code);
         Hibernate.initialize(occurrence);
         return occurrence;
@@ -30,8 +30,8 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(Client client, Date date, InsuredAssetType insuredAssetType, State state, Insurance insurance) {
-        Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance);
+    public Occurrence create(Client client, Date date, InsuredAssetType insuredAssetType, State state, Insurance insurance, String description) {
+        Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance, description);
         em.persist(occurrence);
         return occurrence;
     }
@@ -52,7 +52,7 @@ public class OccurrenceBean {
 
     public void disapproveOccurrence(long id) {
         Occurrence occurrence = em.find(Occurrence.class, id);
-        if(occurrence == null){
+        if (occurrence == null) {
             return;
         }
 
@@ -60,7 +60,7 @@ public class OccurrenceBean {
 
     public void approveOccurrence(long id) {
         Occurrence occurrence = em.find(Occurrence.class, id);
-        if(occurrence == null){
+        if (occurrence == null) {
             return;
         }
 
