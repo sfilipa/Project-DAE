@@ -5,36 +5,36 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CompanyDTO implements Serializable {
+public class PersonDTO implements Serializable {
     @Id
     String username;
     String password, name, email,address;
-    Long phoneNumber,nipc;
+    Long phoneNumber,nif;
     List<String> insurances;
 
-    public CompanyDTO() {
+    public PersonDTO() {
         insurances = new LinkedList<>();
     }
 
-    public CompanyDTO(String username, String password, String name, String email, String address, Long phoneNumber, Long nipc) {
+    public PersonDTO(String username, String password, String name, String email, String address, Long phoneNumber, Long nif) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.nipc = nipc;
+        this.nif = nif;
         insurances = new LinkedList<>();
     }
 
-    public CompanyDTO(String username, String password, String name, String email, String address, Long phoneNumber, Long nipc, List<String> insurances) {
+    public PersonDTO(String username, String password, String name, String email, String address, Long phoneNumber, Long nif, List<String> insurances) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.nipc = nipc;
+        this.nif = nif;
         this.insurances = insurances;
     }
 
@@ -86,12 +86,12 @@ public class CompanyDTO implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public Long getNipc() {
-        return nipc;
+    public Long getNif() {
+        return nif;
     }
 
-    public void setNipc(Long nipc) {
-        this.nipc = nipc;
+    public void setNif(Long nif) {
+        this.nif = nif;
     }
 
     public List<String> getInsurances() {

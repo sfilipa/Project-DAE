@@ -14,17 +14,17 @@ public class Client extends User implements Serializable {
     @NotNull
     private long phoneNumber;
     @NotNull
-    List<String> seguros;
+    List<String> insurances;
 
     public Client() {
-        seguros = new LinkedList<>();
+        insurances = new LinkedList<>();
     }
 
     public Client(String password, String name, String email, String address, long phoneNumber) {
         super(password, name, email);
         this.address = address;
         this.phoneNumber = phoneNumber;
-        seguros = new LinkedList<>();
+        insurances = new LinkedList<>();
     }
 
     public String getAddress() {

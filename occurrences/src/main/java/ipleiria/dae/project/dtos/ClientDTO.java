@@ -5,36 +5,34 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CompanyDTO implements Serializable {
+public class ClientDTO implements Serializable {
     @Id
     String username;
     String password, name, email,address;
-    Long phoneNumber,nipc;
+    Long phoneNumber;
     List<String> insurances;
 
-    public CompanyDTO() {
+    public ClientDTO() {
         insurances = new LinkedList<>();
     }
 
-    public CompanyDTO(String username, String password, String name, String email, String address, Long phoneNumber, Long nipc) {
+    public ClientDTO(String username, String password, String name, String email, String address, Long phoneNumber) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.nipc = nipc;
         insurances = new LinkedList<>();
     }
 
-    public CompanyDTO(String username, String password, String name, String email, String address, Long phoneNumber, Long nipc, List<String> insurances) {
+    public ClientDTO(String username, String password, String name, String email, String address, Long phoneNumber, List<String> insurances) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.nipc = nipc;
         this.insurances = insurances;
     }
 
@@ -84,14 +82,6 @@ public class CompanyDTO implements Serializable {
 
     public void setPhoneNumber(Long phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public Long getNipc() {
-        return nipc;
-    }
-
-    public void setNipc(Long nipc) {
-        this.nipc = nipc;
     }
 
     public List<String> getInsurances() {
