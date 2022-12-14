@@ -16,8 +16,8 @@ public class OccurrenceBean {
     @PersistenceContext
     private EntityManager em;
 
-    public Occurrence find(long code){
-        return em.find(Occurrence.class, code);
+    public Occurrence find(long id){
+        return em.find(Occurrence.class, id);
     }
 
     public Occurrence findOrFail(long code){
@@ -30,14 +30,39 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(long id, Client client, Date date, InsuredAssetType insuredAssetType, State state, Insurance insurance) {
-        Occurrence occurrence = find(id);
-        if(occurrence != null){
-            return null;
-        }
-
-        occurrence = new Occurrence(id, client, date, state, insuredAssetType, insurance);
+    public Occurrence create(Client client, Date date, InsuredAssetType insuredAssetType, State state, Insurance insurance) {
+        Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance);
         em.persist(occurrence);
         return occurrence;
+    }
+
+    public void delete(long id) {
+        Occurrence occurrence = find(id);
+        em.remove(occurrence);
+    }
+
+    public Occurrence update(long id, Client client, Date date, State state, Insurance insurance) {
+        Occurrence occurrence = em.find(Occurrence.class, id);
+        occurrence.setClient(client);
+        occurrence.setDate(date);
+        occurrence.setState(state);
+        occurrence.setInsurance(insurance);
+        return null;
+    }
+
+    public void disapproveOccurrence(long id) {
+        Occurrence occurrence = em.find(Occurrence.class, id);
+        if(occurrence == null){
+            return;
+        }
+
+    }
+
+    public void approveOccurrence(long id) {
+        Occurrence occurrence = em.find(Occurrence.class, id);
+        if(occurrence == null){
+            return;
+        }
+
     }
 }

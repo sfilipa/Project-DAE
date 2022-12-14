@@ -49,8 +49,7 @@ public class Occurrence implements Serializable {
         documents = new LinkedList<>();
     }
 
-    public Occurrence(long id, Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance) {
-        this.id = id;
+    public Occurrence(Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance) {
         this.client = client;
         this.date = date;
         this.state = state;
@@ -62,10 +61,6 @@ public class Occurrence implements Serializable {
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public Insurance getInsurance() {
