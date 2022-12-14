@@ -44,10 +44,15 @@ public class Occurrence implements Serializable {
     @OneToMany(mappedBy = "document", cascade = CascadeType.REMOVE)
     List<Document> documents;
 
+    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE)
     private List<Expert> experts;
+
+    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE)
+    private List<Repairer> repairers;
 
     public Occurrence() {
         experts = new LinkedList<>();
+        repairers = new LinkedList<>();
         documents = new LinkedList<>();
     }
 
@@ -58,6 +63,7 @@ public class Occurrence implements Serializable {
         this.insuredAssetType = insuredAssetType;
         this.insurance = insurance;
         this.experts = new LinkedList<>();
+        this.repairers = new LinkedList<>();
         this.documents = new LinkedList<>();
         this.description = description;
     }
@@ -120,6 +126,38 @@ public class Occurrence implements Serializable {
 
     public void setExperts(List<Expert> experts) {
         this.experts = experts;
+    }
+
+    public void addExpert(Expert expert){
+        if(expert != null){
+            experts.add(expert);
+        }
+    }
+
+    public void removeExpert(Expert expert){
+        if(expert != null){
+            experts.remove(expert);
+        }
+    }
+
+    public List<Repairer> getRepairers() {
+        return repairers;
+    }
+
+    public void addRepairer(Repairer repairer){
+        if(repairer != null){
+            repairers.add(repairer);
+        }
+    }
+
+    public void removeRepairer(Repairer repairer){
+        if(repairer != null){
+            repairers.remove(repairer);
+        }
+    }
+
+    public void setRepairers(List<Repairer> repairers) {
+        this.repairers = repairers;
     }
 
     public String getDescription() {

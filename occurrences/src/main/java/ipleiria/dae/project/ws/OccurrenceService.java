@@ -1,7 +1,9 @@
 package ipleiria.dae.project.ws;
 
 import ipleiria.dae.project.dtos.OccurrenceDTO;
+import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.ejbs.OccurrenceBean;
+import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 
 import javax.ws.rs.*;
@@ -17,16 +19,18 @@ import java.util.stream.Collectors;
 public class OccurrenceService {
     @EJB
     private OccurrenceBean occurrenceBean;
+    @EJB
+    private ExpertBean expertBean;
 
     @GET
     @Path("/")
-    public List<OccurrenceDTO> getAllOccurrences() {
+    public List<OccurrenceDTO> getAllOccurrences(){
         return toDTOS(occurrenceBean.getAllOccurrences());
     }
 
     @POST
     @Path("/")
-    public Response create(OccurrenceDTO occurrenceDTO) {
+    public Response create(OccurrenceDTO occurrenceDTO){
         Occurrence occurrence = occurrenceBean.create(
                 occurrenceDTO.getClient(),
                 occurrenceDTO.getDate(),
@@ -35,7 +39,7 @@ public class OccurrenceService {
                 occurrenceDTO.getInsurance(),
                 occurrenceDTO.getDescription()
         );
-        if (occurrence == null) {
+        if(occurrence == null){
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         return Response.status(Response.Status.CREATED)
@@ -45,9 +49,9 @@ public class OccurrenceService {
 
     @PUT
     @Path("/{id}")
-    public Response updateOccurrence(@PathParam("id") long id, OccurrenceDTO occurrenceDTO) {
+    public Response updateOccurrence(@PathParam("id") long id, OccurrenceDTO occurrenceDTO){
         Occurrence occurrence;
-        try {
+        try{
             occurrence = occurrenceBean.update(
                     id,
                     occurrenceDTO.getClient(),
@@ -55,24 +59,37 @@ public class OccurrenceService {
                     occurrenceDTO.getState(),
                     occurrenceDTO.getInsurance()
             );
-        } catch (Exception e) {
+        }catch (Exception e){
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         return Response.status(Response.Status.ACCEPTED).entity(toDTO(occurrence)).build();
     }
 
-    @PUT
     @Path("/{id}/expert/{username}")
     //a seguradora atribui um perito à ocorrencia - verificar que o perito é da mesma seguradora
     public Response addExpert(@PathParam("id") long id, @PathParam("username") String username) {
+        Occurrence occurrence = occurrenceBean.find(id);
+        if(occurrence == null){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("ERROR_FINDING_OCCURRENCE")
+                    .build();
+        }
+        Expert expert = expertBean.find(username);
+        if(expert == null){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("ERROR_FINDING_EXPERT")
+                    .build();
+        }
+
+//        occurrenceBean.addExpert(id, username);
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
     @PATCH
     @Path("/{id}/approve")
-    public Response approveOccurrence(@PathParam("id") long id) {
+    public Response approveOccurrence(@PathParam("id") long id){
         Occurrence occurrence = occurrenceBean.find(id);
-        if (occurrence == null) {
+        if(occurrence == null){
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("ERROR_FINDING_OCCURRENCE")
                     .build();
@@ -80,14 +97,14 @@ public class OccurrenceService {
 
         occurrenceBean.approveOccurrence(id);
 
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        return Response.status(Response.Status.OK).build();
     }
 
     @PATCH
     @Path("/{id}/disapprove")
-    public Response disapproveOccurrence(@PathParam("id") long id) {
+    public Response disapproveOccurrence(@PathParam("id") long id){
         Occurrence occurrence = occurrenceBean.find(id);
-        if (occurrence == null) {
+        if(occurrence == null){
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("ERROR_FINDING_OCCURRENCE")
                     .build();
@@ -95,12 +112,12 @@ public class OccurrenceService {
 
         occurrenceBean.disapproveOccurrence(id);
 
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        return Response.status(Response.Status.OK).build();
     }
 
     @PUT
     @Path("/{id}/repairer/{username}") //o perito, caso aprove a cobertura, atribui um reparador à ocorrência
-    public Response addRepairer(@PathParam("id") long id, @PathParam("username") String username) {
+    public Response addRepairer(@PathParam("id") long id, @PathParam("username") String username){
         return Response.status(Response.Status.BAD_REQUEST).build();
     }
 
@@ -118,10 +135,10 @@ public class OccurrenceService {
 
     @DELETE
     @Path("/{id}")
-    public Response deleteOccurrence(@PathParam("id") long id) {
-        try {
+    public Response deleteOccurrence(@PathParam("id") long id){
+        try{
             occurrenceBean.delete(id);
-        } catch (Exception exception) {
+        }catch (Exception exception){
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         return Response.status(Response.Status.OK).build();
@@ -131,7 +148,7 @@ public class OccurrenceService {
         return allOccurrences.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    private OccurrenceDTO toDTO(Occurrence occurrence) {
+    private OccurrenceDTO toDTO(Occurrence occurrence){
         return new OccurrenceDTO(
                 occurrence.getId(),
                 occurrence.getClient(),

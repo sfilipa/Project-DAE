@@ -55,7 +55,7 @@ public class OccurrenceBean {
         if (occurrence == null) {
             return;
         }
-
+        occurrence.setState(State.FAILED);
     }
 
     public void approveOccurrence(long id) {
@@ -63,6 +63,6 @@ public class OccurrenceBean {
         if (occurrence == null) {
             return;
         }
-
+        occurrence.setState(State.ACTIVE);
     }
 }
