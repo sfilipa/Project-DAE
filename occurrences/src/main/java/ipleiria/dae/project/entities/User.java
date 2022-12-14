@@ -11,6 +11,7 @@ import java.io.Serializable;
 @Entity
 public class User extends Versionable implements Serializable {
     @Id
+    private String username;
     @Email
     @NotNull
     private String email;
@@ -28,6 +29,14 @@ public class User extends Versionable implements Serializable {
         this.password = password;
         this.name = name;
         this.email = email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
