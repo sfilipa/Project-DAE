@@ -1,6 +1,8 @@
 package ipleiria.dae.project.dtos;
 
 import ipleiria.dae.project.entities.Client;
+import ipleiria.dae.project.entities.Insurance;
+import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
 
 import javax.persistence.Id;
@@ -13,16 +15,18 @@ public class OccurrenceDTO implements Serializable {
     private Client client;
     private Date date;
     private State state;
-    private String insuredAssetType;
+    private InsuredAssetType insuredAssetType;
+    private Insurance insurance;
 
     public OccurrenceDTO() {}
 
-    public OccurrenceDTO(long id, Client client, Date date, State state, String insuredAssetType) {
+    public OccurrenceDTO(long id, Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance) {
         this.id = id;
         this.client = client;
         this.date = date;
         this.state = state;
         this.insuredAssetType = insuredAssetType;
+        this.insurance = insurance;
     }
 
     public long getId() {
@@ -57,11 +61,19 @@ public class OccurrenceDTO implements Serializable {
         this.state = state;
     }
 
-    public String getInsuredAssetType() {
+    public InsuredAssetType getInsuredAssetType() {
         return insuredAssetType;
     }
 
-    public void setInsuredAssetType(String insuredAssetType) {
+    public void setInsuredAssetType(InsuredAssetType insuredAssetType) {
         this.insuredAssetType = insuredAssetType;
+    }
+
+    public Insurance getInsurance() {
+        return insurance;
+    }
+
+    public void setInsurance(Insurance insurance) {
+        this.insurance = insurance;
     }
 }
