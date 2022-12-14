@@ -17,16 +17,18 @@ public class OccurrenceDTO implements Serializable {
     private State state;
     private InsuredAssetType insuredAssetType;
     private Insurance insurance;
+    private String description;
 
     public OccurrenceDTO() {}
 
-    public OccurrenceDTO(long id, Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance) {
+    public OccurrenceDTO(long id, Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description) {
         this.id = id;
         this.client = client;
         this.date = date;
         this.state = state;
         this.insuredAssetType = insuredAssetType;
         this.insurance = insurance;
+        this.description = description;
     }
 
     public long getId() {
@@ -75,5 +77,13 @@ public class OccurrenceDTO implements Serializable {
 
     public void setInsurance(Insurance insurance) {
         this.insurance = insurance;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

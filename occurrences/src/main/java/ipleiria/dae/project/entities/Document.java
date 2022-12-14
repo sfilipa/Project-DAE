@@ -5,15 +5,12 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @NamedQuery(
-        name = "getStudentDocuments",
-        query = "SELECT doc FROM Document doc WHERE doc.student.username = :username"
+        name = "getClientDocuments",
+        query = "SELECT doc FROM Document doc WHERE doc.client.username = :username"
 )
 public class Document {
     @NotNull
     String filepath, filename;
-    @NotNull
-    @ManyToOne
-    Student student;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
@@ -21,10 +18,9 @@ public class Document {
     public Document() {
     }
 
-    public Document(String filepath, String filename, Student student) {
+    public Document(String filepath, String filename) {
         this.filepath = filepath;
         this.filename = filename;
-        this.student = student;
     }
 
     public String getFilepath() {
@@ -41,14 +37,6 @@ public class Document {
 
     public void setFilename(String filename) {
         this.filename = filename;
-    }
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
     }
 
     public Long getId() {
