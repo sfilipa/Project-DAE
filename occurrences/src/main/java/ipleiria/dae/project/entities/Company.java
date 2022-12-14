@@ -26,8 +26,8 @@ public class Company extends Client implements Serializable {
         experts = new LinkedList<>();
     }
 
-    public Company(String password, String name, String email, String address, long phoneNumber, long nipc) {
-        super(password, name, email, address, phoneNumber);
+    public Company(String username, String password, String name, String email, String address, long phoneNumber, long nipc) {
+        super(username, password, name, email, address, phoneNumber);
         this.nipc = nipc;
     }
 

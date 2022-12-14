@@ -9,7 +9,7 @@ public class Repairer extends User implements Serializable {
     public Repairer() {
     }
 
-    public Repairer(String password, String name, String email) {
-        super(password, name, email);
+    public Repairer(String username, String password, String name, String email) {
+        super(username, password, name, email);
     }
 }

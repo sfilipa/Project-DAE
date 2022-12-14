@@ -21,8 +21,8 @@ public class Person extends Client implements Serializable {
     public Person() {
     }
 
-    public Person(String password, String name, String email, String address, long phoneNumber, long nif) {
-        super(password, name, email, address, phoneNumber);
+    public Person(String username, String password, String name, String email, String address, long phoneNumber, long nif) {
+        super(username, password, name, email, address, phoneNumber);
         this.nif = nif;
     }
 

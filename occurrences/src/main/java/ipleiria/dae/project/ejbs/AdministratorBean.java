@@ -17,7 +17,7 @@ public class AdministratorBean {
     private Hasher hasher;
 
     public void create(String username, String password, String name, String email) {
-        Administrator administrator = new Administrator(username, hasher.hash(password), name, email);
+        Administrator administrator = new Administrator(username, password, name, email);
         em.persist(administrator);
     }
 }
