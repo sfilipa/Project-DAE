@@ -20,8 +20,8 @@ public class Client extends User implements Serializable {
         insurances = new LinkedList<>();
     }
 
-    public Client(String password, String name, String email, String address, long phoneNumber) {
-        super(password, name, email);
+    public Client(String username, String password, String name, String email, String address, long phoneNumber) {
+        super(username,password, name, email);
         this.address = address;
         this.phoneNumber = phoneNumber;
         insurances = new LinkedList<>();

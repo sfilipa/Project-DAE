@@ -20,12 +20,9 @@ public class ConfigBean {
     public void populateDB() {
         System.out.println("Hello Java EE!");
         try {
-           // expertBean.create("ivoafonsobispo", "password", "Ivo Afonso Bispo", "ivoafobispo@gmail.com", );
-            //studentBean.create("anamartin", "password", "Log of Error", "anamartin@gmail.com", 9119);
+            expertBean.create("expert1", "exp", "Expert Joca", "expert@mail.pt", "company1");
         } catch (Exception exception) {
             logger.severe(exception.getMessage());
         }
-
-
     }
 }
