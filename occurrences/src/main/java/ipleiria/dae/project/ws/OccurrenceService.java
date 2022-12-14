@@ -32,7 +32,8 @@ public class OccurrenceService {
                 occurrenceDTO.getDate(),
                 occurrenceDTO.getInsuredAssetType(),
                 occurrenceDTO.getState(),
-                occurrenceDTO.getInsurance()
+                occurrenceDTO.getInsurance(),
+                occurrenceDTO.getDescription()
         );
         if (occurrence == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
