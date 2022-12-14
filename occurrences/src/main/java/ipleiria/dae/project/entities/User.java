@@ -25,7 +25,7 @@ public class User extends Versionable implements Serializable {
     public User() {
     }
 
-    public User(String password, String name, String email) {
+    public User(String username, String password, String name, String email) {
         this.password = password;
         this.name = name;
         this.email = email;

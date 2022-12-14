@@ -15,14 +15,14 @@ public class Expert extends User implements Serializable {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "company_nipc")
+    @JoinColumn(name = "company_username")
     Company company;
 
     public Expert() {
     }
 
     public Expert(String username, String password, String name, String email, Company company) {
-        super(/*username,*/password, name, email);
+        super(username,password, name, email);
         this.company = company;
     }
 

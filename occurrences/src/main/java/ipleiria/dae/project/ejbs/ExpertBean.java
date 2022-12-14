@@ -2,7 +2,6 @@ package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Company;
 import ipleiria.dae.project.entities.Expert;
-import ipleiria.dae.project.entities.Teacher;
 import ipleiria.dae.project.security.Hasher;
 
 import javax.ejb.Stateless;
@@ -23,9 +22,9 @@ public class ExpertBean {
         return (List<Expert>) em.createNamedQuery("getAllExperts").getResultList();
     }
 
-    public Expert create(String username, String password, String name, String email, long company_nipc) {
+    public Expert create(String username, String password, String name, String email, String company_username) {
         Expert expert = find(username);
-        Company company = em.find(Company.class, company_nipc);
+        Company company = em.find(Company.class, company_username);
 
         if(company == null ){
             return null;
@@ -40,12 +39,12 @@ public class ExpertBean {
         return find(username);
     }
 
-    public Expert update(String username, String password, String name, String email, long company_nipc) {
+    public Expert update(String username, String password, String name, String email, long company_usernmae) {
         Expert expert = find(username);
         if (expert == null){
             return null;
         }
-        Company company = em.find(Company.class, company_nipc);
+        Company company = em.find(Company.class, company_usernmae);
 
         if(company == null ){
             return null;

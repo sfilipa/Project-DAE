@@ -1,15 +1,8 @@
 package ipleiria.dae.project.ws;
 
 import ipleiria.dae.project.dtos.ExpertDTO;
-import ipleiria.dae.project.dtos.StudentDTO;
 import ipleiria.dae.project.ejbs.ExpertBean;
-import ipleiria.dae.project.ejbs.StudentBean;
 import ipleiria.dae.project.entities.Expert;
-import ipleiria.dae.project.entities.Student;
-import ipleiria.dae.project.exceptions.MyConstraintViolationException;
-import ipleiria.dae.project.exceptions.MyEntityExistsException;
-import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
-import org.hibernate.Hibernate;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -28,7 +21,7 @@ public class ExpertService {
     @GET // means: to call this endpoint, we need to use the HTTP GET method
     @Path("/") // means: the relative url path is “/api/students/”
     public List<ExpertDTO> getAllExperts() {
-        return toDTOsNoSubjects(studentBean.getAllStudents());
+        return toDTOs(expertBean.getAllExperts());
     }
 
     private List<ExpertDTO> toDTOs(List<Expert> experts) {
@@ -36,13 +29,12 @@ public class ExpertService {
     }
 
     private ExpertDTO toDTO(Expert expert) {
-        return new StudentDTO(
+        return new ExpertDTO(
                 expert.getUsername(),
                 expert.getPassword(),
                 expert.getName(),
                 expert.getEmail(),
-                expert.getCompany().getNipc(),
-                expert.getCompany().getName()
+                expert.getCompany().getUsername()
         );
     }
 
@@ -55,7 +47,7 @@ public class ExpertService {
                 expertDTO.getPassword(),
                 expertDTO.getName(),
                 expertDTO.getEmail(),
-                expertDTO.getCompany_nipc()
+                expertDTO.getCompany_username()
         );
 
         return Response.status(Response.Status.CREATED)

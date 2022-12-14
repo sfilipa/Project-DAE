@@ -15,11 +15,12 @@ import java.util.List;
 
 @Entity
 public class Company extends Client implements Serializable {
-    @Id
-    private long nipc;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.REMOVE)
     List<Expert> experts;
+
+    @NotNull
+    long nipc;
 
     public Company() {
         experts = new LinkedList<>();

@@ -10,17 +10,17 @@ public class ExpertDTO {
 
     String password, name, email;
 
-    long company_nipc;
+    String company_username;
 
     public ExpertDTO() {
     }
 
-    public ExpertDTO(String username, String password, String name, String email, long company_nipc) {
+    public ExpertDTO(String username, String password, String name, String email, String company_username) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
-        this.company_nipc = company_nipc;
+        this.company_username = company_username;
     }
 
     public String getUsername() {
@@ -55,11 +55,11 @@ public class ExpertDTO {
         this.email = email;
     }
 
-    public long getCompany_nipc() {
-        return company_nipc;
+    public String getCompany_username() {
+        return company_username;
     }
 
-    public void setCompany_nipc(long company_nipc) {
-        this.company_nipc = company_nipc;
+    public void setCompany_username(String company_username) {
+        this.company_username = company_username;
     }
 }
