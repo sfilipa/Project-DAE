@@ -3,8 +3,10 @@ package ipleiria.dae.project.ws;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.ejbs.OccurrenceBean;
+import ipleiria.dae.project.ejbs.RepairerBean;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
+import ipleiria.dae.project.entities.Repairer;
 
 import javax.ws.rs.*;
 import javax.ejb.EJB;
@@ -21,6 +23,9 @@ public class OccurrenceService {
     private OccurrenceBean occurrenceBean;
     @EJB
     private ExpertBean expertBean;
+
+    @EJB
+    private RepairerBean repairerBean;
 
     @GET
     @Path("/")
@@ -81,8 +86,29 @@ public class OccurrenceService {
                     .build();
         }
 
-//        occurrenceBean.addExpert(id, username);
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        int response = occurrenceBean.addExpert(id, username);
+        switch (response){
+            case -1:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_OCCURRENCE")
+                        .build();
+            case -2:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_EXPERT")
+                        .build();
+            case -3:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("EXPERT_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
+                        .build();
+            case -4:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("EXPERT_NOT_FROM_SAME_INSURANCE")
+                        .build();
+            default:
+                return Response.status(Response.Status.ACCEPTED)
+                        .entity(toDTO(occurrence))
+                        .build();
+        }
     }
 
     @PATCH
@@ -118,7 +144,38 @@ public class OccurrenceService {
     @PUT
     @Path("/{id}/repairer/{username}") //o perito, caso aprove a cobertura, atribui um reparador à ocorrência
     public Response addRepairer(@PathParam("id") long id, @PathParam("username") String username){
-        return Response.status(Response.Status.BAD_REQUEST).build();
+        Occurrence occurrence = occurrenceBean.find(id);
+        if(occurrence == null){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("ERROR_FINDING_OCCURRENCE")
+                    .build();
+        }
+        Repairer repairer = repairerBean.find(username);
+        if(repairer == null){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("ERROR_FINDING_REPAIRER")
+                    .build();
+        }
+
+        int response = occurrenceBean.addRepairer(id, username);
+        switch (response){
+            case -1:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_OCCURRENCE")
+                        .build();
+            case -2:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_REPAIRER")
+                        .build();
+            case -3:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("REPAIRER_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
+                        .build();
+            default:
+                return Response.status(Response.Status.ACCEPTED)
+                        .entity(toDTO(occurrence))
+                        .build();
+        }
     }
 
 //    @GET

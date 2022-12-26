@@ -131,6 +131,14 @@ public class Occurrence implements Serializable {
         }
     }
 
+    public boolean isExpertInOccurrence(Expert expert){
+        return experts.contains(expert);
+    }
+
+    public boolean isRepairerInOccurrence(Repairer repairer) {
+        return experts.contains(repairer);
+    }
+
     public void removeExpert(Expert expert){
         if(expert != null){
             experts.remove(expert);
