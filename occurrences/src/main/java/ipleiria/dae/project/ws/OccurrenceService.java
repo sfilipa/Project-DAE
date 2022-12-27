@@ -82,6 +82,7 @@ public class OccurrenceService {
         return Response.status(Response.Status.ACCEPTED).entity(toDTO(occurrence)).build();
     }
 
+    @PATCH
     @Path("/{id}/expert/{username}")
     //a seguradora atribui um perito à ocorrencia - verificar que o perito é da mesma seguradora
     public Response addExpert(@PathParam("id") long id, @PathParam("username") String username) {
@@ -157,7 +158,7 @@ public class OccurrenceService {
         return Response.status(Response.Status.OK).build();
     }
 
-    @PUT
+    @PATCH
     @Path("/{id}/repairer/{username}") //o perito, caso aprove a cobertura, atribui um reparador à ocorrência
     public Response addRepairer(@PathParam("id") long id, @PathParam("username") String username){
         Occurrence occurrence = occurrenceBean.find(id);
