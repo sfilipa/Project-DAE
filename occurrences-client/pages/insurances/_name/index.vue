@@ -83,36 +83,36 @@
 
 <!--      Report an Occurrence-->
       <div v-if="reportOccurrence" class="report-an-occurrence">
-        <p><b>1. Choose a Policy</b></p>
+<!--        <p><b>1. Choose an Asset Type</b></p>-->
+<!--        <div class="report-an-occurrence-div">-->
+<!--          <div v-if="assets.length==0">-->
+<!--            No Vehicles Registered-->
+<!--          </div>-->
+<!--          <div v-else class="items-grid">-->
+<!--            <div v-for="asset in assets" class="item-grid-div" :class="{'grid-item-selected': selectedAsset == asset}"-->
+<!--                 @click="selectedAsset = asset">-->
+<!--              {{ asset.name }}-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+
+        <p><b>1. Choose the Affected Object</b></p>
         <div class="report-an-occurrence-div">
-          <div v-if="policies.length==0">
-            No Policies Registered
+          <div v-if="assetObjects.length==0">
+            No Objects Registered
           </div>
           <div v-else class="items-grid">
-            <div v-for="policy in policies" class="item-grid-div" :class="{'grid-item-selected': selectedPolicy == policy}"
-              @click="selectedPolicy = policy">
-              {{ policy.name }}
-              <p class="policy-number-span">Policy number --n</p>
+            <div v-for="assetObject in assetObjects" class="item-grid-div" :class="{'grid-item-selected': selectedAssetObject == assetObject}"
+                 @click="selectedAssetObject = assetObject">
+              {{ assetObject.name }}
+              <p class="policy-number-span">{{ assetObject.type }}</p>
             </div>
           </div>
         </div>
 
-        <p><b>2. Choose an Asset Type</b></p>
+        <p><b>2. What Happened</b></p>
         <div class="report-an-occurrence-div">
-          <div v-if="policies.length==0">
-            No Vehicles Registered
-          </div>
-          <div v-else class="items-grid">
-            <div v-for="asset in assets" class="item-grid-div" :class="{'grid-item-selected': selectedAsset == asset}"
-                 @click="selectedAsset = asset">
-              {{ asset.name }}
-            </div>
-          </div>
-        </div>
-
-        <p><b>3. What Happened</b></p>
-        <div class="report-an-occurrence-div">
-          <textarea class="form-control report-an-occurrence-text" placeholder="Write here what happened" v-model="description"></textarea>
+          <textarea class="form-control report-an-occurrence-text" placeholder="Describe here what happened" v-model="description"></textarea>
         </div>
 
         <div style="display: flex;">
@@ -167,8 +167,7 @@ export default {
       ongoingOccurrences: false,
       completedOccurrences: false,
       occurrences: [],
-      selectedPolicy: {},
-      selectedAsset: {},
+      selectedAssetObject: {},
       description: ""
     }
   },
@@ -178,29 +177,15 @@ export default {
         "name": "Verde"
       }
     ]},
-    policies(){
+    assetObjects(){
       return [
         {
-          "name": "Policy 1"
+          "name": "Car Laguna",
+          "type": "Car"
         },
         {
-          "name": "Policy 2"
-        },
-        {
-          "name": "Policy 3"
-        },
-        {
-          "name": "Policy 4"
-        }
-      ]
-    },
-    assets(){
-      return [
-        {
-          "name": "Car"
-        },
-        {
-          "name": "Electronic"
+          "name": "Electronic IPhone",
+          "type": "Electronic"
         }
       ]
     }
@@ -215,12 +200,12 @@ export default {
   methods: {
     register() {
       this.$axios.$post('/api/occurrences', {
-        client: this.name,
+        client: "auth client - not done",
         date: this.date,
-        insuredAssetType: this.selectedAsset,
+        insuredAssetType: this.selectedAssetObject.type,
         state: 'PENDING',
         description: this.description,
-        insurance: this.selectedPolicy
+        insurance: this.name,
       })
         .then(() => {
           this.$router.push('/insurances')
