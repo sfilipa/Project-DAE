@@ -31,7 +31,10 @@ export default {
   computed: {
     insurances(){ return [
       {
-        "name": "Car Renault Laguna"
+        "name": "Carros Liber"
+      },
+      {
+        "name": "Carros Logo"
       }
     ]}
   },
@@ -51,14 +54,9 @@ export default {
     margin-bottom: 3rem;
   }
 
-  .btn-check-details:active{
+  .btn-check-details:active, .btn-check-details:hover{
     background-color: red !important;
     color: white !important;
-  }
-
-  .btn-check-details:hover{
-    background-color: #efefef;
-    color: black !important;
   }
 
   .btn-check-details{
@@ -97,6 +95,7 @@ export default {
     height: 170px;
     background-color: rgb(255, 255, 255);
     border-radius: 25px;
+    margin-bottom: 3%;
   }
 
   @media only screen and (max-width: 1200px) {
