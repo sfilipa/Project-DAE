@@ -30,8 +30,9 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(String usernameClient, Date date, InsuredAssetType insuredAssetType, State state, Insurance insurance, String description) {
+    public Occurrence create(String usernameClient, Date date, InsuredAssetType insuredAssetType, State state, String insuranceCode, String description) {
         Client client = em.find(Client.class, usernameClient);
+        Insurance insurance = em.find(Insurance.class, insuranceCode);
         Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance, description);
         em.persist(occurrence);
         return occurrence;
@@ -42,9 +43,10 @@ public class OccurrenceBean {
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, Date date, State state, Insurance insurance) {
+    public Occurrence update(long id, String usernameClient, Date date, State state, String insuranceCode) {
         Occurrence occurrence = em.find(Occurrence.class, id);
         Client client = em.find(Client.class, usernameClient);
+        Insurance insurance = em.find(Insurance.class, insuranceCode);
         occurrence.setClient(client);
         occurrence.setDate(date);
         occurrence.setState(state);

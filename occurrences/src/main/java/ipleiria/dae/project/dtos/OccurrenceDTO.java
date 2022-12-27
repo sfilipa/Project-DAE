@@ -16,21 +16,20 @@ public class OccurrenceDTO implements Serializable {
     private Date date;
     private State state;
     private InsuredAssetType insuredAssetType;
-    private Insurance insurance;
+    private String insuranceCode;
     private String description;
 
     public OccurrenceDTO() {}
 
-    public OccurrenceDTO(long id, String usernameClient, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description) {
+    public OccurrenceDTO(long id, String usernameClient, Date date, State state, InsuredAssetType insuredAssetType, String insuranceCode, String description) {
         this.id = id;
         this.usernameClient = usernameClient;
         this.date = date;
         this.state = state;
         this.insuredAssetType = insuredAssetType;
-        this.insurance = insurance;
+        this.insuranceCode = insuranceCode;
         this.description = description;
     }
-
     public long getId() {
         return id;
     }
@@ -71,14 +70,6 @@ public class OccurrenceDTO implements Serializable {
         this.insuredAssetType = insuredAssetType;
     }
 
-    public Insurance getInsurance() {
-        return insurance;
-    }
-
-    public void setInsurance(Insurance insurance) {
-        this.insurance = insurance;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -87,5 +78,11 @@ public class OccurrenceDTO implements Serializable {
         this.description = description;
     }
 
+    public String getInsuranceCode() {
+        return insuranceCode;
+    }
 
+    public void setInsuranceCode(String insuranceCode) {
+        this.insuranceCode = insuranceCode;
+    }
 }

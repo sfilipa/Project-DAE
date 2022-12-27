@@ -53,7 +53,7 @@ public class OccurrenceService {
                 occurrenceDTO.getDate(),
                 occurrenceDTO.getInsuredAssetType(),
                 occurrenceDTO.getState(),
-                occurrenceDTO.getInsurance(),
+                occurrenceDTO.getInsuranceCode(),
                 occurrenceDTO.getDescription()
         );
         if(occurrence == null){
@@ -74,7 +74,7 @@ public class OccurrenceService {
                     occurrenceDTO.getUsernameClient(),
                     occurrenceDTO.getDate(),
                     occurrenceDTO.getState(),
-                    occurrenceDTO.getInsurance()
+                    occurrenceDTO.getInsuranceCode()
             );
         }catch (Exception e){
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -233,7 +233,7 @@ public class OccurrenceService {
                 occurrence.getDate(),
                 occurrence.getState(),
                 occurrence.getInsuredAssetType(),
-                occurrence.getInsurance(),
+                occurrence.getInsurance().getCode(),
                 occurrence.getDescription()
         );
     }
