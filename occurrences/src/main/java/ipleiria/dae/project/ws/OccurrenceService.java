@@ -33,6 +33,18 @@ public class OccurrenceService {
         return toDTOS(occurrenceBean.getAllOccurrences());
     }
 
+    @GET
+    @Path("/{id}")
+    public Response getOccurrenceDetails(@PathParam("id") long id){
+        Occurrence occurrence = occurrenceBean.find(id);
+        if(occurrence != null){
+            return Response.ok().entity(toDTO(occurrence)).build();
+        }
+        return Response.status(Response.Status.NOT_FOUND)
+                .entity("ERROR_FINDING_OCCURRENCE")
+                .build();
+    }
+
     @POST
     @Path("/")
     public Response create(OccurrenceDTO occurrenceDTO){
@@ -94,13 +106,17 @@ public class OccurrenceService {
                         .build();
             case -2:
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_EXPERT")
+                        .entity("OCCURRENCE_IS_NOT_PENDING_FOR_APPROVAL")
                         .build();
             case -3:
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("EXPERT_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
+                        .entity("ERROR_FINDING_EXPERT")
                         .build();
             case -4:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("EXPERT_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
+                        .build();
+            case -5:
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("EXPERT_NOT_FROM_SAME_INSURANCE")
                         .build();
@@ -165,9 +181,13 @@ public class OccurrenceService {
                         .build();
             case -2:
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_REPAIRER")
+                        .entity("OCCURRENCE_IS_NOT_APPROVED_YET")
                         .build();
             case -3:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_REPAIRER")
+                        .build();
+            case -4:
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("REPAIRER_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
                         .build();
