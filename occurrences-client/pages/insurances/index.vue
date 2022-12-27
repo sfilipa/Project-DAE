@@ -44,14 +44,17 @@ export default {
   computed: {
     insurances(){ return [
       {
-        "name": "Car Renault Laguna"
+        "name": "Carros Liber"
+      },
+      {
+        "name": "Carros Logo"
       }
     ]}
   },
   created () {
-    // this.$axios.$get('/api/administrators')
-    //   .then((administrators) => {
-    //     this.administrators = administrators
+    // this.$axios.$get('/api/insurances')
+    //   .then((insurances) => {
+    //     this.insurances = insurances
     //   })
     // this.$axios.$get('http://localhost:8080/occurrences/api/students')
   }
@@ -59,14 +62,9 @@ export default {
 </script>
 <style scoped>
 
-  .btn-check-details:active{
+  .btn-check-details:active, .btn-check-details:hover{
     background-color: red !important;
     color: white !important;
-  }
-
-  .btn-check-details:hover{
-    background-color: #efefef;
-    color: black !important;
   }
 
   .btn-check-details{
@@ -105,30 +103,30 @@ export default {
     height: 170px;
     background-color: rgb(255, 255, 255);
     border-radius: 25px;
+    margin-bottom: 3%;
   }
 
   @media only screen and (max-width: 1200px) {
+    .insurance-box{
+      flex-direction: column;
+      height: 340px;
+    }
 
-  .insurance-box{
-    flex-direction: column;
-    height: 340px;
-  }
+    .details-left{
+      width: 100%;
+      height: fit-content;
+      border-top: 1px solid;
+      border-bottom: 0;
+      border-left: 1px solid;
+      border-right: 1px solid;
+      border-radius: 25px 25px 0 0;
+      padding: 10px;
+    }
 
-  .details-left{
-    width: 100%;
-    height: fit-content;
-    border-top: 1px solid;
-    border-bottom: 0;
-    border-left: 1px solid;
-    border-right: 1px solid;
-    border-radius: 25px 25px 0 0;
-    padding: 10px;
+    .details-right{
+      display: block;
+      width: 100%;
+      border-radius: 0 0 25px 25px;
+    }
   }
-
-  .details-right{
-    display: block;
-    width: 100%;
-    border-radius: 0 0 25px 25px;
-  }
-}
 </style>
