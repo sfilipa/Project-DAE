@@ -34,7 +34,7 @@ public class RepairerBean {
         if (repairer != null){
             return null;
         }
-        repairer = new Repairer(username, hasher.hash(password), name, email, company);
+        repairer = new Repairer(username, hasher.hash(password), name, email, company, null);
         em.persist(repairer);
         company.addRepairer(repairer);
         return find(username);
