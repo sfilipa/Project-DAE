@@ -21,14 +21,18 @@
       <div v-for="insurance in insurances" class="insurance-box">
         <div class="details-left">
           <span class="text-uppercase pb-3 pr-5"><b>{{ insurance.name }}</b></span>
-          <span class="pb-3 pr-5">Prazo</span>
+          <span class="pb-3 pr-5">Term</span>
           <nuxt-link
             class="btn btn-check-details pb-3 pr-5"
             :to="`/insurances/${insurance.name}`">Check Insurance Details
           </nuxt-link>
         </div>
         <div class="flex-grow-1 details-right">
-
+          <nuxt-link
+            class="btn btn-register-occurrence-right pb-3 pr-5"
+            :to="{name: `insurances-name`, params: {name:insurance.name, OccurrencesBtn: true}}">
+            <span>Register Occurrence</span>
+          </nuxt-link>
         </div>
       </div>
   </div>
@@ -62,6 +66,14 @@ export default {
 </script>
 <style scoped>
 
+  .btn-register-occurrence-right{
+    height: 80%;
+    width: 20%;
+    border-radius: 0px;
+    background-color: lavenderblush;
+    padding: 20px;
+  }
+
   .btn-check-details:active, .btn-check-details:hover{
     background-color: red !important;
     color: white !important;
@@ -77,11 +89,12 @@ export default {
 
   .details-right{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     width: fit-content;
     align-items: center;
     border: 1px solid black;
     border-radius: 0 25px 25px 0;
+    padding: 20px;
   }
 
   .details-left{
@@ -100,7 +113,7 @@ export default {
   .insurance-box{
     display: flex;
     flex-direction: row;
-    height: 170px;
+    height: 180px;
     background-color: rgb(255, 255, 255);
     border-radius: 25px;
     margin-bottom: 3%;
