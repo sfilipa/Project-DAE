@@ -151,3 +151,14 @@ Content-Disposition: form-data; name="file"; filename="test.txt"
 ### GET FILE
 GET http://localhost:8080/occurrences/api/documents/download/1 HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
+
+##### Occurrences
+GET http://localhost:8080/occurrences/api/ocurrences
+Accept: application/json
+
+### Create Ocurrence
+POST http://localhost:8080/occurrences
+Content-Type: application/json
+
+{
+}

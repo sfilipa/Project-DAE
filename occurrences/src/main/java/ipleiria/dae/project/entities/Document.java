@@ -4,23 +4,37 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Table(name = "documents")
 @NamedQuery(
-        name = "getClientDocuments",
-        query = "SELECT doc FROM Document doc WHERE doc.client.username = :username"
+        name = "getAllDocuments",
+        query = "SELECT doc FROM Document doc "//TODO: change later
 )
 public class Document {
-    @NotNull
-    String filepath, filename;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
+    @NotNull
+    String filepath, filename;
+
+    @ManyToOne
+    private Occurrence occurrence;
+
     public Document() {
     }
 
-    public Document(String filepath, String filename) {
+    public Document(String filepath, String filename, Occurrence occurrence) {
         this.filepath = filepath;
         this.filename = filename;
+        this.occurrence = occurrence;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFilepath() {
@@ -39,7 +53,11 @@ public class Document {
         this.filename = filename;
     }
 
-    public Long getId() {
-        return id;
+    public Occurrence getOcurrence() {
+        return occurrence;
+    }
+
+    public void setOcurrence(Occurrence occurrence) {
+        this.occurrence = occurrence;
     }
 }

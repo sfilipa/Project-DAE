@@ -49,7 +49,7 @@ public class OccurrenceService {
     @Path("/")
     public Response create(OccurrenceDTO occurrenceDTO){
         Occurrence occurrence = occurrenceBean.create(
-                occurrenceDTO.getClient(),
+                occurrenceDTO.getUsernameClient(),
                 occurrenceDTO.getDate(),
                 occurrenceDTO.getInsuredAssetType(),
                 occurrenceDTO.getState(),
@@ -71,7 +71,7 @@ public class OccurrenceService {
         try{
             occurrence = occurrenceBean.update(
                     id,
-                    occurrenceDTO.getClient(),
+                    occurrenceDTO.getUsernameClient(),
                     occurrenceDTO.getDate(),
                     occurrenceDTO.getState(),
                     occurrenceDTO.getInsurance()
@@ -228,7 +228,7 @@ public class OccurrenceService {
     private OccurrenceDTO toDTO(Occurrence occurrence){
         return new OccurrenceDTO(
                 occurrence.getId(),
-                occurrence.getClient(),
+                occurrence.getClient().getUsername(),
                 occurrence.getDate(),
                 occurrence.getState(),
                 occurrence.getInsuredAssetType(),

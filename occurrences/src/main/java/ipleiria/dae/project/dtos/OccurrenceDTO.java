@@ -12,7 +12,7 @@ import java.util.Date;
 public class OccurrenceDTO implements Serializable {
     @Id
     private long id;
-    private Client client;
+    private String usernameClient;
     private Date date;
     private State state;
     private InsuredAssetType insuredAssetType;
@@ -21,9 +21,9 @@ public class OccurrenceDTO implements Serializable {
 
     public OccurrenceDTO() {}
 
-    public OccurrenceDTO(long id, Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description) {
+    public OccurrenceDTO(long id, String usernameClient, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description) {
         this.id = id;
-        this.client = client;
+        this.usernameClient = usernameClient;
         this.date = date;
         this.state = state;
         this.insuredAssetType = insuredAssetType;
@@ -39,12 +39,12 @@ public class OccurrenceDTO implements Serializable {
         this.id = id;
     }
 
-    public Client getClient() {
-        return client;
+    public String getUsernameClient() {
+        return usernameClient;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
+    public void setUsernameClient(String usernameClient) {
+        this.usernameClient = usernameClient;
     }
 
     public Date getDate() {
@@ -86,4 +86,6 @@ public class OccurrenceDTO implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
+
 }

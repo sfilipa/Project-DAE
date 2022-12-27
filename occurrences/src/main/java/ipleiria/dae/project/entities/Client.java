@@ -13,18 +13,24 @@ public class Client extends User implements Serializable {
     private String address;
     @NotNull
     private long phoneNumber;
-    @NotNull
-    List<String> insurances;
+
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Occurrence> occurrences;
+
+   /* @NotNull
+    List<String> insurances;*/
 
     public Client() {
-        insurances = new LinkedList<>();
+        //insurances = new LinkedList<>();
+        occurrences = new LinkedList<>();
     }
 
     public Client(String username, String password, String name, String email, String address, long phoneNumber) {
-        super(username,password, name, email);
+        super(username, password, name, email);
         this.address = address;
         this.phoneNumber = phoneNumber;
-        insurances = new LinkedList<>();
+        occurrences = new LinkedList<>();
+        //insurances = new LinkedList<>();
     }
 
     public String getAddress() {
@@ -41,5 +47,13 @@ public class Client extends User implements Serializable {
 
     public void setPhoneNumber(long phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public List<Occurrence> getOccurrences() {
+        return occurrences;
+    }
+
+    public void setOccurrences(List<Occurrence> occurrences) {
+        this.occurrences = occurrences;
     }
 }
