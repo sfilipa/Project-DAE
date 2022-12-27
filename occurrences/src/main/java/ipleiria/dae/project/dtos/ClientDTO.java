@@ -10,10 +10,10 @@ public class ClientDTO implements Serializable {
     String username;
     String password, name, email,address;
     Long phoneNumber;
-    List<String> insurances;
+   // List<String> insurances;
 
     public ClientDTO() {
-        insurances = new LinkedList<>();
+       // insurances = new LinkedList<>();
     }
 
     public ClientDTO(String username, String password, String name, String email, String address, Long phoneNumber) {
@@ -23,7 +23,7 @@ public class ClientDTO implements Serializable {
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        insurances = new LinkedList<>();
+       // insurances = new LinkedList<>();
     }
 
     public ClientDTO(String username, String password, String name, String email, String address, Long phoneNumber, List<String> insurances) {
@@ -33,7 +33,7 @@ public class ClientDTO implements Serializable {
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
-        this.insurances = insurances;
+       // this.insurances = insurances;
     }
 
     public String getUsername() {
@@ -84,11 +84,11 @@ public class ClientDTO implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
-    public List<String> getInsurances() {
+    /*public List<String> getInsurances() {
         return insurances;
     }
 
     public void setInsurances(List<String> insurances) {
         this.insurances = insurances;
-    }
+    }*/
 }

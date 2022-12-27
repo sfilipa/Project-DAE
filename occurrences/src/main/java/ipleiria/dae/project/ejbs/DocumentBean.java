@@ -5,6 +5,7 @@ import ipleiria.dae.project.exceptions.MyConstraintViolationException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import org.hibernate.Hibernate;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -13,37 +14,33 @@ import java.util.List;
 
 @Stateless
 public class DocumentBean {
+    @EJB
+    private OccurrenceBean occurrenceBean;
 
-//    @PersistenceContext
-//    EntityManager em;
-//
-//    public Document create(String filepath, String filename, String username) throws MyEntityNotFoundException, MyConstraintViolationException {
-//        Document document;
-//        Student student = em.find(Student.class, username);
-//
-//        if (student == null)
-//            throw new MyEntityNotFoundException(username + " - Student was not Found");
-//
-//        try {
-//            document = new Document(filepath, filename, student);
-//            em.persist(document);
-//            student.add(document);
-//        } catch (ConstraintViolationException e) {
-//            throw new MyConstraintViolationException(e);
-//        }
-//        return em.find(Document.class, document.getId());
-//    }
-//
-//    public Document find(Long id) {
-//        return em.find(Document.class, id);
-//    }
-//
-//    public List<Document> getStudentDocuments(String username) throws MyEntityNotFoundException {
-//        Student student = em.find(Student.class, username);
-//        if (student == null)
-//            throw new MyEntityNotFoundException(username + " - Student was not Found");
-//
-//        Hibernate.initialize(student.getDocuments());
-//        return student.getDocuments();
-//    }
+    @PersistenceContext
+    private EntityManager em;
+
+    public Document create(String filepath, String filename, long occurenceId) {
+        var occurence = occurrenceBean.findOrFail(occurenceId);
+        var document = new Document(filepath, filename, occurence);
+
+        em.persist(document);
+        occurence.addDocument(document);
+
+        return document;
+    }
+
+    public Document find(Long id) {
+        return em.find(Document.class, id);
+    }
+
+    public Document findOrFail(Long id) {
+        var document = em.getReference(Document.class, id);
+        Hibernate.initialize(document);
+        return document;
+    }
+
+    public List<Document> getOccurenceDocuments(long occurenceId){
+        return em.createNamedQuery("getOccurenceDocuments", Document.class).setParameter("id", occurenceId).getResultList();
+    }
 }

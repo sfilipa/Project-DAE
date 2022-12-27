@@ -22,6 +22,10 @@ public class Repairer extends User implements Serializable {
     @JoinColumn(name = "expert_repairer")
     Expert associatedExpert;
 
+
+    @ManyToOne
+    private Occurrence occurrence;
+
     public Repairer() {
     }
 

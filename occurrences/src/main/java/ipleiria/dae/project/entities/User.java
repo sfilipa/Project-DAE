@@ -7,25 +7,30 @@ import java.io.Serializable;
 
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-
 @Entity
 public class User extends Versionable implements Serializable {
+
     @Id
-    private String username;
+    protected String username;
+
     @Email
     @NotNull
-    private String email;
+    protected String email;
+
     @NotNull
-    private String password;
+    protected String password;
+
     @NotNull
-    private String name;
+    protected String name;
+
     @Version
-    private int version;
+    protected int version;
 
     public User() {
     }
 
     public User(String username, String password, String name, String email) {
+        this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;

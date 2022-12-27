@@ -25,8 +25,6 @@ public class Occurrence implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotNull
-    private Client client;
-    @NotNull
     @GeneratedValue
     private Date date;
     @NotNull
@@ -38,7 +36,11 @@ public class Occurrence implements Serializable {
     @NotNull
     private String description;
 
-    @OneToMany(mappedBy = "document", cascade = CascadeType.REMOVE)
+    @ManyToOne
+    @JoinColumn(name = "client_username")
+    private Client client;
+
+    @OneToMany(mappedBy = "occurrence")
     List<Document> documents;
 
     @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE)
@@ -172,5 +174,15 @@ public class Occurrence implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void addDocument(Document document) {
+        if (! this.documents.contains(document)) {
+            this.documents.add(document);
+        }
+    }
+
+    public void removeDocument(Document document) {
+        this.documents.remove(document);
     }
 }
