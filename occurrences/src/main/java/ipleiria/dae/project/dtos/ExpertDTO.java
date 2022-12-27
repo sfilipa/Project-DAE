@@ -1,34 +1,26 @@
-package ipleiria.dae.project.entities;
+package ipleiria.dae.project.dtos;
 
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import ipleiria.dae.project.entities.Company;
 
-@Table(name = "users")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+import javax.persistence.Id;
 
-@Entity
-public class User extends Versionable implements Serializable {
+public class ExpertDTO {
     @Id
-    private String username;
-    @Email
-    @NotNull
-    private String email;
-    @NotNull
-    private String password;
-    @NotNull
-    private String name;
-    @Version
-    private int version;
+    String username;
 
-    public User() {
+    String password, name, email;
+
+    String company_username;
+
+    public ExpertDTO() {
     }
 
-    public User(String username, String password, String name, String email) {
+    public ExpertDTO(String username, String password, String name, String email, String company_username) {
+        this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
+        this.company_username = company_username;
     }
 
     public String getUsername() {
@@ -61,5 +53,13 @@ public class User extends Versionable implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getCompany_username() {
+        return company_username;
+    }
+
+    public void setCompany_username(String company_username) {
+        this.company_username = company_username;
     }
 }

@@ -2,21 +2,23 @@ package ipleiria.dae.project.dtos;
 
 import javax.persistence.Id;
 
-public class TeacherDTO {
-
+public class RepairerDTO {
     @Id
     String username;
-    String password, name, email, office;
 
-    public TeacherDTO() {
+    String password, name, email;
+
+    String company_username;
+
+    public RepairerDTO() {
     }
 
-    public TeacherDTO(String username, String password, String name, String email, String office) {
+    public RepairerDTO(String username, String password, String name, String email, String company_username) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
-        this.office = office;
+        this.company_username = company_username;
     }
 
     public String getUsername() {
@@ -51,11 +53,11 @@ public class TeacherDTO {
         this.email = email;
     }
 
-    public String getOffice() {
-        return office;
+    public String getCompany_username() {
+        return company_username;
     }
 
-    public void setOffice(String office) {
-        this.office = office;
+    public void setCompany_username(String company_username) {
+        this.company_username = company_username;
     }
 }

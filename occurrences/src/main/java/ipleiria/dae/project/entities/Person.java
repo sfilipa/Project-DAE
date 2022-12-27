@@ -8,21 +8,21 @@ import java.io.Serializable;
 
 @NamedQueries({
         @NamedQuery(
-                name = "getAllClientsPrivate",
-                query = "SELECT p FROM Private p ORDER BY p.name" // JPQL
+                name = "getAllClientsPerson",
+                query = "SELECT p FROM Person p ORDER BY p.name" // JPQL
         ),
 })
 
 @Entity
-public class Private extends Client implements Serializable {
+public class Person extends Client implements Serializable {
     @NotNull
     private long nif;
 
-    public Private() {
+    public Person() {
     }
 
-    public Private(String password, String name, String email, String address, long phoneNumber, long nif) {
-        super(password, name, email, address, phoneNumber);
+    public Person(String username, String password, String name, String email, String address, long phoneNumber, long nif) {
+        super(username, password, name, email, address, phoneNumber);
         this.nif = nif;
     }
 
