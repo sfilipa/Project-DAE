@@ -53,6 +53,7 @@ public class Occurrence implements Serializable {
         documents = new LinkedList<>();
     }
 
+    //de inicio, todas as occurrences devem ser criadas com o State.PENDING
     public Occurrence(Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description) {
         this.client = client;
         this.date = date;

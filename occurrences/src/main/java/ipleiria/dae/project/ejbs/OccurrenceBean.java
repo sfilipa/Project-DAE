@@ -71,17 +71,20 @@ public class OccurrenceBean {
         if (occurrence == null) {
             return -1; //devolver exception
         }
-        Expert expert = em.find(Expert.class, username);
-        if (expert == null) {
+        if(occurrence.getState() != State.PENDING) {
             return -2; //devolver exception
         }
-        if(occurrence.isExpertInOccurrence(expert)){
+        Expert expert = em.find(Expert.class, username);
+        if (expert == null) {
             return -3; //devolver exception
+        }
+        if(occurrence.isExpertInOccurrence(expert)){
+            return -4; //devolver exception
         }
 
         //verificar que o perito é da mesma seguradora
         if(expert.getCompany() != occurrence.getInsurance().getCompany()){
-            return -4; //devolver exception
+            return -5; //devolver exception
         }
 
         occurrence.addExpert(expert);
@@ -93,12 +96,15 @@ public class OccurrenceBean {
         if (occurrence == null) {
             return -1; //devolver exception
         }
-        Repairer repairer = em.find(Repairer.class, username);
-        if (repairer == null) {
+        if(occurrence.getState() != State.ACTIVE){
             return -2; //devolver exception
         }
-        if(occurrence.isRepairerInOccurrence(repairer)){
+        Repairer repairer = em.find(Repairer.class, username);
+        if (repairer == null) {
             return -3; //devolver exception
+        }
+        if(occurrence.isRepairerInOccurrence(repairer)){
+            return -4; //devolver exception
         }
 
         occurrence.addRepairer(repairer);
