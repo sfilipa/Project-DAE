@@ -12,7 +12,7 @@
     </nuxt-link>
 
     <div class="header-info">
-        <span><b>Insurance Name</b></span>
+        <span><b>{{ this.$route.params.name }}</b></span>
         <span class="policy-number-span">Policy number --n</span>
     </div>
 
@@ -69,33 +69,20 @@
       <div class="insurance-details-content">
         <a class="btn insurance-occurrences-btn"
            :class="{'insurance-occurrences-btn-active': reportOccurrence}"
-           @click="reportOccurrence = true; ongoingOccurrences = false; completedOccurrences = false;">
+           @click="reportOccurrence = !reportOccurrence; ongoingOccurrences = false; completedOccurrences = false;">
           Report An Occurrence</a>
         <a class="btn insurance-occurrences-btn"
            :class="{'insurance-occurrences-btn-active': ongoingOccurrences}"
-           @click="ongoingOccurrences = true; reportOccurrence = false; completedOccurrences = false;">
+           @click="ongoingOccurrences = !ongoingOccurrences; reportOccurrence = false; completedOccurrences = false;">
           Ongoing Occurrences</a>
         <a class="btn insurance-occurrences-btn"
            :class="{'insurance-occurrences-btn-active': completedOccurrences}"
-           @click="completedOccurrences = true; reportOccurrence = false; ongoingOccurrences = false;">
+           @click="completedOccurrences = !completedOccurrences; reportOccurrence = false; ongoingOccurrences = false;">
           Completed Occurrences</a>
       </div>
 
 <!--      Report an Occurrence-->
       <div v-if="reportOccurrence" class="report-an-occurrence">
-<!--        <p><b>1. Choose an Asset Type</b></p>-->
-<!--        <div class="report-an-occurrence-div">-->
-<!--          <div v-if="assets.length==0">-->
-<!--            No Vehicles Registered-->
-<!--          </div>-->
-<!--          <div v-else class="items-grid">-->
-<!--            <div v-for="asset in assets" class="item-grid-div" :class="{'grid-item-selected': selectedAsset == asset}"-->
-<!--                 @click="selectedAsset = asset">-->
-<!--              {{ asset.name }}-->
-<!--            </div>-->
-<!--          </div>-->
-<!--        </div>-->
-
         <p><b>1. Choose the Affected Object</b></p>
         <div class="report-an-occurrence-div">
           <div v-if="assetObjects.length==0">
@@ -115,6 +102,20 @@
           <textarea class="form-control report-an-occurrence-text" placeholder="Describe here what happened" v-model="description"></textarea>
         </div>
 
+        <p><b>3. Choose the Date</b></p>
+        <div class="report-an-occurrence-div">
+          <div class="report-an-occurrence-div">
+            <input class="form-control" placeholder="Enter the date" v-model="date">
+          </div>
+        </div>
+
+        <p><b>4. Expert to Associate</b></p>
+        <div class="report-an-occurrence-div">
+          <div class="report-an-occurrence-div">
+            <input class="form-control" placeholder="Enter the expert name" v-model="expertName">
+          </div>
+        </div>
+
         <div style="display: flex;">
           <div class="register-occurrence-btn-div" >
             <button @click.prevent="register" class="btn register-occurrence-btn">
@@ -126,21 +127,50 @@
 
 <!--      Ongoing Occurrences-->
       <div v-if="ongoingOccurrences" class="ongoing-occurrences">
-        <div v-if="occurrences.length==0">
-          No occurrences registered
+        <div v-if="ongoingOccurrencesArray.length==0">
+          No occurrences ongoing
         </div>
-        <div v-else v-for="occurrence in occurrences">
-          {{ occurrence.name }}
+        <div v-else v-for="occurrence in ongoingOccurrencesArray" class="ongoing-occurrences-item">
+          <div class="ongoing-occurrences-item-row" style="width: 30%;">
+            <p style="font-size: 20px"><b>{{occurrence.affectedObject}} - {{occurrence.insuredAssetType}}</b></p>
+            <p>Occurrence {{ occurrence.code }}</p>
+            <p>Insurance: {{occurrence.insurance}}</p>
+            <p>Expert Associated: {{occurrence.expert}}</p>
+          </div>
+
+          <div class="ongoing-occurrences-item-row" style="align-self: flex-end;">
+            <p>Date: {{occurrence.date}}</p>
+            <p>Description: {{ occurrence.description }}</p>
+          </div>
+
+          <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
+            <p class="text-uppercase">{{ occurrence.state }}</p>
+            <button v-if="occurrence.state == 'Approved'" class="btn btn-associate-repairers">Associate Repairers</button>
+          </div>
         </div>
       </div>
 
 <!--      Completed Occurrences-->
       <div v-if="completedOccurrences" class="completed-occurrences">
-        <div v-if="occurrences.length==0">
-          No occurrences registered
+        <div v-if="completedOccurrencesArray.length==0">
+          No occurrences completed
         </div>
-        <div v-else v-for="occurrence in occurrences">
-          {{ occurrence.name }}
+        <div v-else v-for="occurrence in completedOccurrencesArray" class="ongoing-occurrences-item">
+          <div class="ongoing-occurrences-item-row" style="width: 30%;">
+            <p style="font-size: 20px"><b>{{occurrence.affectedObject}} - {{occurrence.insuredAssetType}}</b></p>
+            <p>Occurrence {{ occurrence.code }}</p>
+            <p>Insurance: {{occurrence.insurance}}</p>
+            <p>Expert Associated: {{occurrence.expert}}</p>
+          </div>
+
+          <div class="ongoing-occurrences-item-row" style="align-self: flex-end;">
+            <p>Date: {{occurrence.date}}</p>
+            <p>Description: {{ occurrence.description }}</p>
+          </div>
+
+          <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
+            <p class="text-uppercase">{{ occurrence.state }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -160,15 +190,17 @@ export default {
   name: "index.vue",
   data() {
     return {
-      OverallDataBtn: true,
-      OccurrencesBtn: false,
+      OverallDataBtn: !this.$route.params.OccurrencesBtn,
+      OccurrencesBtn:  this.$route.params.OccurrencesBtn,
       DocumentsBtn: false,
       reportOccurrence: true,
       ongoingOccurrences: false,
       completedOccurrences: false,
       occurrences: [],
       selectedAssetObject: {},
-      description: ""
+      description: "",
+      date: "",
+      expertName: ""
     }
   },
   computed: {
@@ -188,13 +220,54 @@ export default {
           "type": "Electronic"
         }
       ]
+    },
+    ongoingOccurrencesArray(){
+      return [
+        {
+          "code": "01",
+          "insuredAssetType": "Car",
+          "affectedObject": "Car Laguna",
+          "date": "27/12/2022",
+          "client": "Ana Martins",
+          "state": "Pending",
+          "expert": "José Areia",
+          "description": "Car crash in rua nº10 xxedjoejojde",
+          "insurance": this.$route.params.name
+        },
+        {
+          "code": "02",
+          "insuredAssetType": "Car",
+          "affectedObject": "Car Laguna",
+          "date": "20/12/2022",
+          "client": "Ana Martins",
+          "state": "Approved",
+          "expert": "José Areia",
+          "description": "Car crash in rua nº11 aqnisnqion",
+          "insurance": this.$route.params.name
+        }
+      ]
+    },
+    completedOccurrencesArray(){
+      return [
+        {
+          "code": "00",
+          "insuredAssetType": "Car",
+          "affectedObject": "Car Laguna",
+          "date": "15/12/2022",
+          "client": "Ana Martins",
+          "state": "Completed",
+          "expert": "José Areia",
+          "description": "Car crash in rua nº10 xxedjidwjdjdojde",
+          "insurance": this.$route.params.name
+        }
+      ]
     }
   },
   created () {
-    this.$axios.$get('/api/occurrences')
-      .then((occurrences) => {
-        this.occurrences = occurrences
-      })
+    // this.$axios.$get('/api/occurrences')
+    //   .then((occurrences) => {
+    //     this.occurrences = occurrences
+    //   })
     // this.$axios.$get('http://localhost:8080/occurrences/api/students')
   },
   methods: {
@@ -203,9 +276,10 @@ export default {
         client: "auth client - not done",
         date: this.date,
         insuredAssetType: this.selectedAssetObject.type,
-        state: 'PENDING',
+        state: 'Pending',
         description: this.description,
-        insurance: this.name,
+        insurance: this.$route.params.name,
+        expert: this.expertName,
       })
         .then(() => {
           this.$router.push('/insurances')
@@ -219,9 +293,31 @@ export default {
 </script>
 
 <style scoped>
+  .ongoing-occurrences-item-last{
+    text-align: end;
+    align-self: flex-end;
+    margin-bottom: 1.5%;
+  }
+
+  .btn-associate-repairers:hover{
+    background-color: red !important;
+    color: white !important;
+  }
+
+  .btn-associate-repairers{
+    border: 1px solid black;
+    width: fit-content;
+    height: 3rem;
+    align-self: self-end;
+  }
+
+  .register-occurrence-btn:hover{
+    background-color: red !important;
+    color: white !important;
+  }
+
   .register-occurrence-btn{
-    background-color: red;
-    color: white;
+    border: 1px solid black;
     height: 3rem;
     width: 16rem;
   }
@@ -239,14 +335,15 @@ export default {
   }
 
   .grid-item-selected{
-    border: 2px solid black;
+    border: 2px solid red;
+    color: red !important;
     font-weight: bold;
   }
 
   .item-grid-div{
     padding: 20px;
     text-align: center;
-    height: 8rem;
+    height: 7rem;
     margin: 0 29px;
     border-radius: 2%;
     background-image: linear-gradient(to top left, #f2f2f2, rgba(255, 255, 255, 0.84));
@@ -264,13 +361,11 @@ export default {
   }
 
   .documents-content-list{
-    height: fit-content;
     padding: 20px;
     background-color: white;
   }
 
   .documents-content{
-    height: fit-content;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -302,6 +397,21 @@ export default {
   .completed-occurrences{
     height: fit-content;
     margin: 20px;
+  }
+
+  .ongoing-occurrences-item-row{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ongoing-occurrences-item{
+    background-color: white;
+    height: fit-content;
+    padding: 20px;
+    margin: 30px 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 
   .ongoing-occurrences{
