@@ -2,12 +2,15 @@ package ipleiria.dae.project.dtos;
 
 import ipleiria.dae.project.entities.Client;
 import ipleiria.dae.project.entities.Insurance;
+import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
 
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class OccurrenceDTO implements Serializable {
     @Id
@@ -16,21 +19,20 @@ public class OccurrenceDTO implements Serializable {
     private Date date;
     private State state;
     private InsuredAssetType insuredAssetType;
-    private Insurance insurance;
+    private String insuranceCode;
     private String description;
 
     public OccurrenceDTO() {}
 
-    public OccurrenceDTO(long id, String usernameClient, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description) {
+    public OccurrenceDTO(long id, String usernameClient, Date date, State state, InsuredAssetType insuredAssetType, String insuranceCode, String description) {
         this.id = id;
         this.usernameClient = usernameClient;
         this.date = date;
         this.state = state;
         this.insuredAssetType = insuredAssetType;
-        this.insurance = insurance;
+        this.insuranceCode = insuranceCode;
         this.description = description;
     }
-
     public long getId() {
         return id;
     }
@@ -71,14 +73,6 @@ public class OccurrenceDTO implements Serializable {
         this.insuredAssetType = insuredAssetType;
     }
 
-    public Insurance getInsurance() {
-        return insurance;
-    }
-
-    public void setInsurance(Insurance insurance) {
-        this.insurance = insurance;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -87,5 +81,27 @@ public class OccurrenceDTO implements Serializable {
         this.description = description;
     }
 
+    public String getInsuranceCode() {
+        return insuranceCode;
+    }
 
+    public void setInsuranceCode(String insuranceCode) {
+        this.insuranceCode = insuranceCode;
+    }
+
+    public static OccurrenceDTO from(Occurrence occurrence) {
+        return new OccurrenceDTO(
+                occurrence.getId(),
+                occurrence.getClient().getUsername(),
+                occurrence.getDate(),
+                occurrence.getState(),
+                occurrence.getInsuredAssetType(),
+                occurrence.getInsurance().getCode(),
+                occurrence.getDescription()
+        );
+    }
+
+    public static List<OccurrenceDTO> from(List<Occurrence> occurrences) {
+        return occurrences.stream().map(OccurrenceDTO::from).collect(Collectors.toList());
+    }
 }

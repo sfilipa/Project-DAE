@@ -12,20 +12,16 @@
     </nuxt-link>
 
     <div style="padding: 10px; margin-bottom: 20px;">
-      <h4><b>My Policies</b></h4>
+      <h4><b>My Occurrences</b></h4>
     </div>
 
-    <div v-if="policies.length == 0">
-      <span>No Policies Registered</span>
+    <div v-if="occurrences.length == 0">
+      <span>No Occurrences Registered</span>
     </div>
 
-    <div v-else v-for="policy in policies" class="insurance-box">
+    <div v-else v-for="occurrence in occurrences" class="insurance-box">
       <div class="details-left">
-        <span class="text-uppercase pb-3 pr-5"><b>{{ policy.name }}</b></span>
-        <nuxt-link
-          class="btn btn-check-details pb-3 pr-5"
-          :to="`/insurances/${policy.name}`">Check Policy Details
-        </nuxt-link>
+        <span class="text-uppercase pb-3 pr-5"><b>{{ occurrence.name }}</b></span>
       </div>
       <div class="flex-grow-1 details-right">
 
@@ -42,7 +38,7 @@ export default {
     }
   },
   computed: {
-    policies(){ return [
+    occurrences(){ return [
     ]}
   },
   created () {
@@ -55,23 +51,6 @@ export default {
 }
 </script>
 <style scoped>
-  .btn-check-details:active{
-    background-color: red !important;
-    color: white !important;
-  }
-
-  .btn-check-details:hover{
-    background-color: #efefef;
-    color: black !important;
-  }
-
-  .btn-check-details{
-    font-size: 18px;
-    width: fit-content;
-    height: fit-content;
-    border: 1px solid gray;
-    padding: 10px;
-  }
 
   .details-right{
     display: flex;

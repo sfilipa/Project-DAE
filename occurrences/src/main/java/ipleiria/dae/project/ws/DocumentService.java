@@ -53,7 +53,7 @@ public class DocumentService {
             byte[] bytes = IOUtils.toByteArray(inputStream);
 
             String homedir = System.getProperty("user.home");
-            String dirpath = homedir + File.separator + "uploads" + File.separator;// + occurrenceId;
+            String dirpath = homedir + File.separator + "uploads" + File.separator + occurrenceId;
             mkdirIfNotExists(dirpath);
 
             String filepath =  dirpath + File.separator + filename;
@@ -99,7 +99,7 @@ public class DocumentService {
     public Response hasDocuments(@PathParam("occurrenceId") long occurrenceId) {
         var occurrence = occurrenceBean.findOrFail(occurrenceId);
 
-        return Response.status(Response.Status.OK).entity(! occurrence.getDocuments().isEmpty()).build();
+        return Response.status(Response.Status.OK).entity(!occurrence.getDocuments().isEmpty()).build();
     }
 
     private String getFilename(MultivaluedMap<String, String> headers) {

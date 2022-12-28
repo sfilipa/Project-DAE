@@ -1,164 +1,55 @@
-##### Students
-GET http://localhost:8080/occurrences/api/students/all
-Accept: application/json
-
-### Create Student
-POST http://localhost:8080/occurrences/api/students
-Content-Type: application/json
-
-{
-  "email": "johndoe@mail.com",
-  "name": "John Doe",
-  "username": "ivoafonsobispo",
-  "password": "jd",
-  "courseCode": 9119
-}
-
-##### Courses
-GET http://localhost:8080/occurrences/api/courses/all
-Accept: application/json
-
-### Add Course
-POST http://localhost:8080/occurrences/api/courses
-Content-Type: application/json
-
-{
-  "code": 3,
-  "name": "New Course Clean Code"
-}
-
-##### Student Details
-GET http://localhost:8080/occurrences/api/students/ivoafonsobispo
-Accept: application/json
-
-##### Student Subjects
-GET http://localhost:8080/occurrences/api/students/ivoafonsobispo/subjects
-Accept: application/json
-
-##### Subjects
-GET http://localhost:8080/occurrences/api/subjects/all
-Accept: application/json
-
-##### Specific Subject
-GET http://localhost:8080/occurrences/api/subjects/1
-Accept: application/json
-
-##### Subject Students
-GET http://localhost:8080/occurrences/api/subjects/1/students
-Accept: application/json
-
-##### Teachers
-GET http://localhost:8080/occurrences/api/teachers/all
-Accept: application/json
-
-##### Associate Subject to Teacher
-POST http://localhost:8080/occurrences/api/teachers/mariajoana/2
-Content-Type: application/json
-
-##### GET Teacher Subjects
-GET http://localhost:8080/occurrences/api/teachers/mariajoana/subjects
-Accept: application/json
-
-##### GET Subject Teachers
-GET http://localhost:8080/occurrences/api/subjects/1/teachers
-Accept: application/json
-
-### Create Teacher
-POST http://localhost:8080/occurrences/api/teachers
-Content-Type: application/json
-
-{
-  "email": "ivo@mail.pt",
-  "name": "Ivo Bispo",
-  "office": "L-33",
-  "password": "ivoivo",
-  "username": "ivoafobispo"
-}
-
-##### Find Teacher
-GET http://localhost:8080/occurrences/api/teachers/ivoafobispo
-Content-Type: application/json
-
-##### Update Teacher
-PUT http://localhost:8080/occurrences/api/teachers/ivoafobispo
-Content-Type: application/json
-
-{
-  "email": "ivo@mail.pt",
-  "name": "Jose Areia",
-  "office": "L-33",
-  "password": "ivoivo",
-  "username": "ivoafobispo"
-}
-
-##### Delete Teacher
-DELETE http://localhost:8080/occurrences/api/teachers/ivoafobispo
-Content-Type: application/json
-
-##### Update Student
-PUT http://localhost:8080/occurrences/api/students/ivoafonsobispo
-Content-Type: application/json
-
-{
-  "email": "ivo@mail.pt",
-  "name": "Ivo Bispo Alterado",
-  "office": "L-33",
-  "password": "ivoivo",
-  "courseCode": 9119
-}
-
-### Send Email
-POST http://localhost:8080/occurrences/api/students/ivoafonsobispo/email/send
-Content-Type: application/json
-
-{
-  "subject": "This is the subject",
-  "message": "This is the message"
-}
-
-### REQUEST JWT TOKEN
-POST http://localhost:8080/occurrences/api/auth/login
-Content-Type: application/json
-Accept: application/json
-
-{
- "username": "ivoafonsobispo",
- "password": "password"
-}
-
-### GET ALL STUDENTS
-GET http://localhost:8080/occurrences/api/students
-Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdm9hZm9uc29iaXNwbyIsImlhdCI6MTY2OTgxMDA5NSwiZXhwIjoxNjY5ODEzNjk1fQ.GJsNqpvnKIETcC5WtfrA0p6KzLQ-Ted09mbHjELVRl0
-
-### GET SPECIFIC STUDENT
-GET http://localhost:8080/occurrences/api/students/ivoafonsobispo
-Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdm9hZm9uc29iaXNwbyIsImlhdCI6MTY2OTIxMTE3MywiZXhwIjoxNjY5MjE0NzczfQ.kXw-GpzguUWOtYdogL06KgObi20eq3xbjwKpSgkTh2A
-
-### POST FILE
-POST http://localhost:8080/occurrences/api/documents HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJpdm9hZm9uc29iaXNwbyIsImlhdCI6MTY2OTg5Mzk0MCwiZXhwIjoxNjY5ODk3NTQwfQ.tyvv9K4Ehhk5ukeOdJrzuuXsfxbkCY6fygov-XFTwrA
-Content-Type: multipart/form-data; boundary=boundary
-
---boundary
-Content-Disposition: form-data; name="file"; filename="test.txt"
-
-</home/ivoafonsobispo/Development/dae-ipleiria/occurrences/HTTPRequests.http
-
---boundary
-
-### GET FILE
-GET http://localhost:8080/occurrences/api/documents/download/1 HTTP/1.1
-Content-Type: application/x-www-form-urlencoded
-
 ##### Occurrences
-GET http://localhost:8080/occurrences/api/ocurrences
+GET http://localhost:8080/occurrences/api/occurrences
 Accept: application/json
 
 ### Create Ocurrence
-POST http://localhost:8080/occurrences
+POST http://localhost:8080/occurrences/api/occurrences
 Content-Type: application/json
 
 {
+  "usernameClient": "client3",
+  "date": "2021-07-20",
+  "insuredAssetType": "VEHICLES",
+  "state": "PENDING",
+  "insuranceCode": "AL-123",
+  "description": "ola"
 }
+
+####LOGIN
+### REQUEST JWT TOKEN
+POST http://localhost:8080/occurrences/api/auth/login
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMTg2MDc4LCJleHAiOjE2NzIxODk2Nzd9.ELUX-iZlR2F1ixcDc5mlG1dNre0kmZTHUhQz9KiQ6Hs
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "client3",
+  "password": "client"
+}
+
+
+
+###DOCUMENTS
+POST http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMTg3MjQ5LCJleHAiOjE2NzIxOTA4NDl9.jVq0fDRi63gNr7EBWB9TFa8WOmRcPRhJHZMZSOzfrck
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="<C:\popo\statistics.txt"
+
+--boundary
+
+###
+GET http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMjIxNjAwLCJleHAiOjE2NzIyMjUyMDB9.Q8UDYtmCHsLEcP6drMzcOUPUv_eHNmIof9coowL6S4s
+Content-Type: application/x-www-form-urlencoded
+
+###
+GET http://localhost:8080/occurrences/api/documents/2/exists HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMTg3MjQ5LCJleHAiOjE2NzIxOTA4NDl9.jVq0fDRi63gNr7EBWB9TFa8WOmRcPRhJHZMZSOzfrck
+Content-Type: application/x-www-form-urlencoded
+
+##### CLIENT Occurrences
+GET http://localhost:8080/occurrences/api/clients/client3/occurrences
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIxOTYzLCJleHAiOjE2NzIyMjU1NjN9.L7yr_QWZIb7xq6Ebx81Z5h_qV3NwcYPCDuAD8OGCI2g
+Accept: application/json

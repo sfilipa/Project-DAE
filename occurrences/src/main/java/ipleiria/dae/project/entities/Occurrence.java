@@ -32,13 +32,15 @@ public class Occurrence implements Serializable {
     @NotNull
     private InsuredAssetType insuredAssetType;
     @NotNull
-    private Insurance insurance;
-    @NotNull
     private String description;
 
     @ManyToOne
     @JoinColumn(name = "client_username")
     private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "insurance_code")
+    private Insurance insurance;
 
     @OneToMany(mappedBy = "occurrence")
     List<Document> documents;
