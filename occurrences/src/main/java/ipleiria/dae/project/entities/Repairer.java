@@ -14,16 +14,6 @@ import java.util.List;
         )
 })
 public class Repairer extends User implements Serializable {
-
-//    @NotNull
-//    @ManyToOne
-//    @JoinColumn(name = "company_username")
-//    Company company;
-
-//    @ManyToOne
-//    @JoinColumn(name = "expert_repairer")
-//    Expert associatedExpert;
-
     @NotNull
     private String address;
 
@@ -38,15 +28,6 @@ public class Repairer extends User implements Serializable {
         this.address = address;
         occurrences = new LinkedList<>();
     }
-
-//    public Company getCompany() {
-//        return company;
-//    }
-//
-//    public void setCompany(Company company) {
-//        this.company = company;
-//    }
-
 
     public String getAddress() {
         return address;
@@ -78,18 +59,4 @@ public class Repairer extends User implements Serializable {
         this.occurrences = occurrences;
     }
 
-    //    public Expert getAssociatedExpert() {
-//        return associatedExpert;
-//    }
-//
-//    public void associateExpert(Expert expert) {
-//        if (this.associatedExpert != null) {
-//            throw new IllegalStateException("Repairer already has an associated expert");
-//        }
-//        this.associatedExpert = expert;
-//    }
-//
-//    public void disassociateExpert() {
-//        this.associatedExpert = null;
-//    }
 }

@@ -30,7 +30,7 @@ public class OccurrenceService {
     @GET
     @Path("/")
     public List<OccurrenceDTO> getAllOccurrences(){
-        return toDTOS(occurrenceBean.getAllOccurrences());
+        return OccurrenceDTO.from(occurrenceBean.getAllOccurrences());
     }
 
     @GET
@@ -38,7 +38,7 @@ public class OccurrenceService {
     public Response getOccurrenceDetails(@PathParam("id") long id){
         Occurrence occurrence = occurrenceBean.find(id);
         if(occurrence != null){
-            return Response.ok().entity(toDTO(occurrence)).build();
+            return Response.ok().entity(OccurrenceDTO.from(occurrence)).build();
         }
         return Response.status(Response.Status.NOT_FOUND)
                 .entity("ERROR_FINDING_OCCURRENCE")
@@ -60,7 +60,7 @@ public class OccurrenceService {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         return Response.status(Response.Status.CREATED)
-                .entity(toDTO(occurrence))
+                .entity(OccurrenceDTO.from(occurrence))
                 .build();
     }
 
@@ -79,11 +79,11 @@ public class OccurrenceService {
         }catch (Exception e){
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        return Response.status(Response.Status.ACCEPTED).entity(toDTO(occurrence)).build();
+        return Response.status(Response.Status.ACCEPTED).entity(OccurrenceDTO.from(occurrence)).build();
     }
 
     @PATCH
-    @Path("/{id}/expert/{username}")
+    @Path("/{id}/expert/{username}/add")
     //a seguradora atribui um perito à ocorrencia - verificar que o perito é da mesma seguradora
     public Response addExpert(@PathParam("id") long id, @PathParam("username") String username) {
         Occurrence occurrence = occurrenceBean.find(id);
@@ -113,17 +113,47 @@ public class OccurrenceService {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("ERROR_FINDING_EXPERT")
                         .build();
-//            case -4:
-//                return Response.status(Response.Status.BAD_REQUEST)
-//                        .entity("EXPERT_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
-//                        .build();
+            case -4:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("EXPERT_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
+                        .build();
             case -5:
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("EXPERT_NOT_FROM_SAME_INSURANCE")
                         .build();
             default:
                 return Response.status(Response.Status.ACCEPTED)
-                        .entity(toDTO(occurrence))
+                        .entity(OccurrenceDTO.from(occurrence))
+                        .build();
+        }
+    }
+
+    @PATCH
+    @Path("/{id}/expert/{username}/unassign")
+    public Response unassignExpert(@PathParam("id") long id, @PathParam("username") String username) {
+        Occurrence occurrence = occurrenceBean.find(id);
+        if(occurrence == null){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("ERROR_FINDING_OCCURRENCE")
+                    .build();
+        }
+        int response = occurrenceBean.removeExpert(id, username);
+        switch (response){
+            case -1:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_OCCURRENCE")
+                        .build();
+            case -2:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_EXPERT")
+                        .build();
+            case -3:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("EXPERT_IS_NOT_ASSIGNED_TO_THAT_OCCURRENCE")
+                        .build();
+            default:
+                return Response.status(Response.Status.ACCEPTED)
+                        .entity(OccurrenceDTO.from(occurrence))
                         .build();
         }
     }
@@ -159,8 +189,8 @@ public class OccurrenceService {
     }
 
     @PATCH
-    @Path("/{id}/repairer/{username}") //o perito, caso aprove a cobertura, atribui um reparador à ocorrência
-    public Response addRepairer(@PathParam("id") long id, @PathParam("username") String username){
+    @Path("/{id}/repairer/{username}/assign") //o perito, caso aprove a cobertura, atribui um reparador à ocorrência
+    public Response assignRepairer(@PathParam("id") long id, @PathParam("username") String username){
         Occurrence occurrence = occurrenceBean.find(id);
         if(occurrence == null){
             return Response.status(Response.Status.BAD_REQUEST)
@@ -174,7 +204,7 @@ public class OccurrenceService {
                     .build();
         }
 
-        int response = occurrenceBean.addRepairer(id, username);
+        int response = occurrenceBean.assignRepairer(id, username);
         switch (response){
             case -1:
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -194,7 +224,34 @@ public class OccurrenceService {
 //                        .build();
             default:
                 return Response.status(Response.Status.ACCEPTED)
-                        .entity(toDTO(occurrence))
+                        .entity(OccurrenceDTO.from(occurrence))
+                        .build();
+        }
+    }
+
+    @PATCH
+    @Path("/{id}/repairer/unassign")
+    public Response unassignRepairer(@PathParam("id") long id){
+        Occurrence occurrence = occurrenceBean.find(id);
+        if(occurrence == null){
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("ERROR_FINDING_OCCURRENCE")
+                    .build();
+        }
+
+        int response = occurrenceBean.unassignRepairer(id);
+        switch (response){
+            case -1:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_OCCURRENCE")
+                        .build();
+            case -2:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_REPAIRER")
+                        .build();
+            default:
+                return Response.status(Response.Status.ACCEPTED)
+                        .entity(OccurrenceDTO.from(occurrence))
                         .build();
         }
     }
@@ -220,21 +277,5 @@ public class OccurrenceService {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         return Response.status(Response.Status.OK).build();
-    }
-
-    private List<OccurrenceDTO> toDTOS(List<Occurrence> allOccurrences) {
-        return allOccurrences.stream().map(this::toDTO).collect(Collectors.toList());
-    }
-
-    private OccurrenceDTO toDTO(Occurrence occurrence){
-        return new OccurrenceDTO(
-                occurrence.getId(),
-                occurrence.getClient().getUsername(),
-                occurrence.getDate(),
-                occurrence.getState(),
-                occurrence.getInsuredAssetType(),
-                occurrence.getInsurance().getCode(),
-                occurrence.getDescription()
-        );
     }
 }

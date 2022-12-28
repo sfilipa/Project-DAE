@@ -3,6 +3,7 @@ package ipleiria.dae.project.ejbs;
 import ipleiria.dae.project.entities.Client;
 import ipleiria.dae.project.entities.Company;
 import ipleiria.dae.project.entities.Insurance;
+import ipleiria.dae.project.entities.InsuranceCompany;
 import ipleiria.dae.project.security.Hasher;
 
 import javax.ejb.EJB;
@@ -17,7 +18,7 @@ public class InsuranceBean {
     @PersistenceContext
     private EntityManager em;
 
-    public void create(String insuranceCode, Company company, String name) {
+    public void create(String insuranceCode, InsuranceCompany company, String name) {
         var insurance = new Insurance(insuranceCode, company, name);
         em.persist(insurance);
     }

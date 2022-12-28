@@ -2,6 +2,7 @@ package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Company;
 import ipleiria.dae.project.entities.Expert;
+import ipleiria.dae.project.entities.InsuranceCompany;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.security.Hasher;
 
@@ -24,16 +25,17 @@ public class ExpertBean {
     }
 
     public Expert create(String username, String password, String name, String email, String company_username) {
-        Company company = em.find(Company.class, company_username);
+        InsuranceCompany company = em.find(InsuranceCompany.class, company_username);
         if(company == null ){
             return null;
         }
 
-        Expert expert = find(username);
-        if (expert != null){
-            return null;
-        }
-        expert = new Expert(username, hasher.hash(password), name, email, company);
+//        Expert expert = find(username);
+//        if (expert != null){
+//            return null;
+//        }
+
+        Expert expert = new Expert(username, hasher.hash(password), name, email, company);
         em.persist(expert);
         company.addExpert(expert);
         return find(username);
@@ -50,7 +52,7 @@ public class ExpertBean {
         }
 
         expert.addOccurrence(occurrence);
-        occurrence.setExpert(expert);
+        occurrence.addExpert(expert);
         return 0;
     }
 
@@ -65,7 +67,7 @@ public class ExpertBean {
         }
 
         expert.removeOccurrence(occurrence);
-        occurrence.setExpert(null);
+        occurrence.removeExpert(expert);
         return 0;
     }
 
@@ -76,7 +78,7 @@ public class ExpertBean {
         if (expert == null){
             return null;
         }
-        Company company = em.find(Company.class, company_usernmae);
+        InsuranceCompany company = em.find(InsuranceCompany.class, company_usernmae);
 
         if(company == null ){
             return null;
@@ -98,7 +100,7 @@ public class ExpertBean {
 
         }
 
-        Company company = expert.getCompany();
+        InsuranceCompany company = expert.getCompany();
         company.removeExpert(expert);
         em.remove(expert);
     }
