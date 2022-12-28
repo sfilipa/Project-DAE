@@ -7,11 +7,15 @@ import ipleiria.dae.project.ejbs.RepairerBean;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.entities.Repairer;
+import ipleiria.dae.project.security.Authenticated;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.*;
 import javax.ejb.EJB;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +30,9 @@ public class OccurrenceService {
 
     @EJB
     private RepairerBean repairerBean;
+
+    @Context
+    private SecurityContext securityContext;
 
     @GET
     @Path("/")
@@ -46,8 +53,13 @@ public class OccurrenceService {
     }
 
     @POST
+    @Authenticated
+    @RolesAllowed({"Client"})
     @Path("/")
     public Response create(OccurrenceDTO occurrenceDTO){
+        if(!securityContext.getUserPrincipal().getName().equals(occurrenceDTO.getUsernameClient())) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
         Occurrence occurrence = occurrenceBean.create(
                 occurrenceDTO.getUsernameClient(),
                 occurrenceDTO.getDate(),

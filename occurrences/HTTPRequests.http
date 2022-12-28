@@ -1,24 +1,6 @@
-##### Occurrences
-GET http://localhost:8080/occurrences/api/occurrences
-Accept: application/json
-
-### Create Ocurrence
-POST http://localhost:8080/occurrences/api/occurrences
-Content-Type: application/json
-
-{
-  "usernameClient": "client3",
-  "date": "2021-07-20",
-  "insuredAssetType": "VEHICLES",
-  "state": "PENDING",
-  "insuranceCode": "AL-123",
-  "description": "ola"
-}
-
 ####LOGIN
 ### REQUEST JWT TOKEN
 POST http://localhost:8080/occurrences/api/auth/login
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMTg2MDc4LCJleHAiOjE2NzIxODk2Nzd9.ELUX-iZlR2F1ixcDc5mlG1dNre0kmZTHUhQz9KiQ6Hs
 Content-Type: application/json
 Accept: application/json
 
@@ -27,7 +9,23 @@ Accept: application/json
   "password": "client"
 }
 
+##### Occurrences
+GET http://localhost:8080/occurrences/api/occurrences
+Accept: application/json
 
+### Create Ocurrence
+POST http://localhost:8080/occurrences/api/occurrences
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
+Content-Type: application/json
+
+{
+  "usernameClient": "client2",
+  "date": "2021-07-20",
+  "insuredAssetType": "VEHICLES",
+  "state": "PENDING",
+  "insuranceCode": "AL-123",
+  "description": "ola"
+}
 
 ###DOCUMENTS
 POST http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
@@ -51,5 +49,5 @@ Content-Type: application/x-www-form-urlencoded
 
 ##### CLIENT Occurrences
 GET http://localhost:8080/occurrences/api/clients/client3/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIxOTYzLCJleHAiOjE2NzIyMjU1NjN9.L7yr_QWZIb7xq6Ebx81Z5h_qV3NwcYPCDuAD8OGCI2g
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
 Accept: application/json
