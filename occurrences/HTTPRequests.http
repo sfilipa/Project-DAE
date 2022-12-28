@@ -14,3 +14,42 @@ Content-Type: application/json
   "insuranceCode": "AL-123",
   "description": "ola"
 }
+
+####LOGIN
+### REQUEST JWT TOKEN
+POST http://localhost:8080/occurrences/api/auth/login
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMTg2MDc4LCJleHAiOjE2NzIxODk2Nzd9.ELUX-iZlR2F1ixcDc5mlG1dNre0kmZTHUhQz9KiQ6Hs
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "client3",
+  "password": "client"
+}
+
+
+
+###DOCUMENTS
+POST http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMTg3MjQ5LCJleHAiOjE2NzIxOTA4NDl9.jVq0fDRi63gNr7EBWB9TFa8WOmRcPRhJHZMZSOzfrck
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="<C:\popo\statistics.txt"
+
+--boundary
+
+###
+GET http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMjIxNjAwLCJleHAiOjE2NzIyMjUyMDB9.Q8UDYtmCHsLEcP6drMzcOUPUv_eHNmIof9coowL6S4s
+Content-Type: application/x-www-form-urlencoded
+
+###
+GET http://localhost:8080/occurrences/api/documents/2/exists HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMTg3MjQ5LCJleHAiOjE2NzIxOTA4NDl9.jVq0fDRi63gNr7EBWB9TFa8WOmRcPRhJHZMZSOzfrck
+Content-Type: application/x-www-form-urlencoded
+
+##### CLIENT Occurrences
+GET http://localhost:8080/occurrences/api/clients/client3/occurrences
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIxOTYzLCJleHAiOjE2NzIyMjU1NjN9.L7yr_QWZIb7xq6Ebx81Z5h_qV3NwcYPCDuAD8OGCI2g
+Accept: application/json

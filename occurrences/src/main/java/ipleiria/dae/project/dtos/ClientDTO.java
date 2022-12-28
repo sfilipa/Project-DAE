@@ -1,9 +1,12 @@
 package ipleiria.dae.project.dtos;
 
+import ipleiria.dae.project.entities.Client;
+
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClientDTO implements Serializable {
     @Id
@@ -82,6 +85,21 @@ public class ClientDTO implements Serializable {
 
     public void setPhoneNumber(Long phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public static ClientDTO from(Client client) {
+        return new ClientDTO(
+                client.getUsername(),
+                client.getPassword(),
+                client.getName(),
+                client.getEmail(),
+                client.getAddress(),
+                client.getPhoneNumber()
+        );
+    }
+
+    public static List<ClientDTO> from(List<Client> students) {
+        return students.stream().map(ClientDTO::from).collect(Collectors.toList());
     }
 
     /*public List<String> getInsurances() {

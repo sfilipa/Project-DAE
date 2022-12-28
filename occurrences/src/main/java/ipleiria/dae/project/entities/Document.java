@@ -6,8 +6,8 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "documents")
 @NamedQuery(
-        name = "getAllDocuments",
-        query = "SELECT doc FROM Document doc "//TODO: change later
+        name = "getOccurenceDocuments",
+        query = "SELECT doc FROM Document doc WHERE doc.occurrence.id = :id"//TODO: change later
 )
 public class Document {
     @Id
