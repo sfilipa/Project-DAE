@@ -9,7 +9,7 @@ public class Insurance implements Serializable {
     //TODO: Change company to insurance Company
 
     String code;
-    Company company;
+    InsuranceCompany insuranceCompany;
     String name;
 
 
@@ -17,9 +17,9 @@ public class Insurance implements Serializable {
 
     }
 
-    public Insurance( String code, Company company, String name) {
+    public Insurance( String code, InsuranceCompany insuranceCompany, String name) {
         this.code = code;
-        this.company = company;
+        this.insuranceCompany = insuranceCompany;
         this.name = name;
     }
 
@@ -31,12 +31,12 @@ public class Insurance implements Serializable {
         this.code = code;
     }
 
-    public Company getCompany() {
-        return company;
+    public InsuranceCompany getCompany() {
+        return insuranceCompany;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setCompany(InsuranceCompany insuranceCompany) {
+        this.insuranceCompany = insuranceCompany;
     }
 
     public String getName() {

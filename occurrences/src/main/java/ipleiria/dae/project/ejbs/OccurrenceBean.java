@@ -52,8 +52,8 @@ public class OccurrenceBean {
 
         Client client = em.find(Client.class, usernameClient);
         InsuredAssetType insuredAssetType = null;
-        Company company = new Company();
-        Insurance insurance = new Insurance(insuranceCode, company, insuranceNameAPI);
+        InsuranceCompany insuranceCompany = new InsuranceCompany(insuranceNameAPI);
+        Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
 
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
@@ -61,7 +61,7 @@ public class OccurrenceBean {
             throw new MyEntityNotFoundException("Insurance type not found");
         }
 
-        Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance, description, insuranceObjectAPI, null, null);
+        Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance, description, insuranceObjectAPI, null);
         em.persist(occurrence);
         return occurrence;
     }
@@ -71,7 +71,7 @@ public class OccurrenceBean {
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, String date, State state, String insuranceCode) {
+    public Occurrence update(long id, String usernameClient, String date, State state, String insuranceCode) {//TODO : Exceptions
         Occurrence occurrence = em.find(Occurrence.class, id);
         Client client = em.find(Client.class, usernameClient);
         Insurance insurance = em.find(Insurance.class, insuranceCode);
@@ -103,61 +103,75 @@ public class OccurrenceBean {
         if (occurrence == null) {
             return -1; //devolver exception
         }
-        if (occurrence.getState() != State.PENDING) {
+        if(occurrence.getState() != State.PENDING) {
             return -2; //devolver exception
         }
         Expert expert = em.find(Expert.class, username);
         if (expert == null) {
             return -3; //devolver exception
         }
-//        if(occurrence.isExpertInOccurrence(expert)){
-//            return -4; //devolver exception
-//        }
+        if(occurrence.isExpertInOccurrence(expert)){
+            return -4; //devolver exception
+        }
 
         //verificar que o perito é da mesma seguradora
-        if (expert.getCompany() != occurrence.getInsurance().getCompany()) {
+        if(expert.getCompany() != occurrence.getInsurance().getCompany()){
             return -5; //devolver exception
         }
 
-//        occurrence.addExpert(expert);
-        occurrence.setExpert(expert);
+        occurrence.addExpert(expert);
+//        occurrence.setExpert(expert);
         return 0;
     }
 
-    public int addRepairer(long id, String username) {
+    public int removeExpert(long id, String username){
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
             return -1; //devolver exception
         }
-        if (occurrence.getState() != State.ACTIVE) {
+        Expert expert = em.find(Expert.class, username);
+        if (expert == null) {
+            return -2; //devolver exception
+        }
+        if(!occurrence.isExpertInOccurrence(expert)){
+            return -3; //devolver exception
+        }
+
+        occurrence.removeExpert(expert);
+        expert.removeOccurrence(occurrence);
+        return 0;
+    }
+
+    public int assignRepairer(long id, String username) {
+        Occurrence occurrence = em.find(Occurrence.class, id);
+        if (occurrence == null) {
+            return -1; //devolver exception
+        }
+        if(occurrence.getState() != State.ACTIVE){
             return -2; //devolver exception
         }
         Repairer repairer = em.find(Repairer.class, username);
         if (repairer == null) {
             return -3; //devolver exception
         }
-//        if(occurrence.isRepairerInOccurrence(repairer)){
-//            return -4; //devolver exception
-//        }
 
-//        occurrence.addRepairer(repairer);
         occurrence.setRepairer(repairer);
         repairer.addOccurrence(occurrence);
         return 0;
     }
 
-    public int removeRepairer(long id, String username) { //TODO: SERVICE
+    public int unassignRepairer(long id){
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
             return -1; //devolver exception
         }
 
-        Repairer repairer = em.find(Repairer.class, username);
+        Repairer repairer = occurrence.getRepairer();
         if (repairer == null) {
             return -2; //devolver exception
         }
 
-        occurrence.setExpert(null);
+        occurrence.setRepairer(null);
         repairer.removeOccurrence(occurrence);
         return 0;
     }

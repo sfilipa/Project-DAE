@@ -13,6 +13,10 @@ Accept: application/json
 GET http://localhost:8080/occurrences/api/occurrences
 Accept: application/json
 
+##### Occurrence
+GET http://localhost:8080/occurrences/api/occurrences/1
+Accept: application/json
+
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjU2ODE1LCJleHAiOjE2NzIyNjA0MTV9.6UqxwG_gLvFWlIC95lyMhu51NhKBRVG7GPesuiOg7mE
@@ -50,3 +54,89 @@ Content-Type: application/x-www-form-urlencoded
 GET http://localhost:8080/occurrences/api/clients/client3/occurrences
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
 Accept: application/json
+
+### Create Company
+POST http://localhost:8080/occurrences/api/companies
+Content-Type: application/json
+
+{
+  "username": "company1",
+  "password": "123",
+  "name": "Company 1",
+  "email": "company@mail.pt",
+  "address": "Rua 1",
+  "phoneNumber": 987654321,
+  "nipc": 123456
+}
+
+### Create Expert
+POST http://localhost:8080/occurrences/api/experts
+Content-Type: application/json
+
+{
+  "username": "expert1",
+  "password": "123",
+  "name": "Expert 1",
+  "email": "expert@mail.pt",
+  "company_username": "company1"
+}
+
+### Create Repairer
+POST http://localhost:8080/occurrences/api/repairers
+Content-Type: application/json
+
+{
+  "username": "repairer1",
+  "password": "123",
+  "name": "Repairer 1",
+  "email": "repairer@mail.pt",
+  "address": "Rua 1"
+}
+
+### GET Experts
+GET http://localhost:8080/occurrences/api/experts
+Accept: application/json
+
+#### OCCURRENCE DISAPPROVE
+PATCH http://localhost:8080/occurrences/api/occurrences/1/disapprove
+Content-Type: application/json
+
+#### OCCURRENCE APPROVED
+PATCH http://localhost:8080/occurrences/api/occurrences/1/approve
+Content-Type: application/json
+
+### Expert Disapprove Occurrence
+PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/disapprove
+Content-Type: application/json
+
+{
+    "description": "Occurrence disapproved, because..."
+}
+
+### Expert Approve Occurrence
+PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/4/approve
+Content-Type: application/json
+
+{
+  "description": "The problem seems to be with..."
+}
+
+### Repairer Starts Occurrence
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/3/start
+Content-Type: application/json
+
+### Repairer Fails Occurrence
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/2/fail
+Content-Type: application/json
+
+{
+  "description": "Found a problem could not be fixed because..."
+}
+
+### Repairer Finishes Occurrence
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/3/finish
+Content-Type: application/json
+
+{
+  "description": "Problem fixed and ready to be delivered"
+}

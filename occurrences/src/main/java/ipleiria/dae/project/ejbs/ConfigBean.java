@@ -1,5 +1,6 @@
 package ipleiria.dae.project.ejbs;
 
+import ipleiria.dae.project.entities.*;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.entities.Company;
 import ipleiria.dae.project.entities.Insurance;
@@ -41,9 +42,10 @@ public class ConfigBean {
     @EJB
     OccurrenceBean occurrenceBean;
     @EJB
-    InsuranceBean insuranceBean;
-    @EJB
     AdministratorBean administratorBean;
+
+    @EJB
+    InsuranceCompanyBean insuranceCompanyBean;
 
     @PostConstruct
     public void populateDB() {
@@ -52,39 +54,17 @@ public class ConfigBean {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         String dateInString = sdf.format(new Date());
         try {
-           // getDataAPI();
             //expertBean.create("expert1", "exp", "Expert Joca", "expert@mail.pt", "company1");
+            InsuranceCompany insuranceCompany = insuranceCompanyBean.create("Fidelidade");
             clientBean.create("client2", "client", "Client Isabel", "client2@mail.pt", "Rua dos pinheiros tortos", 912345678);
             clientBean.create("client3", "client", "Client Nando", "client3@mail.pt", "Rua dos pinheiros tortos", 912345678);
             //insuranceBean.create("AL-123", company, "Allianz");
-            occurrenceBean.create("client2", dateInString, State.PENDING, "FIDEL-1298302", "ola");
+            Expert e = expertBean.create("expert2", "exp", "Expert Sofia", "sofia@mail.pt", "Fidelidade");
+            System.out.println("CRIOU O EXPERT" + e);
+            Occurrence o = occurrenceBean.create("client2", dateInString, State.PENDING, "FIDEL-1298302", "ola");
+            occurrenceBean.addExpert(o.getId(),"expert");
         } catch (Exception exception) {
             logger.severe(exception.getMessage());
-        }
-    }
-
-    public void getDataAPI() {
-        try {
-            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
-
-            if (conn.getResponseCode() < 200 || conn.getResponseCode() > 299) {
-                // throw an exception or handle the error
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-            String output;
-            StringBuilder response = new StringBuilder();
-            while ((output = br.readLine()) != null) {
-                response.append(output);
-            }
-            System.out.println(response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

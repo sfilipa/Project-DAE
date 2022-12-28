@@ -63,9 +63,9 @@ public class ExpertDTO {
         return company_username;
     }
 
-    public void setCompany_username(String company_username) {
-        this.company_username = company_username;
-    }
+//    public void setCompany_username(String company_username) { //penso que para fazer isto teriamos que criar mesmo uma InsuranceCompany, caso esta nao existisse
+//        this.company_username = company_username;
+//    }
 
     public static ExpertDTO from(Expert expert){
         return new ExpertDTO(
@@ -73,7 +73,7 @@ public class ExpertDTO {
                 expert.getPassword(),
                 expert.getName(),
                 expert.getEmail(),
-                expert.getCompany().getUsername()
+                expert.getCompany().getName()
         );
     }
 

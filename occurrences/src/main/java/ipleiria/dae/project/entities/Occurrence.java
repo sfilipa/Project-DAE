@@ -44,12 +44,12 @@ public class Occurrence implements Serializable {
     @OneToMany(mappedBy = "occurrence")
     List<Document> documents;
 
-//    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE)
-//    private List<Expert> experts;
+    @ManyToMany(mappedBy = "occurrences", fetch = FetchType.LAZY)
+    private List<Expert> experts;
 
-    @ManyToOne
-    @JoinColumn(name = "expert_name")
-    private Expert expert;
+//    @ManyToOne
+//    @JoinColumn(name = "expert_name")
+//    private Expert expert;
 
     @ManyToOne
     @JoinColumn(name = "repairer_name")
@@ -62,14 +62,14 @@ public class Occurrence implements Serializable {
     }
 
     //de inicio, todas as occurrences devem ser criadas com o State.PENDING
-    public Occurrence(Client client, String date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description, String object, Repairer repairer, Expert expert) {
+    public Occurrence(Client client, String date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description, String object, Repairer repairer) {
         this.client = client;
         this.date = date;
         this.state = state;
         this.insuredAssetType = insuredAssetType;
         this.insurance = insurance;
         this.repairer = repairer;
-        this.expert = expert;
+        this.experts = new LinkedList<>();
         this.documents = new LinkedList<>();
         this.description = description;
         this.object = object;
@@ -127,40 +127,33 @@ public class Occurrence implements Serializable {
         this.documents = documents;
     }
 
-    public Expert getExpert() {
-        return expert;
+    public List<Expert> getExperts() {
+        return experts;
     }
 
-    public void setExpert(Expert expert) {
-        this.expert = expert;
+    public void setExperts(List<Expert> experts) {
+        this.experts = experts;
     }
 
-    //    public List<Expert> getExperts() {
-//        return experts;
-//    }
-//
-//    public void setExperts(List<Expert> experts) {
-//        this.experts = experts;
-//    }
-//
-//    public void addExpert(Expert expert){
-//        if(expert != null){
-//            experts.add(expert);
-//        }
-//    }
-//
-//    public boolean isExpertInOccurrence(Expert expert){
-//        return experts.contains(expert);
-//    }
+    public void addExpert(Expert expert){
+        if(expert != null){
+            experts.add(expert);
+        }
+    }
+
+    public void removeExpert(Expert expert){
+        if(expert != null){
+            experts.remove(expert);
+        }
+    }
+
+    public boolean isExpertInOccurrence(Expert expert){
+        return experts.contains(expert);
+    }
+
 //
 //    public boolean isRepairerInOccurrence(Repairer repairer) {
 //        return experts.contains(repairer);
-//    }
-//
-//    public void removeExpert(Expert expert){
-//        if(expert != null){
-//            experts.remove(expert);
-//        }
 //    }
 
 //    public List<Repairer> getRepairers() {
