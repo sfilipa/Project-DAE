@@ -53,13 +53,13 @@ public class OccurrenceService {
     }
 
     @POST
-    @Authenticated
-    @RolesAllowed({"Client"})
+    //@Authenticated
+    //@RolesAllowed({"Client"})
     @Path("/")
     public Response create(OccurrenceDTO occurrenceDTO){
-        if(!securityContext.getUserPrincipal().getName().equals(occurrenceDTO.getUsernameClient())) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
+        //if(!securityContext.getUserPrincipal().getName().equals(occurrenceDTO.getUsernameClient())) {
+        //    return Response.status(Response.Status.FORBIDDEN).build();
+        //}
         Occurrence occurrence = occurrenceBean.create(
                 occurrenceDTO.getUsernameClient(),
                 occurrenceDTO.getDate(),
