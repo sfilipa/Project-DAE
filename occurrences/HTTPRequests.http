@@ -96,8 +96,16 @@ Content-Type: application/json
 
 ### Expert Disapprove Occurrence
 PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/disapprove
-Accept: application/json
+Content-Type: application/json
+
+{
+    "description": "Occurrence disapproved by expert"
+}
 
 ### Expert Approve Occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/approve
-Accept: application/json
+PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/2/approve
+Content-Type: application/json
+
+{
+  "description": "Occurrence approved by expert"
+}

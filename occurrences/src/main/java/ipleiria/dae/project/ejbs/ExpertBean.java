@@ -104,7 +104,7 @@ public class ExpertBean {
         em.remove(expert);
     }
 
-    public void disapproveOccurrence(String username, long occurrenceCode) {
+    public void disapproveOccurrence(String username, long occurrenceCode, String description) {
         try {
             // Find Expert
             Expert expert = find(username);
@@ -114,14 +114,22 @@ public class ExpertBean {
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
             validateOccurrence(expert, occurrence);
 
-            // Approve Occurrence
+            // Disapprove Occurrence
             occurrence.setState(State.FAILED_BY_EXPERT);
+
+            // Get Occurrence Description
+            String occurrenceDescription = occurrence.getDescription();
+
+            // Build Occurrence Description
+            String newOccurrenceDescription = occurrenceDescription + " - " + expert.getUsername() + ": " + description;
+            occurrence.setDescription(newOccurrenceDescription);
+
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    public void approveOccurrence(String username, long occurrenceCode) {
+    public void approveOccurrence(String username, long occurrenceCode, String description) {
         try {
             // Find Expert
             Expert expert = find(username);
@@ -133,6 +141,14 @@ public class ExpertBean {
 
             // Approve Occurrence
             occurrence.setState(State.APPROVED);
+
+            // Get Occurrence Description
+            String occurrenceDescription = occurrence.getDescription();
+
+            // Build Occurrence Description
+            String newOccurrenceDescription = occurrenceDescription + " - " + expert.getUsername() + ": " + description;
+            occurrence.setDescription(newOccurrenceDescription);
+
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }

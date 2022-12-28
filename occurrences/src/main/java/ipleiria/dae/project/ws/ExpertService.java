@@ -1,13 +1,20 @@
 package ipleiria.dae.project.ws;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ipleiria.dae.project.dtos.ExpertDTO;
 import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.entities.Expert;
 
 import javax.ejb.EJB;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,9 +27,19 @@ public class ExpertService {
 
     @PATCH
     @Path("/{username}/occurrences/{occurrence_code}/disapprove")
-    public Response disapproveOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+    public Response disapproveOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
         try {
-            expertBean.disapproveOccurrence(username, occurrence_code);
+            // Get the input stream from the request
+            InputStream inputStream = request.getInputStream();
+
+            // Read the message body from the input stream
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(inputStream);
+
+            // Extract the values from the JSON object
+            String description = rootNode.get("description").asText();
+
+            expertBean.disapproveOccurrence(username, occurrence_code, description);
             return Response.ok().build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -31,9 +48,19 @@ public class ExpertService {
 
     @PATCH
     @Path("/{username}/occurrences/{occurrence_code}/approve")
-    public Response approveOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+    public Response approveOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
         try {
-            expertBean.approveOccurrence(username, occurrence_code);
+            // Get the input stream from the request
+            InputStream inputStream = request.getInputStream();
+
+            // Read the message body from the input stream
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(inputStream);
+
+            // Extract the values from the JSON object
+            String description = rootNode.get("description").asText();
+
+            expertBean.approveOccurrence(username, occurrence_code, description);
             return Response.ok().build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
