@@ -39,10 +39,13 @@ public class OccurrenceBean {
 
     public Occurrence create(String usernameClient, String date, State state, String insuranceCode, String description) throws MyEntityNotFoundException {
         JSONObject jsonObject = getDataAPI(insuranceCode);
+        if(jsonObject == null){
+            throw new MyEntityNotFoundException("Insurance not found");
+        }
         String insuranceCodeAPI = jsonObject.getString("code");
         String insuranceNameAPI = jsonObject.getJSONObject("insurance").getString("name");
         String clientUsernameAPI = jsonObject.getJSONObject("client").getString("username");
-        String insuranceTypeAPI = jsonObject.getString("type");
+        String insuranceTypeAPI = jsonObject.getString("type").toUpperCase();
         String insuranceObjectAPI = jsonObject.getString("object");
         JSONArray insuranceCoversAPI = jsonObject.getJSONArray("covers");
 
