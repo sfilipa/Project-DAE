@@ -15,15 +15,14 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjU2ODE1LCJleHAiOjE2NzIyNjA0MTV9.6UqxwG_gLvFWlIC95lyMhu51NhKBRVG7GPesuiOg7mE
 Content-Type: application/json
 
 {
-  "usernameClient": "client2",
+  "usernameClient": "client3",
   "date": "2021-07-20",
-  "insuredAssetType": "VEHICLES",
   "state": "PENDING",
-  "insuranceCode": "AL-123",
+  "insuranceCode": "ALL-1298389",
   "description": "ola"
 }
 

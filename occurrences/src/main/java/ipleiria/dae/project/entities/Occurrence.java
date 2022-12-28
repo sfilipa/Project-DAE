@@ -25,22 +25,21 @@ public class Occurrence implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotNull
-    @GeneratedValue
-    private Date date;
+    private String date;
+    @NotNull
+    private Insurance insurance;
     @NotNull
     private State state;
     @NotNull
     private InsuredAssetType insuredAssetType;
     @NotNull
     private String description;
+    @NotNull
+    private String object;
 
     @ManyToOne
     @JoinColumn(name = "client_username")
     private Client client;
-
-    @ManyToOne
-    @JoinColumn(name = "insurance_code")
-    private Insurance insurance;
 
     @OneToMany(mappedBy = "occurrence")
     List<Document> documents;
@@ -63,7 +62,7 @@ public class Occurrence implements Serializable {
     }
 
     //de inicio, todas as occurrences devem ser criadas com o State.PENDING
-    public Occurrence(Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description, Repairer repairer, Expert expert) {
+    public Occurrence(Client client, String date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description, String object, Repairer repairer, Expert expert) {
         this.client = client;
         this.date = date;
         this.state = state;
@@ -73,6 +72,7 @@ public class Occurrence implements Serializable {
         this.expert = expert;
         this.documents = new LinkedList<>();
         this.description = description;
+        this.object = object;
     }
 
     public long getId() {
@@ -95,11 +95,11 @@ public class Occurrence implements Serializable {
         this.client = client;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -207,5 +207,13 @@ public class Occurrence implements Serializable {
 
     public void removeDocument(Document document) {
         this.documents.remove(document);
+    }
+
+    public String getObject() {
+        return object;
+    }
+
+    public void setObject(String object) {
+        this.object = object;
     }
 }

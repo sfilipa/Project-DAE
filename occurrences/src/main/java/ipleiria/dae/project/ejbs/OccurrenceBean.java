@@ -3,11 +3,18 @@ package ipleiria.dae.project.ejbs;
 import ipleiria.dae.project.entities.*;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import org.hibernate.Hibernate;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
@@ -30,10 +37,31 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(String usernameClient, Date date, InsuredAssetType insuredAssetType, State state, String insuranceCode, String description) {
+    public Occurrence create(String usernameClient, String date, State state, String insuranceCode, String description) throws MyEntityNotFoundException {
+        JSONObject jsonObject = getDataAPI(insuranceCode);
+        String insuranceCodeAPI = jsonObject.getString("code");
+        String insuranceNameAPI = jsonObject.getJSONObject("insurance").getString("name");
+        String clientUsernameAPI = jsonObject.getJSONObject("client").getString("username");
+        String insuranceTypeAPI = jsonObject.getString("type");
+        String insuranceObjectAPI = jsonObject.getString("object");
+        JSONArray insuranceCoversAPI = jsonObject.getJSONArray("covers");
+
+        if (!clientUsernameAPI.equals(usernameClient)){
+            throw new MyEntityNotFoundException("Client is not the owner of the insurance");
+        }
+
         Client client = em.find(Client.class, usernameClient);
-        Insurance insurance = em.find(Insurance.class, insuranceCode);
-        Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance, description, null, null);
+        InsuredAssetType insuredAssetType = null;
+        Company company = new Company();
+        Insurance insurance = new Insurance(insuranceCode, company, insuranceNameAPI);
+
+        try {
+            insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
+        }catch (IllegalArgumentException e){
+            throw new MyEntityNotFoundException("Insurance type not found");
+        }
+
+        Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance, description, insuranceObjectAPI, null, null);
         em.persist(occurrence);
         return occurrence;
     }
@@ -43,7 +71,7 @@ public class OccurrenceBean {
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, Date date, State state, String insuranceCode) {
+    public Occurrence update(long id, String usernameClient, String date, State state, String insuranceCode) {
         Occurrence occurrence = em.find(Occurrence.class, id);
         Client client = em.find(Client.class, usernameClient);
         Insurance insurance = em.find(Insurance.class, insuranceCode);
@@ -75,7 +103,7 @@ public class OccurrenceBean {
         if (occurrence == null) {
             return -1; //devolver exception
         }
-        if(occurrence.getState() != State.PENDING) {
+        if (occurrence.getState() != State.PENDING) {
             return -2; //devolver exception
         }
         Expert expert = em.find(Expert.class, username);
@@ -87,7 +115,7 @@ public class OccurrenceBean {
 //        }
 
         //verificar que o perito é da mesma seguradora
-        if(expert.getCompany() != occurrence.getInsurance().getCompany()){
+        if (expert.getCompany() != occurrence.getInsurance().getCompany()) {
             return -5; //devolver exception
         }
 
@@ -101,7 +129,7 @@ public class OccurrenceBean {
         if (occurrence == null) {
             return -1; //devolver exception
         }
-        if(occurrence.getState() != State.ACTIVE){
+        if (occurrence.getState() != State.ACTIVE) {
             return -2; //devolver exception
         }
         Repairer repairer = em.find(Repairer.class, username);
@@ -118,7 +146,7 @@ public class OccurrenceBean {
         return 0;
     }
 
-    public int removeRepairer(long id, String username){ //TODO: SERVICE
+    public int removeRepairer(long id, String username) { //TODO: SERVICE
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
             return -1; //devolver exception
@@ -133,4 +161,37 @@ public class OccurrenceBean {
         repairer.removeOccurrence(occurrence);
         return 0;
     }
+
+    public JSONObject getDataAPI(String code) {
+        JSONObject jsonObject = null;
+        try {
+            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies/" + code);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.connect();
+
+            if (conn.getResponseCode() < 200 || conn.getResponseCode() > 299) {
+                // throw an exception or handle the error
+            }
+
+            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+            String output;
+            StringBuilder response = new StringBuilder();
+            while ((output = br.readLine()) != null) {
+                response.append(output);
+            }
+            System.out.println(response);
+
+            jsonObject = new JSONObject(response.toString());
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return jsonObject;
+    }
+
+
 }

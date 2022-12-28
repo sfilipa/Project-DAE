@@ -5,27 +5,22 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-@Table(name = "insurances")
-@Entity
 public class Insurance implements Serializable {
-    //TODO: Change when MOCKAPI is ready
-    @Id
+    //TODO: Change company to insurance Company
+
     String code;
     Company company;
     String name;
 
-    @OneToMany(mappedBy = "insurance", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Occurrence> occurrences;
 
     public Insurance() {
-        occurrences = new LinkedList<>();
+
     }
 
     public Insurance( String code, Company company, String name) {
         this.code = code;
         this.company = company;
         this.name = name;
-        occurrences = new LinkedList<>();
     }
 
     public String getCode() {
@@ -52,11 +47,4 @@ public class Insurance implements Serializable {
         this.name = name;
     }
 
-    public List<Occurrence> getOccurrences() {
-        return occurrences;
-    }
-
-    public void setOccurrences(List<Occurrence> occurrences) {
-        this.occurrences = occurrences;
-    }
 }

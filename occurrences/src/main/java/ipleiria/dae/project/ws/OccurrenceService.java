@@ -7,6 +7,7 @@ import ipleiria.dae.project.ejbs.RepairerBean;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.entities.Repairer;
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Authenticated;
 
 import javax.annotation.security.RolesAllowed;
@@ -16,6 +17,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +41,8 @@ public class OccurrenceService {
     @GET
     @Path("/")
     public List<OccurrenceDTO> getAllOccurrences(){
+        var occurrences = occurrenceBean.getAllOccurrences();
+
         return toDTOS(occurrenceBean.getAllOccurrences());
     }
 
@@ -56,18 +62,18 @@ public class OccurrenceService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("/")
-    public Response create(OccurrenceDTO occurrenceDTO){
+    public Response create(OccurrenceDTO occurrenceDTO) throws MyEntityNotFoundException {
         if(!securityContext.getUserPrincipal().getName().equals(occurrenceDTO.getUsernameClient())) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         Occurrence occurrence = occurrenceBean.create(
                 occurrenceDTO.getUsernameClient(),
                 occurrenceDTO.getDate(),
-                occurrenceDTO.getInsuredAssetType(),
                 occurrenceDTO.getState(),
                 occurrenceDTO.getInsuranceCode(),
                 occurrenceDTO.getDescription()
         );
+
         if(occurrence == null){
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
@@ -239,6 +245,7 @@ public class OccurrenceService {
     }
 
     private OccurrenceDTO toDTO(Occurrence occurrence){
+
         return new OccurrenceDTO(
                 occurrence.getId(),
                 occurrence.getClient().getUsername(),
@@ -246,7 +253,9 @@ public class OccurrenceService {
                 occurrence.getState(),
                 occurrence.getInsuredAssetType(),
                 occurrence.getInsurance().getCode(),
-                occurrence.getDescription()
+                occurrence.getInsurance().getName(),
+                occurrence.getDescription(),
+                occurrence.getObject()
         );
     }
 }
