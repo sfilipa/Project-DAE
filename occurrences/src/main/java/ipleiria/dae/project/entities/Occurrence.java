@@ -202,4 +202,7 @@ public class Occurrence implements Serializable {
         this.documents.remove(document);
     }
 
+
+
+
 }

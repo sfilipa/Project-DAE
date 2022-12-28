@@ -1,24 +1,6 @@
-##### Occurrences
-GET http://localhost:8080/occurrences/api/occurrences
-Accept: application/json
-
-### Create Ocurrence
-POST http://localhost:8080/occurrences/api/occurrences
-Content-Type: application/json
-
-{
-  "usernameClient": "client3",
-  "date": "2021-07-20",
-  "insuredAssetType": "VEHICLES",
-  "state": "PENDING",
-  "insuranceCode": "AL-123",
-  "description": "ola"
-}
-
 ####LOGIN
 ### REQUEST JWT TOKEN
 POST http://localhost:8080/occurrences/api/auth/login
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMTg2MDc4LCJleHAiOjE2NzIxODk2Nzd9.ELUX-iZlR2F1ixcDc5mlG1dNre0kmZTHUhQz9KiQ6Hs
 Content-Type: application/json
 Accept: application/json
 
@@ -27,7 +9,27 @@ Accept: application/json
   "password": "client"
 }
 
+##### Occurrences
+GET http://localhost:8080/occurrences/api/occurrences
+Accept: application/json
 
+##### Occurrence
+GET http://localhost:8080/occurrences/api/occurrences/1
+Accept: application/json
+
+### Create Ocurrence
+POST http://localhost:8080/occurrences/api/occurrences
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
+Content-Type: application/json
+
+{
+  "usernameClient": "client2",
+  "date": "2021-07-20",
+  "insuredAssetType": "VEHICLES",
+  "state": "PENDING",
+  "insuranceCode": "AL-123",
+  "description": "ola"
+}
 
 ###DOCUMENTS
 POST http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
@@ -51,5 +53,91 @@ Content-Type: application/x-www-form-urlencoded
 
 ##### CLIENT Occurrences
 GET http://localhost:8080/occurrences/api/clients/client3/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIxOTYzLCJleHAiOjE2NzIyMjU1NjN9.L7yr_QWZIb7xq6Ebx81Z5h_qV3NwcYPCDuAD8OGCI2g
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
 Accept: application/json
+
+### Create Company
+POST http://localhost:8080/occurrences/api/companies
+Content-Type: application/json
+
+{
+  "username": "company1",
+  "password": "123",
+  "name": "Company 1",
+  "email": "company@mail.pt",
+  "address": "Rua 1",
+  "phoneNumber": 987654321,
+  "nipc": 123456
+}
+
+### Create Expert
+POST http://localhost:8080/occurrences/api/experts
+Content-Type: application/json
+
+{
+  "username": "expert1",
+  "password": "123",
+  "name": "Expert 1",
+  "email": "expert@mail.pt",
+  "company_username": "company1"
+}
+
+### Create Repairer
+POST http://localhost:8080/occurrences/api/repairers
+Content-Type: application/json
+
+{
+  "username": "repairer1",
+  "password": "123",
+  "name": "Repairer 1",
+  "email": "repairer@mail.pt",
+  "address": "Rua 1"
+}
+
+### GET Experts
+GET http://localhost:8080/occurrences/api/experts
+Accept: application/json
+
+#### OCCURRENCE DISAPPROVE
+PATCH http://localhost:8080/occurrences/api/occurrences/1/disapprove
+Content-Type: application/json
+
+#### OCCURRENCE APPROVED
+PATCH http://localhost:8080/occurrences/api/occurrences/1/approve
+Content-Type: application/json
+
+### Expert Disapprove Occurrence
+PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/disapprove
+Content-Type: application/json
+
+{
+    "description": "Occurrence disapproved, because..."
+}
+
+### Expert Approve Occurrence
+PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/4/approve
+Content-Type: application/json
+
+{
+  "description": "The problem seems to be with..."
+}
+
+### Repairer Starts Occurrence
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/3/start
+Content-Type: application/json
+
+### Repairer Fails Occurrence
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/2/fail
+Content-Type: application/json
+
+{
+  "description": "Found a problem could not be fixed because..."
+}
+
+### Repairer Finishes Occurrence
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/3/finish
+Content-Type: application/json
+
+{
+  "description": "Problem fixed and ready to be delivered"
+}
