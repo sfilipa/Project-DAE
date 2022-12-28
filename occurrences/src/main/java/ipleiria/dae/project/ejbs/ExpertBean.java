@@ -117,7 +117,7 @@ public class ExpertBean {
             validateOccurrence(expert, occurrence);
 
             // Disapprove Occurrence
-            occurrence.setState(State.FAILED_BY_EXPERT);
+            occurrence.setState(State.DISAPPROVED);
 
             // Get Occurrence Description
             String occurrenceDescription = occurrence.getDescription();

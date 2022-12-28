@@ -234,10 +234,6 @@ public class OccurrenceService {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("ERROR_FINDING_REPAIRER")
                         .build();
-//            case -4:
-//                return Response.status(Response.Status.BAD_REQUEST)
-//                        .entity("REPAIRER_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
-//                        .build();
             default:
                 return Response.status(Response.Status.ACCEPTED)
                         .entity(OccurrenceDTO.from(occurrence))

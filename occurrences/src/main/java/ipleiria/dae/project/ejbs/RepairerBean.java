@@ -92,8 +92,8 @@ public class RepairerBean {
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
             validateOccurrence(repairer, occurrence, State.ACTIVE);
 
-            // Disapprove Occurrence
-            occurrence.setState(State.FAILED_BY_REPAIRER);
+            // Fail Occurrence
+            occurrence.setState(State.FAILED);
 
             // Get Occurrence Description
             String occurrenceDescription = occurrence.getDescription();
