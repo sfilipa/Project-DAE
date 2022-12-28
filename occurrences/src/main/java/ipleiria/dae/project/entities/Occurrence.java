@@ -208,4 +208,7 @@ public class Occurrence implements Serializable {
     public void removeDocument(Document document) {
         this.documents.remove(document);
     }
+
+
+
 }

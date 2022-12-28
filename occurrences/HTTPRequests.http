@@ -13,6 +13,10 @@ Accept: application/json
 GET http://localhost:8080/occurrences/api/occurrences
 Accept: application/json
 
+##### Occurrence
+GET http://localhost:8080/occurrences/api/occurrences/1
+Accept: application/json
+
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
@@ -82,12 +86,18 @@ Content-Type: application/json
 GET http://localhost:8080/occurrences/api/experts
 Accept: application/json
 
-#### EXPERT FAILS OCCURRENCE
-PATCH http://localhost:8080/occurrences/api/occurrences/1/expert1/disapprove
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
+#### OCCURRENCE DISAPPROVE
+PATCH http://localhost:8080/occurrences/api/occurrences/1/disapprove
 Content-Type: application/json
 
-{
-    "usernameExpert": "expert1",
-    "description": "Expert 1 disapproved"
-}
+#### OCCURRENCE APPROVED
+PATCH http://localhost:8080/occurrences/api/occurrences/1/approve
+Content-Type: application/json
+
+### Expert Disapprove Occurrence
+PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/disapprove
+Accept: application/json
+
+### Expert Approve Occurrence
+PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/approve
+Accept: application/json
