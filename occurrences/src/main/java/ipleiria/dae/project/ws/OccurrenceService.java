@@ -113,10 +113,10 @@ public class OccurrenceService {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("ERROR_FINDING_EXPERT")
                         .build();
-            case -4:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("EXPERT_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
-                        .build();
+//            case -4:
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("EXPERT_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
+//                        .build();
             case -5:
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("EXPERT_NOT_FROM_SAME_INSURANCE")
@@ -188,10 +188,10 @@ public class OccurrenceService {
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("ERROR_FINDING_REPAIRER")
                         .build();
-            case -4:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("REPAIRER_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
-                        .build();
+//            case -4:
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("REPAIRER_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
+//                        .build();
             default:
                 return Response.status(Response.Status.ACCEPTED)
                         .entity(toDTO(occurrence))

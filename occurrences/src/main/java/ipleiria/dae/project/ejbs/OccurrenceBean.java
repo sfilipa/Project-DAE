@@ -32,7 +32,7 @@ public class OccurrenceBean {
 
     public Occurrence create(String usernameClient, Date date, InsuredAssetType insuredAssetType, State state, Insurance insurance, String description) {
         Client client = em.find(Client.class, usernameClient);
-        Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance, description);
+        Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance, description, null, null);
         em.persist(occurrence);
         return occurrence;
     }
@@ -80,16 +80,17 @@ public class OccurrenceBean {
         if (expert == null) {
             return -3; //devolver exception
         }
-        if(occurrence.isExpertInOccurrence(expert)){
-            return -4; //devolver exception
-        }
+//        if(occurrence.isExpertInOccurrence(expert)){
+//            return -4; //devolver exception
+//        }
 
         //verificar que o perito é da mesma seguradora
         if(expert.getCompany() != occurrence.getInsurance().getCompany()){
             return -5; //devolver exception
         }
 
-        occurrence.addExpert(expert);
+//        occurrence.addExpert(expert);
+        occurrence.setExpert(expert);
         return 0;
     }
 
@@ -105,11 +106,29 @@ public class OccurrenceBean {
         if (repairer == null) {
             return -3; //devolver exception
         }
-        if(occurrence.isRepairerInOccurrence(repairer)){
-            return -4; //devolver exception
+//        if(occurrence.isRepairerInOccurrence(repairer)){
+//            return -4; //devolver exception
+//        }
+
+//        occurrence.addRepairer(repairer);
+        occurrence.setRepairer(repairer);
+        repairer.addOccurrence(occurrence);
+        return 0;
+    }
+
+    public int removeRepairer(long id, String username){ //TODO: SERVICE
+        Occurrence occurrence = em.find(Occurrence.class, id);
+        if (occurrence == null) {
+            return -1; //devolver exception
         }
 
-        occurrence.addRepairer(repairer);
+        Repairer repairer = em.find(Repairer.class, username);
+        if (repairer == null) {
+            return -2; //devolver exception
+        }
+
+        occurrence.setExpert(null);
+        repairer.removeOccurrence(occurrence);
         return 0;
     }
 }

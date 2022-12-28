@@ -1,8 +1,12 @@
 package ipleiria.dae.project.dtos;
 
 import ipleiria.dae.project.entities.Company;
+import ipleiria.dae.project.entities.Expert;
+import ipleiria.dae.project.entities.Repairer;
 
 import javax.persistence.Id;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ExpertDTO {
     @Id
@@ -61,5 +65,19 @@ public class ExpertDTO {
 
     public void setCompany_username(String company_username) {
         this.company_username = company_username;
+    }
+
+    public static ExpertDTO from(Expert expert){
+        return new ExpertDTO(
+                expert.getUsername(),
+                expert.getPassword(),
+                expert.getName(),
+                expert.getEmail(),
+                expert.getCompany().getUsername()
+        );
+    }
+
+    public static List<ExpertDTO> from(List<Expert> experts){
+        return experts.stream().map(ExpertDTO::from).collect(Collectors.toList());
     }
 }

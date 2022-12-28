@@ -23,37 +23,26 @@ public class RepairerBean {
         return (List<Repairer>) em.createNamedQuery("getAllRepairers").getResultList();
     }
 
-    public Repairer create(String username, String password, String name, String email, String company_username) {
+    public Repairer create(String username, String password, String name, String email, String address) {
         Repairer repairer = find(username);
-        Company company = em.find(Company.class, company_username);
-
-        if(company == null ){
-            return null;
-        }
-
         if (repairer != null){
             return null;
         }
-        repairer = new Repairer(username, hasher.hash(password), name, email, company, null);
+        repairer = new Repairer(username, hasher.hash(password), name, email, address);
         em.persist(repairer);
-        company.addRepairer(repairer);
+//        company.addRepairer(repairer);
         return find(username);
     }
 
-    public Repairer update(String username, String password, String name, String email, long company_usernmae) {
+    public Repairer update(String username, String password, String name, String email, String address) {
         Repairer repairer = find(username);
         if (repairer == null){
-            return null;
-        }
-        Company company = em.find(Company.class, company_usernmae);
-
-        if(company == null ){
             return null;
         }
         repairer.setPassword(password);
         repairer.setName(name);
         repairer.setEmail(email);
-        repairer.setCompany(company);
+        repairer.setAddress(address);
         return repairer;
     }
 
@@ -61,15 +50,17 @@ public class RepairerBean {
         return em.find(Repairer.class, username);
     }
 
+    //findOrFail
+
     public void delete(String username) {
-        Repairer repairer = find(username);
-        if (repairer == null){
-
-        }
-
-        Company company = repairer.getCompany();
-        company.removeRepairer(repairer);
-        em.remove(repairer);
+//        Repairer repairer = find(username);
+//        if (repairer == null){
+//            return;
+//        }
+//        Company company = repairer.getCompany();
+//        company.removeRepairer(repairer);
+//        em.remove(repairer);
+        em.remove(find(username));
     }
 
 }

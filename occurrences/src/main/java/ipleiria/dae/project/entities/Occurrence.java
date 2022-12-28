@@ -43,27 +43,32 @@ public class Occurrence implements Serializable {
     @OneToMany(mappedBy = "occurrence")
     List<Document> documents;
 
-    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE)
-    private List<Expert> experts;
+//    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE)
+//    private List<Expert> experts;
 
-    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE)
-    private List<Repairer> repairers;
+    @ManyToOne
+    @JoinColumn(name = "expert_name")
+    private Expert expert;
+
+    @ManyToOne
+    @JoinColumn(name = "repairer_name")
+    private Repairer repairer;
+//    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE)
+//    private List<Repairer> repairers;
 
     public Occurrence() {
-        experts = new LinkedList<>();
-        repairers = new LinkedList<>();
         documents = new LinkedList<>();
     }
 
     //de inicio, todas as occurrences devem ser criadas com o State.PENDING
-    public Occurrence(Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description) {
+    public Occurrence(Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description, Repairer repairer, Expert expert) {
         this.client = client;
         this.date = date;
         this.state = state;
         this.insuredAssetType = insuredAssetType;
         this.insurance = insurance;
-        this.experts = new LinkedList<>();
-        this.repairers = new LinkedList<>();
+        this.repairer = repairer;
+        this.expert = expert;
         this.documents = new LinkedList<>();
         this.description = description;
     }
@@ -120,52 +125,68 @@ public class Occurrence implements Serializable {
         this.documents = documents;
     }
 
-    public List<Expert> getExperts() {
-        return experts;
+    public Expert getExpert() {
+        return expert;
     }
 
-    public void setExperts(List<Expert> experts) {
-        this.experts = experts;
+    public void setExpert(Expert expert) {
+        this.expert = expert;
     }
 
-    public void addExpert(Expert expert){
-        if(expert != null){
-            experts.add(expert);
-        }
+    //    public List<Expert> getExperts() {
+//        return experts;
+//    }
+//
+//    public void setExperts(List<Expert> experts) {
+//        this.experts = experts;
+//    }
+//
+//    public void addExpert(Expert expert){
+//        if(expert != null){
+//            experts.add(expert);
+//        }
+//    }
+//
+//    public boolean isExpertInOccurrence(Expert expert){
+//        return experts.contains(expert);
+//    }
+//
+//    public boolean isRepairerInOccurrence(Repairer repairer) {
+//        return experts.contains(repairer);
+//    }
+//
+//    public void removeExpert(Expert expert){
+//        if(expert != null){
+//            experts.remove(expert);
+//        }
+//    }
+
+//    public List<Repairer> getRepairers() {
+//        return repairers;
+//    }
+//
+//    public void addRepairer(Repairer repairer){
+//        if(repairer != null){
+//            repairers.add(repairer);
+//        }
+//    }
+//
+//    public void removeRepairer(Repairer repairer){
+//        if(repairer != null){
+//            repairers.remove(repairer);
+//        }
+//    }
+//
+//    public void setRepairers(List<Repairer> repairers) {
+//        this.repairers = repairers;
+//    }
+
+    public Repairer getRepairer() {
+        return repairer;
     }
 
-    public boolean isExpertInOccurrence(Expert expert){
-        return experts.contains(expert);
-    }
-
-    public boolean isRepairerInOccurrence(Repairer repairer) {
-        return experts.contains(repairer);
-    }
-
-    public void removeExpert(Expert expert){
-        if(expert != null){
-            experts.remove(expert);
-        }
-    }
-
-    public List<Repairer> getRepairers() {
-        return repairers;
-    }
-
-    public void addRepairer(Repairer repairer){
-        if(repairer != null){
-            repairers.add(repairer);
-        }
-    }
-
-    public void removeRepairer(Repairer repairer){
-        if(repairer != null){
-            repairers.remove(repairer);
-        }
-    }
-
-    public void setRepairers(List<Repairer> repairers) {
-        this.repairers = repairers;
+    public void setRepairer(Repairer repairer) {
+        this.repairer = repairer;
     }
 
     public String getDescription() {

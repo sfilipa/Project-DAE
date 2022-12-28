@@ -22,23 +22,20 @@ public class RepairerService {
     private RepairerBean repairerBean;
 
     @GET // means: to call this endpoint, we need to use the HTTP GET method
-    @Path("/") // means: the relative url path is “/api/students/”
+    @Path("/") // means: the relative url path is “/api/repairers/”
     public List<RepairerDTO> getAllRepairers() {
-        return toDTOs(repairerBean.getAllRepairers());
+        return RepairerDTO.from(repairerBean.getAllRepairers());
     }
 
-    private List<RepairerDTO> toDTOs(List<Repairer> repairers) {
-        return repairers.stream().map(this::toDTO).collect(Collectors.toList());
-    }
+    @GET
+    @Path("/{username}")
+    public Response getRepairer(@PathParam("username") String username) {
+        Repairer repairer = repairerBean.find(username);
+        if(repairer == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
 
-    private RepairerDTO toDTO(Repairer repairer) {
-        return new RepairerDTO(
-                repairer.getUsername(),
-                repairer.getPassword(),
-                repairer.getName(),
-                repairer.getEmail(),
-                repairer.getCompany().getUsername()
-        );
+        return Response.ok(RepairerDTO.from(repairer)).build();
     }
 
     @POST
@@ -50,11 +47,11 @@ public class RepairerService {
                 repairerDTO.getPassword(),
                 repairerDTO.getName(),
                 repairerDTO.getEmail(),
-                repairerDTO.getCompany_username()
+                repairerDTO.getAddress()
         );
 
         return Response.status(Response.Status.CREATED)
-                .entity(toDTO(repairer))
+                .entity(RepairerDTO.from(repairer))
                 .build();
     }
 
@@ -66,5 +63,6 @@ public class RepairerService {
 
         return Response.status(Response.Status.ACCEPTED).build();
     }
+
 
 }

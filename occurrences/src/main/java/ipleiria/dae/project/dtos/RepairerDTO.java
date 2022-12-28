@@ -1,24 +1,28 @@
 package ipleiria.dae.project.dtos;
 
-import javax.persistence.Id;
+import ipleiria.dae.project.entities.Repairer;
 
-public class RepairerDTO {
-    @Id
+import javax.persistence.Id;
+import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class RepairerDTO implements Serializable {
     String username;
 
     String password, name, email;
 
-    String company_username;
+    String address;
 
     public RepairerDTO() {
     }
 
-    public RepairerDTO(String username, String password, String name, String email, String company_username) {
+    public RepairerDTO(String username, String password, String name, String email, String address) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
-        this.company_username = company_username;
+        this.address = address;
     }
 
     public String getUsername() {
@@ -53,11 +57,24 @@ public class RepairerDTO {
         this.email = email;
     }
 
-    public String getCompany_username() {
-        return company_username;
+    public String getAddress() {
+        return address;
     }
 
-    public void setCompany_username(String company_username) {
-        this.company_username = company_username;
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public static RepairerDTO from(Repairer repairer) {
+        return new RepairerDTO(
+                repairer.getUsername(),
+                repairer.getPassword(),
+                repairer.getName(),
+                repairer.getEmail(),
+                repairer.getAddress());
+    }
+
+    public static List<RepairerDTO> from(List<Repairer> repairers){
+        return repairers.stream().map(RepairerDTO::from).collect(Collectors.toList());
     }
 }

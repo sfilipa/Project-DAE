@@ -20,28 +20,32 @@ public class Expert extends User implements Serializable {
     @JoinColumn(name = "company_username")
     Company company;
 
-    @OneToMany
-    @JoinColumn(name = "expert_repairer")
-    List<Repairer> associatedRepairers;
+//    @OneToMany
+//    @JoinColumn(name = "expert_repairer")
+//    List<Repairer> associatedRepairers;
 
-    @ManyToOne
-    private Occurrence occurrence;
+//    @ManyToOne
+//    private Occurrence occurrence;
+    @OneToMany(mappedBy = "expert", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Occurrence> occurrences;
 
     public Expert() {
+        occurrences = new LinkedList<>();
     }
 
     public Expert(String username, String password, String name, String email, Company company) {
         super(username,password, name, email);
         this.company = company;
-        associatedRepairers = new LinkedList<>();
+        occurrences = new LinkedList<>();
+//        associatedRepairers = new LinkedList<>();
     }
 
 
-    public Expert(String username, String password, String name, String email, Company company, List<Repairer> associatedRepairers) {
-        super(username,password, name, email);
-        this.company = company;
-        this.associatedRepairers = new LinkedList<>(associatedRepairers);
-    }
+//    public Expert(String username, String password, String name, String email, Company company, List<Repairer> associatedRepairers) {
+//        super(username,password, name, email);
+//        this.company = company;
+//        this.associatedRepairers = new LinkedList<>(associatedRepairers);
+//    }
 
     public Company getCompany() {
         return company;
@@ -51,17 +55,39 @@ public class Expert extends User implements Serializable {
         this.company = company;
     }
 
-    public void addRepairer(Repairer repairer) {
-        if (this.associatedRepairers.contains(repairer)) {
-            throw new IllegalStateException("Repairer already associated to this expert");
-        }
-        this.associatedRepairers.add(repairer);
+    public List<Occurrence> getOccurrences() {
+        return occurrences;
     }
 
-    public void removeRepairer(Repairer repairer) {
-        if (!this.associatedRepairers.contains(repairer)) {
-            throw new IllegalStateException("Repairer not associated to this expert");
-        }
-        this.associatedRepairers.remove(repairer);
+    public void setOccurrences(List<Occurrence> occurrences) {
+        this.occurrences = occurrences;
     }
+
+    public void addOccurrence(Occurrence occurrence){
+        if(occurrences.contains(occurrence)){
+            return;
+        }
+        occurrences.add(occurrence);
+    }
+
+    public void removeOccurrence(Occurrence occurrence){
+        if(!occurrences.contains(occurrence)){
+            return;
+        }
+        occurrences.remove(occurrence);
+    }
+
+    //    public void addRepairer(Repairer repairer) {
+//        if (this.associatedRepairers.contains(repairer)) {
+//            throw new IllegalStateException("Repairer already associated to this expert");
+//        }
+//        this.associatedRepairers.add(repairer);
+//    }
+//
+//    public void removeRepairer(Repairer repairer) {
+//        if (!this.associatedRepairers.contains(repairer)) {
+//            throw new IllegalStateException("Repairer not associated to this expert");
+//        }
+//        this.associatedRepairers.remove(repairer);
+//    }
 }

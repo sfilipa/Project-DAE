@@ -2,6 +2,7 @@ package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Company;
 import ipleiria.dae.project.entities.Expert;
+import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.security.Hasher;
 
 import javax.ejb.Stateless;
@@ -23,13 +24,12 @@ public class ExpertBean {
     }
 
     public Expert create(String username, String password, String name, String email, String company_username) {
-        Expert expert = find(username);
         Company company = em.find(Company.class, company_username);
-
         if(company == null ){
             return null;
         }
 
+        Expert expert = find(username);
         if (expert != null){
             return null;
         }
@@ -39,6 +39,38 @@ public class ExpertBean {
         return find(username);
     }
 
+    public int addOccurrence(String username, String occurrence_code) {
+        Expert expert = find(username);
+        if (expert == null){
+            return -1;
+        }
+        Occurrence occurrence = em.find(Occurrence.class, occurrence_code);
+        if (occurrence == null){
+            return -2;
+        }
+
+        expert.addOccurrence(occurrence);
+        occurrence.setExpert(expert);
+        return 0;
+    }
+
+    public int removeOccurrence(String username, String occurrence_code) {
+        Expert expert = find(username);
+        if (expert == null){
+            return -1;
+        }
+        Occurrence occurrence = em.find(Occurrence.class, occurrence_code);
+        if (occurrence == null){
+            return -2;
+        }
+
+        expert.removeOccurrence(occurrence);
+        occurrence.setExpert(null);
+        return 0;
+    }
+
+
+    //penso que nunca se vai fazer updates pq isto vem da API
     public Expert update(String username, String password, String name, String email, long company_usernmae) {
         Expert expert = find(username);
         if (expert == null){

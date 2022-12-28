@@ -21,27 +21,23 @@ public class ExpertService {
     @GET // means: to call this endpoint, we need to use the HTTP GET method
     @Path("/") // means: the relative url path is “/api/students/”
     public List<ExpertDTO> getAllExperts() {
-        return toDTOs(expertBean.getAllExperts());
+        return ExpertDTO.from(expertBean.getAllExperts());
     }
 
-    private List<ExpertDTO> toDTOs(List<Expert> experts) {
-        return experts.stream().map(this::toDTO).collect(Collectors.toList());
-    }
+    @GET
+    @Path("/{username}")
+    public Response getExpert(@PathParam("username") String username) {
+        Expert expert = expertBean.find(username);
+        if(expert == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
 
-    private ExpertDTO toDTO(Expert expert) {
-        return new ExpertDTO(
-                expert.getUsername(),
-                expert.getPassword(),
-                expert.getName(),
-                expert.getEmail(),
-                expert.getCompany().getUsername()
-        );
+        return Response.ok(ExpertDTO.from(expert)).build();
     }
 
     @POST
     @Path("/")
     public Response create(ExpertDTO expertDTO) {
-
         Expert expert = expertBean.create(
                 expertDTO.getUsername(),
                 expertDTO.getPassword(),
@@ -50,9 +46,55 @@ public class ExpertService {
                 expertDTO.getCompany_username()
         );
 
+        if(expert == null){
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
         return Response.status(Response.Status.CREATED)
-                .entity(toDTO(expert))
+                .entity(ExpertDTO.from(expert))
                 .build();
+    }
+
+    @PATCH
+    @Path("/{username}/occurrences/{code}/assign")
+    public Response assignOccurrence(@PathParam("username") String username, @PathParam("code") String code) {
+        int response = expertBean.addOccurrence(username, code);
+        switch (response) {
+            case 0:
+                return Response.status(Response.Status.OK)
+                        .build();
+            case -1:
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("ERROR_FINDING_EXPERT")
+                        .build();
+            case -2:
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("ERROR_FINDING_OCCURRENCE")
+                        .build();
+            default:
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PATCH
+    @Path("/{username}/occurrences/{code}/unassign")
+    public Response unassignOccurrence(@PathParam("username") String username, @PathParam("code") String code) {
+        int response = expertBean.removeOccurrence(username, code);
+        switch (response) {
+            case 0:
+                return Response.status(Response.Status.OK)
+                        .build();
+            case -1:
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("ERROR_FINDING_EXPERT")
+                        .build();
+            case -2:
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("ERROR_FINDING_OCCURRENCE")
+                        .build();
+            default:
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @DELETE
