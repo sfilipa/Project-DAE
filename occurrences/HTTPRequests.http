@@ -51,3 +51,43 @@ Content-Type: application/x-www-form-urlencoded
 GET http://localhost:8080/occurrences/api/clients/client3/occurrences
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
 Accept: application/json
+
+### Create Company
+POST http://localhost:8080/occurrences/api/companies
+Content-Type: application/json
+
+{
+  "username": "company1",
+  "password": "123",
+  "name": "Company 1",
+  "email": "company@mail.pt",
+  "address": "Rua 1",
+  "phoneNumber": 987654321,
+  "nipc": 123456
+}
+
+### Create Expert
+POST http://localhost:8080/occurrences/api/experts
+Content-Type: application/json
+
+{
+  "username": "expert1",
+  "password": "123",
+  "name": "Expert 1",
+  "email": "expert@mail.pt",
+  "company_username": "company1"
+}
+
+### GET Experts
+GET http://localhost:8080/occurrences/api/experts
+Accept: application/json
+
+#### EXPERT FAILS OCCURRENCE
+PATCH http://localhost:8080/occurrences/api/occurrences/1/expert1/disapprove
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
+Content-Type: application/json
+
+{
+    "usernameExpert": "expert1",
+    "description": "Expert 1 disapproved"
+}
