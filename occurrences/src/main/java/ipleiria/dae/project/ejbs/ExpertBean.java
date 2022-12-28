@@ -121,7 +121,7 @@ public class ExpertBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + " - " + expert.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n- " + expert.getUsername() + ": " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
         } catch (IllegalArgumentException e) {
@@ -146,7 +146,7 @@ public class ExpertBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + " - " + expert.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n- " + expert.getUsername() + ": " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
         } catch (IllegalArgumentException e) {
