@@ -14,21 +14,38 @@ GET http://localhost:8080/occurrences/api/occurrences
 Accept: application/json
 
 ##### Occurrence
-GET http://localhost:8080/occurrences/api/occurrences/1
+GET http://localhost:8080/occurrences/api/occurrences/2
 Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjU2ODE1LCJleHAiOjE2NzIyNjA0MTV9.6UqxwG_gLvFWlIC95lyMhu51NhKBRVG7GPesuiOg7mE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNDEwMjQ2LCJleHAiOjE2NzI0MTM4NDZ9.gP_DH4Gj1oJ7zNkowDrEx1eUA1R5sGBmPEOiJpc28b4
+Content-Type: application/json
+
+{
+  "usernameClient": "client3",
+  "date": "2021/07/20",
+  "state": "PENDING",
+  "insuranceCode": "ALL-1298389",
+  "description": "ola"
+}
+
+### Update Ocurrence
+PUT http://localhost:8080/occurrences/api/occurrences/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNDEyNTIyLCJleHAiOjE2NzI0MTYxMjJ9.mgJrZw2wfftcSwqNXp2lQ6TuVvFxbihS05829rz7Kmk
 Content-Type: application/json
 
 {
   "usernameClient": "client3",
   "date": "2021-07-20",
   "state": "PENDING",
-  "insuranceCode": "ALL-1298389",
+  "insuranceCode": "FIDEL-1298999",
   "description": "ola"
 }
+
+### Delete Ocurrence
+DELETE http://localhost:8080/occurrences/api/occurrences/2
+Content-Type: application/json
 
 ###DOCUMENTS
 POST http://localhost:8080/occurrences/api/documents/2 HTTP/1.1

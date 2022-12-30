@@ -69,20 +69,53 @@ public class OccurrenceBean {
         return occurrence;
     }
 
-    public void delete(long id) {
+    public void delete(long id) throws MyEntityNotFoundException {
         Occurrence occurrence = find(id);
+        if(occurrence == null){
+            throw new MyEntityNotFoundException("Occurrence not found");
+        }
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, String date, State state, String insuranceCode) {//TODO : Exceptions
+    public Occurrence update(long id, String usernameClient, String date, State state, String insuranceCode, String description) throws MyEntityNotFoundException {//TODO : Exceptions
         Occurrence occurrence = em.find(Occurrence.class, id);
+        if(occurrence == null){
+            throw new MyEntityNotFoundException("Occurrence not found");
+        }
+
+        JSONObject jsonObject = getDataAPI(insuranceCode);
+        if(jsonObject == null){
+            throw new MyEntityNotFoundException("Insurance not found");
+        }
+        String insuranceNameAPI = jsonObject.getJSONObject("insurance").getString("name");
+        String clientUsernameAPI = jsonObject.getJSONObject("client").getString("username");
+        String insuranceTypeAPI = jsonObject.getString("type").toUpperCase();
+        String insuranceObjectAPI = jsonObject.getString("object");
+
+        if (!clientUsernameAPI.equals(usernameClient)){
+            throw new MyEntityNotFoundException("Client is not the owner of the insurance");
+        }
+
         Client client = em.find(Client.class, usernameClient);
-        Insurance insurance = em.find(Insurance.class, insuranceCode);
+        InsuredAssetType insuredAssetType = null;
+        InsuranceCompany insuranceCompany = new InsuranceCompany(insuranceNameAPI);
+        Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
+
+        try {
+            insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
+        }catch (IllegalArgumentException e){
+            throw new MyEntityNotFoundException("Insurance type not found");
+        }
+
         occurrence.setClient(client);
         occurrence.setDate(date);
         occurrence.setState(state);
+        occurrence.setInsuredAssetType(insuredAssetType);
         occurrence.setInsurance(insurance);
-        return null;
+        occurrence.setDescription(description);
+        occurrence.setObject(insuranceObjectAPI);
+
+        return occurrence;
     }
 
     public void disapproveOccurrence(long id) {
