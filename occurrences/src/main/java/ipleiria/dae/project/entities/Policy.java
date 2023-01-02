@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Table(name = "policies")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Entity
 @NamedQueries({
         @NamedQuery(
@@ -31,6 +30,7 @@ public class Policy {
     @JoinColumn(name = "client_username")
     private Client client;
     @NotNull
+    @ElementCollection
     private List<InsuredAssetType> covers;
 
     public Policy() {
