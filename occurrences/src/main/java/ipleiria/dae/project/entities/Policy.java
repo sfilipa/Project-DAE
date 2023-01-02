@@ -75,7 +75,7 @@ public class Policy {
     }
 
     public List<String> getCovers() {
-        return covers;
+        return new LinkedList<>(covers);
     }
 
     public void setCovers(List<String> covers) {
