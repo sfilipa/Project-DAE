@@ -70,7 +70,7 @@ public class PolicyBean {
     }
 
     // Update Policy
-    public void update(String code, String type, String client_username, List<InsuredAssetType> covers) {
+    public Policy update(String code, String type, String client_username, List<InsuredAssetType> covers) {
         // Verifies if the policy exists
         Policy policy = findOrFail(code);
         if (policy == null) {
@@ -91,6 +91,7 @@ public class PolicyBean {
             throw new IllegalArgumentException(e.getMessage());
         }
         em.merge(policy);
+        return find(policy.getCode());
     }
 
     // Add Insured Asset Type

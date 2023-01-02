@@ -15,23 +15,23 @@ public class PolicyDTO implements Serializable {
     @Id
     private String code;
     private String type;
-    private String client;
+    private String client_username;
     private List<InsuredAssetType> covers;
 
     public PolicyDTO() {
     }
 
-    public PolicyDTO(String code, String type, String client) {
+    public PolicyDTO(String code, String type, String client_username) {
         this.code = code;
         this.type = type;
-        this.client = client;
+        this.client_username = client_username;
         covers = new LinkedList<>();
     }
 
-    public PolicyDTO(String code, String type, String client, List<InsuredAssetType> covers) {
+    public PolicyDTO(String code, String type, String client_username, List<InsuredAssetType> covers) {
         this.code = code;
         this.type = type;
-        this.client = client;
+        this.client_username = client_username;
         this.covers = covers;
     }
 
@@ -64,12 +64,12 @@ public class PolicyDTO implements Serializable {
         this.type = type;
     }
 
-    public String getClient() {
-        return client;
+    public String getClient_username() {
+        return client_username;
     }
 
-    public void setClient(String client) {
-        this.client = client;
+    public void setClient_username(String client_username) {
+        this.client_username = client_username;
     }
 
     public List<InsuredAssetType> getCovers() {
