@@ -17,42 +17,33 @@ public class Expert extends User implements Serializable {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "company_username")
-    Company company;
+    @JoinColumn(name = "insurance_name")
+    InsuranceCompany insuranceCompany;
 
-//    @OneToMany
-//    @JoinColumn(name = "expert_repairer")
-//    List<Repairer> associatedRepairers;
-
-//    @ManyToOne
-//    private Occurrence occurrence;
-    @OneToMany(mappedBy = "expert", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToMany
+    @JoinTable(
+            name = "experts_occurrences",
+            joinColumns = @JoinColumn(name = "expert_username", referencedColumnName = "username"),
+            inverseJoinColumns = @JoinColumn(name = "occurrence_code", referencedColumnName = "id")
+    )
     private List<Occurrence> occurrences;
 
     public Expert() {
         occurrences = new LinkedList<>();
     }
 
-    public Expert(String username, String password, String name, String email, Company company) {
+    public Expert(String username, String password, String name, String email, InsuranceCompany insuranceCompany) {
         super(username,password, name, email);
-        this.company = company;
+        this.insuranceCompany = insuranceCompany;
         occurrences = new LinkedList<>();
-//        associatedRepairers = new LinkedList<>();
     }
 
-
-//    public Expert(String username, String password, String name, String email, Company company, List<Repairer> associatedRepairers) {
-//        super(username,password, name, email);
-//        this.company = company;
-//        this.associatedRepairers = new LinkedList<>(associatedRepairers);
-//    }
-
-    public Company getCompany() {
-        return company;
+    public InsuranceCompany getCompany() {
+        return insuranceCompany;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setCompany(InsuranceCompany insuranceCompany) {
+        this.insuranceCompany = insuranceCompany;
     }
 
     public List<Occurrence> getOccurrences() {
@@ -76,18 +67,4 @@ public class Expert extends User implements Serializable {
         }
         occurrences.remove(occurrence);
     }
-
-    //    public void addRepairer(Repairer repairer) {
-//        if (this.associatedRepairers.contains(repairer)) {
-//            throw new IllegalStateException("Repairer already associated to this expert");
-//        }
-//        this.associatedRepairers.add(repairer);
-//    }
-//
-//    public void removeRepairer(Repairer repairer) {
-//        if (!this.associatedRepairers.contains(repairer)) {
-//            throw new IllegalStateException("Repairer not associated to this expert");
-//        }
-//        this.associatedRepairers.remove(repairer);
-//    }
 }

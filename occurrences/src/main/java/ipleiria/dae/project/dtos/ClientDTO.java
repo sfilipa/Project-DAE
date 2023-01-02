@@ -29,6 +29,15 @@ public class ClientDTO implements Serializable {
        // insurances = new LinkedList<>();
     }
 
+    public ClientDTO(String password, String name, String email, String address, Long phoneNumber) {
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
+        // insurances = new LinkedList<>();
+    }
+
     public ClientDTO(String username, String password, String name, String email, String address, Long phoneNumber, List<String> insurances) {
         this.username = username;
         this.password = password;
@@ -101,6 +110,8 @@ public class ClientDTO implements Serializable {
     public static List<ClientDTO> from(List<Client> students) {
         return students.stream().map(ClientDTO::from).collect(Collectors.toList());
     }
+
+
 
     /*public List<String> getInsurances() {
         return insurances;

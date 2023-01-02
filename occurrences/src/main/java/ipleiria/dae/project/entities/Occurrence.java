@@ -25,32 +25,31 @@ public class Occurrence implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotNull
-    @GeneratedValue
-    private Date date;
+    private String date;
+    @NotNull
+    private Insurance insurance;
     @NotNull
     private State state;
     @NotNull
     private InsuredAssetType insuredAssetType;
     @NotNull
     private String description;
+    @NotNull
+    private String object;
 
     @ManyToOne
     @JoinColumn(name = "client_username")
     private Client client;
 
-    @ManyToOne
-    @JoinColumn(name = "insurance_code")
-    private Insurance insurance;
+    @OneToMany(mappedBy = "occurrence", fetch = FetchType.EAGER)
+    private List<Document> documents;
 
-    @OneToMany(mappedBy = "occurrence")
-    List<Document> documents;
+    @ManyToMany(mappedBy = "occurrences", fetch = FetchType.LAZY)
+    private List<Expert> experts;
 
-//    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE)
-//    private List<Expert> experts;
-
-    @ManyToOne
-    @JoinColumn(name = "expert_name")
-    private Expert expert;
+//    @ManyToOne
+//    @JoinColumn(name = "expert_name")
+//    private Expert expert;
 
     @ManyToOne
     @JoinColumn(name = "repairer_name")
@@ -63,16 +62,17 @@ public class Occurrence implements Serializable {
     }
 
     //de inicio, todas as occurrences devem ser criadas com o State.PENDING
-    public Occurrence(Client client, Date date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description, Repairer repairer, Expert expert) {
+    public Occurrence(Client client, String date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description, String object, Repairer repairer) {
         this.client = client;
         this.date = date;
         this.state = state;
         this.insuredAssetType = insuredAssetType;
         this.insurance = insurance;
         this.repairer = repairer;
-        this.expert = expert;
+        this.experts = new LinkedList<>();
         this.documents = new LinkedList<>();
         this.description = description;
+        this.object = object;
     }
 
     public long getId() {
@@ -95,11 +95,11 @@ public class Occurrence implements Serializable {
         this.client = client;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -127,40 +127,33 @@ public class Occurrence implements Serializable {
         this.documents = documents;
     }
 
-    public Expert getExpert() {
-        return expert;
+    public List<Expert> getExperts() {
+        return experts;
     }
 
-    public void setExpert(Expert expert) {
-        this.expert = expert;
+    public void setExperts(List<Expert> experts) {
+        this.experts = experts;
     }
 
-    //    public List<Expert> getExperts() {
-//        return experts;
-//    }
-//
-//    public void setExperts(List<Expert> experts) {
-//        this.experts = experts;
-//    }
-//
-//    public void addExpert(Expert expert){
-//        if(expert != null){
-//            experts.add(expert);
-//        }
-//    }
-//
-//    public boolean isExpertInOccurrence(Expert expert){
-//        return experts.contains(expert);
-//    }
+    public void addExpert(Expert expert){
+        if(expert != null){
+            experts.add(expert);
+        }
+    }
+
+    public void removeExpert(Expert expert){
+        if(expert != null){
+            experts.remove(expert);
+        }
+    }
+
+    public boolean isExpertInOccurrence(Expert expert){
+        return experts.contains(expert);
+    }
+
 //
 //    public boolean isRepairerInOccurrence(Repairer repairer) {
 //        return experts.contains(repairer);
-//    }
-//
-//    public void removeExpert(Expert expert){
-//        if(expert != null){
-//            experts.remove(expert);
-//        }
 //    }
 
 //    public List<Repairer> getRepairers() {
@@ -207,5 +200,13 @@ public class Occurrence implements Serializable {
 
     public void removeDocument(Document document) {
         this.documents.remove(document);
+    }
+
+    public String getObject() {
+        return object;
+    }
+
+    public void setObject(String object) {
+        this.object = object;
     }
 }
