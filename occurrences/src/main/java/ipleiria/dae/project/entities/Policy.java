@@ -81,4 +81,24 @@ public class Policy {
     public void setCovers(List<InsuredAssetType> covers) {
         this.covers = covers;
     }
+
+    public void update(String type, Client client, List<InsuredAssetType> covers) {
+        setType(type);
+        setClient(client);
+        setCovers(covers);
+    }
+
+    public void add(InsuredAssetType insuredAssetType) {
+        if (covers.contains(insuredAssetType)) {
+            throw new IllegalArgumentException("This policy already covers this asset type");
+        }
+        covers.add(insuredAssetType);
+    }
+
+    public void remove(InsuredAssetType insuredAssetType) {
+        if (!covers.contains(insuredAssetType)) {
+            throw new IllegalArgumentException("This policy does not cover this asset type");
+        }
+        covers.remove(insuredAssetType);
+    }
 }
