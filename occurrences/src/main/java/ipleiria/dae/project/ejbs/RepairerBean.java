@@ -65,7 +65,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(repairer, occurrence, State.APPROVED);
+            validateOccurrence(repairer, occurrence, State.REPAIRER_WAITING_LIST);
 
             // Start Occurrence
             occurrence.setState(State.ACTIVE);

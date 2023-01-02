@@ -241,7 +241,7 @@ public class OccurrenceService {
     }
 
     @PATCH
-    @Path("/{id}/repairer/{username}/assign") //o perito, caso aprove a cobertura, atribui um reparador à ocorrência
+    @Path("/{id}/repairer/{username}/assign")
     public Response assignRepairer(@PathParam("id") long id, @PathParam("username") String username) {
         Occurrence occurrence = occurrenceBean.find(id);
         if (occurrence == null) {
@@ -265,6 +265,68 @@ public class OccurrenceService {
             case -2:
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("OCCURRENCE_IS_NOT_APPROVED_YET")
+                        .build();
+            case -3:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_REPAIRER")
+                        .build();
+            default:
+                return Response.status(Response.Status.ACCEPTED)
+                        .entity(OccurrenceDTO.from(occurrence))
+                        .build();
+        }
+    }
+
+    @PATCH
+    @Path("/{id}/repairer/accept")
+    public Response acceptRepairerByExpert(@PathParam("id") long id){
+        Occurrence occurrence = occurrenceBean.find(id);
+        if (occurrence == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("ERROR_FINDING_OCCURRENCE")
+                    .build();
+        }
+
+        int response = occurrenceBean.acceptRepairer(id);
+        switch (response) {
+            case -1:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_OCCURRENCE")
+                        .build();
+            case -2:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("OCCURRENCE_ISNT_WAITING_FOR_APPROVAL_OF_EXPERT")
+                        .build();
+            case -3:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_REPAIRER")
+                        .build();
+            default:
+                return Response.status(Response.Status.ACCEPTED)
+                        .entity(OccurrenceDTO.from(occurrence))
+                        .build();
+        }
+    }
+
+    @PATCH
+    @Path("/{id}/repairer/reject")
+    public Response rejectRepairerByExpert(@PathParam("id") long id){
+        Occurrence occurrence = occurrenceBean.find(id);
+        if (occurrence == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("ERROR_FINDING_OCCURRENCE")
+                    .build();
+        }
+
+        int response = occurrenceBean.rejectRepairer(id);
+        switch (response) {
+            case -1:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_OCCURRENCE")
+                        .build();
+            case -2:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("OCCURRENCE_ISNT_WAITING_FOR_APPROVAL_OF_EXPERT")
                         .build();
             case -3:
                 return Response.status(Response.Status.BAD_REQUEST)

@@ -13,7 +13,7 @@ Accept: application/json
 GET http://localhost:8080/occurrences/api/occurrences
 Accept: application/json
 
-##### Occurrence
+##### Get Occurrence Details
 GET http://localhost:8080/occurrences/api/occurrences/2
 Accept: application/json
 
@@ -143,6 +143,10 @@ Content-Type: application/json
 {
   "description": "The problem seems to be with..."
 }
+
+### Get All Repairers
+GET http://localhost:8080/occurrences/api/repairers
+Content-Type: application/json
 
 ### Client assigns Occurrence to a Repairer
 PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/repairer1/assign
