@@ -14,25 +14,43 @@ GET http://localhost:8080/occurrences/api/occurrences
 Accept: application/json
 
 ##### Occurrence
-GET http://localhost:8080/occurrences/api/occurrences/1
+GET http://localhost:8080/occurrences/api/occurrences/2
 Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjU2ODE1LCJleHAiOjE2NzIyNjA0MTV9.6UqxwG_gLvFWlIC95lyMhu51NhKBRVG7GPesuiOg7mE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNjY4NTQ0LCJleHAiOjE2NzI2NzIxNDR9.twJ6VmBx_BXRDNqdv-Jedc0zJOGwa9IFEwffiSFFe9M
+Content-Type: application/json
+
+{
+  "usernameClient": "client3",
+  "date": "2021/07/20",
+  "state": "PENDING",
+  "insuranceCode": "ALL-1298389",
+  "description": "ola"
+}
+
+### Update Ocurrence
+PUT http://localhost:8080/occurrences/api/occurrences/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNDEyNTIyLCJleHAiOjE2NzI0MTYxMjJ9.mgJrZw2wfftcSwqNXp2lQ6TuVvFxbihS05829rz7Kmk
 Content-Type: application/json
 
 {
   "usernameClient": "client3",
   "date": "2021-07-20",
   "state": "PENDING",
-  "insuranceCode": "ALL-1298389",
+  "insuranceCode": "FIDEL-1298999",
   "description": "ola"
 }
 
+### Delete Ocurrence
+DELETE http://localhost:8080/occurrences/api/occurrences/2
+Content-Type: application/json
+
 ###DOCUMENTS
+### Add Documents to occurrency
 POST http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMTg3MjQ5LCJleHAiOjE2NzIxOTA4NDl9.jVq0fDRi63gNr7EBWB9TFa8WOmRcPRhJHZMZSOzfrck
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNjY4NTQ0LCJleHAiOjE2NzI2NzIxNDR9.twJ6VmBx_BXRDNqdv-Jedc0zJOGwa9IFEwffiSFFe9M
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -40,14 +58,19 @@ Content-Disposition: form-data; name="file"; filename="<C:\popo\statistics.txt"
 
 --boundary
 
-###
+### Gets documents of occurrency with id = 2
 GET http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMjIxNjAwLCJleHAiOjE2NzIyMjUyMDB9.Q8UDYtmCHsLEcP6drMzcOUPUv_eHNmIof9coowL6S4s
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNjY4NTQ0LCJleHAiOjE2NzI2NzIxNDR9.twJ6VmBx_BXRDNqdv-Jedc0zJOGwa9IFEwffiSFFe9M
 Content-Type: application/x-www-form-urlencoded
 
-###
+###Download documents with id=1
+GET http://localhost:8080/occurrences/api/documents/download/1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNjY4NTQ0LCJleHAiOjE2NzI2NzIxNDR9.twJ6VmBx_BXRDNqdv-Jedc0zJOGwa9IFEwffiSFFe9M
+Content-Type: application/x-www-form-urlencoded
+
+###See if occurrency with id = 2 has documents
 GET http://localhost:8080/occurrences/api/documents/2/exists HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyMTg3MjQ5LCJleHAiOjE2NzIxOTA4NDl9.jVq0fDRi63gNr7EBWB9TFa8WOmRcPRhJHZMZSOzfrck
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNjcwNDY1LCJleHAiOjE2NzI2NzQwNjV9.grKU_mYiooNmTNcs6pfNG3-kFVGP6aSbGZyU43d-nlE
 Content-Type: application/x-www-form-urlencoded
 
 ##### CLIENT Occurrences
@@ -148,3 +171,51 @@ Content-Type: application/json
 {
   "description": "Problem fixed and ready to be delivered"
 }
+
+### CLIENTS
+### Create Client
+POST http://localhost:8080/occurrences/api/clients
+Content-Type: application/json
+
+{
+  "username": "pedro",
+  "email": "pedro@gmail.com",
+  "name": "Pedro",
+  "password": "pedro1234",
+  "address": "Rua da Pedra n18",
+  "phoneNumber": 915958652
+}
+
+####LOGIN
+### REQUEST JWT TOKEN
+POST http://localhost:8080/occurrences/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "pedro",
+  "password": "pedro1234"
+}
+
+### Get Client Details
+GET http://localhost:8080/occurrences/api/clients/pedro
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRybyIsImlhdCI6MTY3MjY3NDE5MCwiZXhwIjoxNjcyNjc3NzkwfQ.YgVeoucpbiJEuaDREWuPHQVXZfE9uKkJku2Ypnz53lQ
+Accept: application/json
+
+### Update Client
+PUT http://localhost:8080/occurrences/api/clients/pedro
+//Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRybyIsImlhdCI6MTY3MjY3NDE5MCwiZXhwIjoxNjcyNjc3NzkwfQ.YgVeoucpbiJEuaDREWuPHQVXZfE9uKkJku2Ypnz53lQ
+Content-Type: application/json
+
+{
+  "email": "pedro@gmail.com",
+  "name": "LALA",
+  "password": "pedro1234",
+  "address": "Rua da Pedra n18",
+  "phoneNumber": 915958652
+}
+
+### Delete Client
+DELETE http://localhost:8080/occurrences/api/clients/pedro
+//Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRybyIsImlhdCI6MTY3MjY3NDE5MCwiZXhwIjoxNjcyNjc3NzkwfQ.YgVeoucpbiJEuaDREWuPHQVXZfE9uKkJku2Ypnz53lQ
+Content-Type: application/json

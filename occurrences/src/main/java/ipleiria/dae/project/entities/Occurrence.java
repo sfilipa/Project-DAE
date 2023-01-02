@@ -41,8 +41,8 @@ public class Occurrence implements Serializable {
     @JoinColumn(name = "client_username")
     private Client client;
 
-    @OneToMany(mappedBy = "occurrence")
-    List<Document> documents;
+    @OneToMany(mappedBy = "occurrence", fetch = FetchType.EAGER)
+    private List<Document> documents;
 
     @ManyToMany(mappedBy = "occurrences", fetch = FetchType.LAZY)
     private List<Expert> experts;
