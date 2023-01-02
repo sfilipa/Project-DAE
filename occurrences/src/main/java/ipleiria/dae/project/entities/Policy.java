@@ -31,7 +31,7 @@ public class Policy {
     @JoinColumn(name = "client_username")
     private Client client;
     @NotNull
-    private List<String> covers;
+    private List<InsuredAssetType> covers;
 
     public Policy() {
     }
@@ -43,7 +43,7 @@ public class Policy {
         covers = new LinkedList<>();
     }
 
-    public Policy(String code, String type, Client client, List<String> covers) {
+    public Policy(String code, String type, Client client, List<InsuredAssetType> covers) {
         this.code = code;
         this.type = type;
         this.client = client;
@@ -74,11 +74,11 @@ public class Policy {
         this.client = client;
     }
 
-    public List<String> getCovers() {
+    public List<InsuredAssetType> getCovers() {
         return new LinkedList<>(covers);
     }
 
-    public void setCovers(List<String> covers) {
+    public void setCovers(List<InsuredAssetType> covers) {
         this.covers = covers;
     }
 }
