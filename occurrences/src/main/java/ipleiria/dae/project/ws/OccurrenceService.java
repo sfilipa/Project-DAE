@@ -184,9 +184,23 @@ public class OccurrenceService {
                     .build();
         }
 
-        occurrenceBean.approveOccurrence(id);
-
-        return Response.status(Response.Status.OK).build();
+        int response = occurrenceBean.approveOccurrence(id);
+        switch (response){
+            case -1:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_OCCURRENCE")
+                        .build();
+            case -2:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("OCCURRENCE_DOESNT_HAVE_EXPERT")
+                        .build();
+            case -3:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("LOGGED_USER_ISN'T_AN_EXPERT_ASSOCIATED_TO_THAT_OCCURRENCE")
+                        .build();
+            default:
+                return Response.status(Response.Status.OK).build();
+        }
     }
 
     @PATCH
@@ -199,9 +213,23 @@ public class OccurrenceService {
                     .build();
         }
 
-        occurrenceBean.disapproveOccurrence(id);
-
-        return Response.status(Response.Status.OK).build();
+        int response = occurrenceBean.disapproveOccurrence(id);
+        switch (response){
+            case -1:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("ERROR_FINDING_OCCURRENCE")
+                        .build();
+            case -2:
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("OCCURRENCE_DOESNT_HAVE_EXPERT")
+                        .build();
+            case -3:
+                return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("LOGGED_USER_ISN'T_AN_EXPERT_ASSOCIATED_TO_THAT_OCCURRENCE")
+                    .build();
+            default:
+                return Response.status(Response.Status.OK).build();
+        }
     }
 
     @PATCH

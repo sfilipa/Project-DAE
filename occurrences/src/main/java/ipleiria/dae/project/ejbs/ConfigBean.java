@@ -41,9 +41,12 @@ public class ConfigBean {
     ClientBean clientBean;
     @EJB
     OccurrenceBean occurrenceBean;
+
     @EJB
     AdministratorBean administratorBean;
 
+    @EJB
+    RepairerBean repairerBean;
     @EJB
     InsuranceCompanyBean insuranceCompanyBean;
 
@@ -59,10 +62,10 @@ public class ConfigBean {
             clientBean.create("client2", "client", "Client Isabel", "client2@mail.pt", "Rua dos pinheiros tortos", 912345678);
             clientBean.create("client3", "client", "Client Nando", "client3@mail.pt", "Rua dos pinheiros tortos", 912345678);
             //insuranceBean.create("AL-123", company, "Allianz");
-            Expert e = expertBean.create("expert2", "exp", "Expert Sofia", "sofia@mail.pt", "Fidelidade");
-            System.out.println("CRIOU O EXPERT" + e);
+            expertBean.create("expert2", "exp", "Expert Sofia", "sofia@mail.pt", "Fidelidade");
             Occurrence o = occurrenceBean.create("client2", dateInString, State.PENDING, "FIDEL-1298302", "ola");
-            occurrenceBean.addExpert(o.getId(),"expert");
+            //occurrenceBean.addExpert(o.getId(),"expert");
+            repairerBean.create("repairer1", "repairer", "Repairer Bob", "bob_o_construtor@mail.pt", "rua dos calduços");
         } catch (Exception exception) {
             logger.severe(exception.getMessage());
         }

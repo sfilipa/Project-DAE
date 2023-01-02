@@ -85,20 +85,35 @@ public class OccurrenceBean {
         return null;
     }
 
-    public void disapproveOccurrence(long id) {
+    public int disapproveOccurrence(long id) {
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
-            return;
+            return -1;
         }
+        if(occurrence.getExperts().isEmpty()){
+            return -2;
+        }
+        //TODO: Verificar se o expert logged está na lista de experts da occurrence
+
         occurrence.setState(State.FAILED);
+        return 0;
     }
 
-    public void approveOccurrence(long id) {
+    public int approveOccurrence(long id) {
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
-            return;
+            return -1;
         }
+        if(occurrence.getExperts().isEmpty()){
+            return -2;
+        }
+        //TODO: Verificar se o expert logged está na lista de experts da occurrence
+//        if(!occurrence.isExpertInOccurrence(expertLoggedIn)){
+//            return -3;
+//        }
+
         occurrence.setState(State.ACTIVE);
+        return 0;
     }
 
     public int addExpert(long id, String username) {
@@ -123,7 +138,6 @@ public class OccurrenceBean {
         }
 
         occurrence.addExpert(expert);
-//        occurrence.setExpert(expert);
         return 0;
     }
 

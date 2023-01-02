@@ -121,6 +121,14 @@ Content-Type: application/json
   "description": "The problem seems to be with..."
 }
 
+### Client assigns Occurrence to a Repairer
+PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/repairer1/assign
+Content-Type: application/json
+
+### Client unassigns Occurrence to a Repairer
+PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/unassign
+Content-Type: application/json
+
 ### Repairer Starts Occurrence
 PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/3/start
 Content-Type: application/json

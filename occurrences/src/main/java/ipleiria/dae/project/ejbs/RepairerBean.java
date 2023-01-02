@@ -32,7 +32,6 @@ public class RepairerBean {
         }
         repairer = new Repairer(username, hasher.hash(password), name, email, address);
         em.persist(repairer);
-//        company.addRepairer(repairer);
         return find(username);
     }
 
@@ -55,13 +54,6 @@ public class RepairerBean {
     //findOrFail
 
     public void delete(String username) {
-//        Repairer repairer = find(username);
-//        if (repairer == null){
-//            return;
-//        }
-//        Company company = repairer.getCompany();
-//        company.removeRepairer(repairer);
-//        em.remove(repairer);
         em.remove(find(username));
     }
 
