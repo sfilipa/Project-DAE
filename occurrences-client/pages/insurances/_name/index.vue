@@ -145,7 +145,7 @@
 
           <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
             <p class="text-uppercase">{{ occurrence.state }}</p>
-            <button v-if="occurrence.state == 'Approved'" class="btn btn-associate-repairers">Associate Repairers</button>
+            <button v-if="occurrence.state == 'Approved'" class="btn btn-associate-repairers">Associate Repairer</button>
           </div>
         </div>
       </div>
@@ -190,9 +190,9 @@ export default {
   name: "index.vue",
   data() {
     return {
-      OverallDataBtn: !this.$route.params.OccurrencesBtn,
+      OverallDataBtn: !this.$route.params.OccurrencesBtn && !this.$route.params.DocumentsBtn,
       OccurrencesBtn:  this.$route.params.OccurrencesBtn,
-      DocumentsBtn: false,
+      DocumentsBtn: this.$route.params.DocumentsBtn,
       reportOccurrence: true,
       ongoingOccurrences: false,
       completedOccurrences: false,

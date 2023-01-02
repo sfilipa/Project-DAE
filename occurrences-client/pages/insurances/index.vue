@@ -33,6 +33,12 @@
             :to="{name: `insurances-name`, params: {name:insurance.name, OccurrencesBtn: true}}">
             <span>Register Occurrence</span>
           </nuxt-link>
+
+          <nuxt-link
+            class="btn btn-register-occurrence-right pb-3 pr-5 mx-4"
+            :to="{name: `insurances-name`, params: {name:insurance.name, DocumentsBtn: true}}">
+            <span>Documents</span>
+          </nuxt-link>
         </div>
       </div>
   </div>

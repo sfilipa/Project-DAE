@@ -19,12 +19,22 @@
       <span>No Occurrences Registered</span>
     </div>
 
-    <div v-else v-for="occurrence in occurrences" class="insurance-box">
-      <div class="details-left">
-        <span class="text-uppercase pb-3 pr-5"><b>{{ occurrence.name }}</b></span>
+    <div v-else v-for="occurrence in occurrences" class="ongoing-occurrences-item">
+      <div class="ongoing-occurrences-item-row" style="width: 30%;">
+        <p style="font-size: 20px"><b>{{occurrence.affectedObject}} - <span class="text-lowercase">{{occurrence.insuredAssetType}}</span></b></p>
+        <p>Occurrence {{ occurrence.id }}</p>
+        <p>Insurance: {{occurrence.insuranceCode}}</p>
+        <p>Expert Associated: {{occurrence.expert}}</p>
       </div>
-      <div class="flex-grow-1 details-right">
 
+      <div class="ongoing-occurrences-item-row" style="align-self: flex-end;">
+        <p>Date: {{occurrence.date}}</p>
+        <p>Description: {{ occurrence.description }}</p>
+      </div>
+
+      <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
+        <p class="text-uppercase">{{ occurrence.state }}</p>
+        <button v-if="occurrence.state == 'Approved'" class="btn btn-associate-repairers">Associate Repairer</button>
       </div>
     </div>
   </div>
@@ -34,23 +44,53 @@ export default {
   data () {
     return {
       fields: ['name', 'actions'], //nomes do DTOs
-      // insurances: []
+      // insurances: [],
+      occurrences: []
     }
   },
-  computed: {
-    occurrences(){ return [
-    ]}
-  },
   created () {
-    // this.$axios.$get('/api/administrators')
-    //   .then((administrators) => {
-    //     this.administrators = administrators
-    //   })
-    // this.$axios.$get('http://localhost:8080/occurrences/api/students')
+    this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences`)
+      .then((occurrences) => {
+        this.occurrences = occurrences
+      })
   }
 }
 </script>
 <style scoped>
+
+  .ongoing-occurrences-item-last{
+    text-align: end;
+    align-self: flex-end;
+    margin-bottom: 1.5%;
+  }
+
+  .btn-associate-repairers:hover{
+    background-color: red !important;
+    color: white !important;
+  }
+
+  .btn-associate-repairers{
+    border: 1px solid black;
+    width: fit-content;
+    height: 3rem;
+    align-self: self-end;
+  }
+
+  .ongoing-occurrences-item-row{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ongoing-occurrences-item{
+    background-color: white;
+    height: fit-content;
+    padding: 20px;
+    margin: 30px 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
 
   .details-right{
     display: flex;

@@ -1,12 +1,12 @@
 <template>
   <div class="nuxt-page">
-    <div class="nuxt-sidebar justify-left overflow-y-auto">
+    <div v-if="this.$auth.user" class="nuxt-sidebar justify-left overflow-y-auto">
       <h3 class="uppercase font-bold py-1 nuxt-sidebar-name">
         Company
       </h3>
       <div >
         <span>Welcome back,</span>
-        <p class="nuxt-sidebar-user-name" style="margin: auto;">Name</p>
+        <p class="nuxt-sidebar-user-name" style="margin: auto;">{{ this.$auth.user.name }}</p>
       </div>
       <hr style="margin-bottom: 10%;">
       <nuxt-link to="/" class="flex items-center" style="padding: 10px;">
@@ -36,7 +36,7 @@
         </div>
       </nuxt-link>
 
-      <nuxt-link to="/profile" class="flex items-center" style="padding: 10px;">
+      <nuxt-link :to="{name: `clients-username`, params: {username:this.$auth.user.name}}" class="flex items-center" style="padding: 10px;">
         <div class="sidebar-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
             <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
@@ -47,7 +47,7 @@
 
       <div class="sidebar-logout">
         <hr>
-        <nuxt-link to="/logout" class="flex items-center sidebar-logout-link">
+        <a @click="logout" class="flex items-center sidebar-logout-link">
           <div class="sidebar-link"  style="padding: 0 20px">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
@@ -55,7 +55,7 @@
             </svg>
             <span>&nbsp; Logout</span>
           </div>
-        </nuxt-link>
+        </a>
       </div>
     </div>
     <div class="nuxt-body">
@@ -63,6 +63,29 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  methods: {
+    logout() {
+      this.$auth.logout()
+      this.$router.push('/')
+    }
+  },
+  data() {
+    return {
+      users: [
+        {
+          "name": "Client Isabel",
+          "role": "Client",
+          "username": "client2",
+          "password": "client"
+        }
+      ]
+    }
+  }
+}
+</script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
@@ -115,7 +138,7 @@ a.nuxt-link-exact-active {
   display: flex;
   flex-direction: column;
   padding: 40px;
-  width: 92%;
+  width: 100%;
   background-image: url("../images/backgroundHome.jpg");
   background-repeat: repeat;
   background-size: cover;

@@ -1,24 +1,26 @@
 <template>
-  <b-container>
-    <h3>Login into Occurrences Management</h3>
+  <b-container class="login-page">
+    <h3 class="text-center mb-4">Login into Company</h3>
     <b-form @submit.prevent="onSubmit" @reset="onReset">
-      <b-form-group label="Username" description="Enter your username">
+      <b-form-group class="mb-3" label="Username">
         <b-input
           name="username"
-          placeholder="Your username"
+          placeholder="Enter your username"
           v-model.trim="username"
           required />
       </b-form-group>
-      <b-form-group label="Password" description="Enter your password">
+      <b-form-group class="mb-4" label="Password">
         <b-input
           name="password"
           type="password"
-          placeholder="Your password"
+          placeholder="Enter your password"
           v-model="password"
           required />
       </b-form-group>
-      <b-button type="reset" class="btn-warning">Reset</b-button>
-      <b-button type="submit" class="btn-success">Submit</b-button>
+      <div class="login-buttons">
+        <button type="reset" class="btn btn-reset">Reset</button>
+        <button type="submit" class="btn btn-submit">Submit</button>
+      </div>
     </b-form>
   </b-container>
 </template>
@@ -40,15 +42,15 @@ export default {
           password: this.password
         }
       })
-      promise.then(() => {
+      promise.then((response) => {
         this.$toast.success('You are logged in!').goAway(3000)
-        // check if the user $auth.user object is set
-        console.log(this.$auth.user)
-        // Role-based redirecion
-        // eg: IF role is 'Student' THEN it will redirect to: /students/{username}
-        // WARN: be aware that if you don't have pages for each role, it will not work
-        this.$router.push(`/${this.$auth.user.role.toLowerCase()}s/` +
-          this.username)
+        console.log(this.$auth.user, response.data)
+        // const { token } = response.data;
+        // this.$axios.defaults.headers.common = { Authorization: `Bearer ${token}` };
+        // this.$auth.user.setToken('Bearer',response.data)
+        // this.$auth.setUserToken(response.data)
+        this.$router.push('/')
+        // this.$router.push(`/${this.$auth.user.role.toLowerCase()}s`)
       })
       promise.catch(() => {
         this.$toast.error('Sorry, you cant login. Ensure your credentials are correct').goAway(3000)
@@ -63,5 +65,37 @@ export default {
 </script>
 
 <style scoped>
+  .btn-reset:hover{
+    background-color: #dcdcdc;
+  }
+
+  .btn-reset{
+    width: 45%;
+    background-color: #eaeaea;
+    border: 1px solid black;
+    margin-right: auto;
+  }
+
+  .btn-submit:hover{
+    background-color: red !important;
+    color: white !important;
+  }
+
+  .btn-submit{
+    width: 45%;
+    background-color: white;
+    border: 1px solid black;
+  }
+
+  .login-buttons{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+
+  .login-page{
+    padding: 80px 320px;
+  }
+
 
 </style>

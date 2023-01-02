@@ -5,7 +5,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "client3",
+  "username": "client2",
   "password": "client"
 }
 
@@ -48,6 +48,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyM
 Content-Type: application/x-www-form-urlencoded
 
 ##### CLIENT Occurrences
-GET http://localhost:8080/occurrences/api/clients/client3/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyMjIzMDg1LCJleHAiOjE2NzIyMjY2ODV9.5_XkxLitzXAk96rhGK5J29p9nFurnbE9W9jeWlaEL_c
+GET http://localhost:8080/occurrences/api/clients/client2/occurrences
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyNjc1NDU0LCJleHAiOjE2NzI2NzkwNTR9.lDmY9p4zAbZlLO3YJfARoC3pQxDiSnE6vryutFdubXQ
 Accept: application/json
