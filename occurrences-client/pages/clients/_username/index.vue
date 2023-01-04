@@ -6,6 +6,7 @@
         <p class="profile-field"><span class="profile-label">Username:</span> {{this.username}}</p>
         <p class="profile-field"><span class="profile-label">Name:</span> {{ this.name }}</p>
         <p class="profile-field"><span class="profile-label">Email:</span> {{this.email}}</p>
+        <p class="profile-field"><span class="profile-label">NIF/NIPC:</span> {{this.nif_nipc}}</p>
         <p class="profile-field"><span class="profile-label">Address:</span> {{ this.address }}</p>
         <p class="profile-field"><span class="profile-label">Phone Number:</span> {{ this.phoneNumber }}</p>
         <p class="profile-field profile-password"><span class="profile-label">Password:</span> <span :class="{'reveal-password': !revealPass}">{{revealPass ? this.password : ""}}</span>
@@ -35,6 +36,7 @@ export default {
       password: "",
       name: "",
       email: "",
+      nif_nipc: "",
       address: "",
       phoneNumber: null,
       revealPass: false
@@ -59,6 +61,7 @@ export default {
         this.email = response.email;
         this.address = response.address;
         this.phoneNumber = response.phoneNumber;
+        this.nif_nipc = response.nif_nipc;
       })
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container v-if="this.$auth.user">
     <h3 class="text-center index-header">Welcome to your occurrence management platform</h3>
     <p>&nbsp; My Insurances</p>
 
