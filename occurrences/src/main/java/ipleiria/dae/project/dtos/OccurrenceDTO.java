@@ -16,31 +16,27 @@ import java.util.stream.Collectors;
 public class OccurrenceDTO implements Serializable {
     @Id
     private long id;
-    private String usernameClient;
-    private String date;
-    private State state;
-    private InsuredAssetType insuredAssetType;
-    private String insuranceCode;
+    private String entryDate;
+    private String finalDate;
+    private String objectInsured;
     private String description;
-    private String insurancename;
-    private String object;
+    private String insuranceCode;
+    private State state;
+    private String usernameClient;
+    private String usernameRepairer;
 
-
-    public OccurrenceDTO() {}
-
-
-    public OccurrenceDTO(long id, String usernameClient, String date, State state, InsuredAssetType insuredAssetType, String insuranceCode, String insurancename, String description, String object) {
-        this.id = id;
-        this.usernameClient = usernameClient;
-        this.date = date;
-        this.state = state;
-        this.insuredAssetType = insuredAssetType;
-        this.insuranceCode = insuranceCode;
-        this.insurancename = insurancename;
-        this.description = description;
-        this.object = object;
+    public OccurrenceDTO() {
     }
 
+    public OccurrenceDTO(long id, String entryDate, String objectInsured, String description, String insuranceCode, State state, String usernameClient) {
+        this.id = id;
+        this.entryDate = entryDate;
+        this.objectInsured = objectInsured;
+        this.description = description;
+        this.insuranceCode = insuranceCode;
+        this.state = state;
+        this.usernameClient = usernameClient;
+    }
 
     public long getId() {
         return id;
@@ -50,36 +46,28 @@ public class OccurrenceDTO implements Serializable {
         this.id = id;
     }
 
-    public String getUsernameClient() {
-        return usernameClient;
+    public String getEntryDate() {
+        return entryDate;
     }
 
-    public void setUsernameClient(String usernameClient) {
-        this.usernameClient = usernameClient;
+    public void setEntryDate(String entryDate) {
+        this.entryDate = entryDate;
     }
 
-    public String getDate() {
-        return date;
+    public String getFinalDate() {
+        return finalDate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setFinalDate(String finalDate) {
+        this.finalDate = finalDate;
     }
 
-    public State getState() {
-        return state;
+    public String getObjectInsured() {
+        return objectInsured;
     }
 
-    public void setState(State state) {
-        this.state = state;
-    }
-
-    public InsuredAssetType getInsuredAssetType() {
-        return insuredAssetType;
-    }
-
-    public void setInsuredAssetType(InsuredAssetType insuredAssetType) {
-        this.insuredAssetType = insuredAssetType;
+    public void setObjectInsured(String objectInsured) {
+        this.objectInsured = objectInsured;
     }
 
     public String getDescription() {
@@ -98,33 +86,39 @@ public class OccurrenceDTO implements Serializable {
         this.insuranceCode = insuranceCode;
     }
 
-    public String getInsurancename() {
-        return insurancename;
+    public State getState() {
+        return state;
     }
 
-    public void setInsurancename(String insurancename) {
-        this.insurancename = insurancename;
+    public void setState(State state) {
+        this.state = state;
     }
 
-    public String getObject() {
-        return object;
+    public String getUsernameClient() {
+        return usernameClient;
     }
 
-    public void setObject(String object) {
-        this.object = object;
+    public void setUsernameClient(String usernameClient) {
+        this.usernameClient = usernameClient;
+    }
+
+    public String getUsernameRepairer() {
+        return usernameRepairer;
+    }
+
+    public void setUsernameRepairer(String usernameRepairer) {
+        this.usernameRepairer = usernameRepairer;
     }
 
     public static OccurrenceDTO from(Occurrence occurrence) {
         return new OccurrenceDTO(
                 occurrence.getId(),
-                occurrence.getClient().getUsername(),
-                occurrence.getDate(),
-                occurrence.getState(),
-                occurrence.getInsuredAssetType(),
-                occurrence.getInsurance().getCode(),
-                occurrence.getInsurance().getName(),
+                occurrence.getEntryDate(),
+                occurrence.getObjectInsured(),
                 occurrence.getDescription(),
-                occurrence.getObject()
+                occurrence.getInsurance().getCode(),
+                occurrence.getState(),
+                occurrence.getClient().getUsername()
         );
     }
 

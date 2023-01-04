@@ -1,6 +1,7 @@
 package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.*;
+import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
@@ -15,6 +16,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 @Stateless
@@ -36,41 +38,52 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(String usernameClient, String date, State state, String insuranceCode, String description) throws MyEntityNotFoundException {
+    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode) throws MyEntityNotFoundException {
         JSONObject jsonObject = getDataAPI(insuranceCode);
         if(jsonObject == null){
             throw new MyEntityNotFoundException("Insurance not found");
         }
-        String insuranceCodeAPI = jsonObject.getString("code");
-        String insuranceNameAPI = jsonObject.getString("insurance");
-        long clientNif_NipcAPI = jsonObject.getLong("nif_nipc");
+        long policyNumberAPI = jsonObject.getLong("policyNumber");
+        String insuranceCompanyAPI = jsonObject.getString("insuranceCompany");
+        long clientNifAPI = jsonObject.getLong("clientNif");
+        String clientNameAPI = jsonObject.getString("clientName");
+        String initialDateAPI = jsonObject.getString("initialDate");
+        String validUntilAPI = jsonObject.getString("validUntil");
         String insuranceTypeAPI = jsonObject.getString("type").toUpperCase();
         String insuranceObjectAPI = jsonObject.getString("object");
+        String descriptionAPI = jsonObject.getString("description");
         JSONArray insuranceCoversAPI = jsonObject.getJSONArray("covers");
 
         Client client = em.find(Client.class, usernameClient);
 
-        System.out.println("NIFFFFFFFFFFFFFFFFFFFFFDAAAAAAAAAAAAAAPIIIIIIIIIIIIII" + clientNif_NipcAPI);
-        System.out.println("NIFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFBDDDDDDDDDDDDDD" + client.getNif_nipc());
-
-        if (clientNif_NipcAPI != client.getNif_nipc()){
+        if (clientNifAPI != client.getNif_nipc()){
             throw new MyEntityNotFoundException("Client is not the owner of the insurance");
         }
-        InsuredAssetType insuredAssetType = null;
-        InsuranceCompany insuranceCompany = em.find(InsuranceCompany.class, insuranceNameAPI);
-        if (insuranceCompany == null){
-            throw new IllegalArgumentException("Insurance Company not found");
+
+        Date initialDate_formatDate = new Date(initialDateAPI);
+        Date validUntil_formatDate = new Date(validUntilAPI);
+        Date entryDate_formatDate = new Date(entryDate);
+
+        System.out.println("initialDate_formatDate: " + initialDate_formatDate + " validUntil_formatDate: " + validUntil_formatDate + " entryDate_formatDate: " + entryDate_formatDate);
+
+        if ((entryDate_formatDate.before(initialDate_formatDate) || entryDate_formatDate.after(validUntil_formatDate))){
+            throw new MyEntityNotFoundException("Entry date is not between the initial date and the valid until date --------- "+ entryDate_formatDate + " " + initialDate_formatDate + " " + validUntil_formatDate);
         }
 
-        Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
-
+        InsuredAssetType insuredAssetType = null;
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
         } catch (IllegalArgumentException e){
             throw new MyEntityNotFoundException("Insurance type not found");
         }
 
-        Occurrence occurrence = new Occurrence(client, date, state, insuredAssetType, insurance, description, insuranceObjectAPI, null);
+        Insurance insurance = new Insurance(insuranceCode, policyNumberAPI, insuranceCompanyAPI, clientNifAPI, clientNameAPI, initialDateAPI, validUntilAPI, insuranceObjectAPI, insuredAssetType, descriptionAPI);
+
+        List<CoverageType> covers = CoverageType.getCoverageTypeList(insuranceCoversAPI);
+
+        insurance.setCovers(covers);
+
+        Occurrence occurrence = new Occurrence(entryDate, insuranceObjectAPI, descriptionAPI, insurance, state, client);
         em.persist(occurrence);
         return occurrence;
     }
@@ -83,7 +96,7 @@ public class OccurrenceBean {
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, String date, State state, String insuranceCode, String description) throws MyEntityNotFoundException {//TODO : Exceptions
+    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode) throws MyEntityNotFoundException {//TODO : Exceptions
         Occurrence occurrence = em.find(Occurrence.class, id);
         if(occurrence == null){
             throw new MyEntityNotFoundException("Occurrence not found");
@@ -93,22 +106,32 @@ public class OccurrenceBean {
         if(jsonObject == null){
             throw new MyEntityNotFoundException("Insurance not found");
         }
-        String insuranceNameAPI = jsonObject.getString("insurance");
-        long clientNif_NipcAPI = jsonObject.getLong("nif_nipc");
+
+        String insuranceCodeAPI = jsonObject.getString("code");
+        long policyNumberAPI = jsonObject.getLong("policyNumber");
+        String insuranceCompanyAPI = jsonObject.getString("insuranceCompany");
+        long clientNifAPI = jsonObject.getLong("clientNif");
+        String clientNameAPI = jsonObject.getString("clientName");
+        String initialDateAPI = jsonObject.getString("initialDate");
+        String validUntilAPI = jsonObject.getString("validUntil");
         String insuranceTypeAPI = jsonObject.getString("type").toUpperCase();
         String insuranceObjectAPI = jsonObject.getString("object");
+        String descriptionAPI = jsonObject.getString("description");
+        JSONArray insuranceCoversAPI = jsonObject.getJSONArray("covers");
 
 
         Client client = em.find(Client.class, usernameClient);
 
-        if (clientNif_NipcAPI != client.getNif_nipc()){
+        if (clientNifAPI != client.getNif_nipc()){
             throw new MyEntityNotFoundException("Client is not the owner of the insurance");
         }
         InsuredAssetType insuredAssetType = null;
-        InsuranceCompany insuranceCompany = em.find(InsuranceCompany.class, insuranceNameAPI);
+        InsuranceCompany insuranceCompany = em.find(InsuranceCompany.class, insuranceCompanyAPI);
         if (insuranceCompany == null){
             throw new IllegalArgumentException("Insurance Company not found");
-        }        Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
+        }
+        Insurance insurance = new Insurance(insuranceCode, policyNumberAPI, insuranceCompanyAPI, clientNifAPI, clientNameAPI, initialDateAPI, validUntilAPI, insuranceObjectAPI, insuredAssetType, descriptionAPI);
+
 
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
@@ -117,12 +140,11 @@ public class OccurrenceBean {
         }
 
         occurrence.setClient(client);
-        occurrence.setDate(date);
+        occurrence.setEntryDate(entryDate);
         occurrence.setState(state);
-        occurrence.setInsuredAssetType(insuredAssetType);
         occurrence.setInsurance(insurance);
-        occurrence.setDescription(description);
-        occurrence.setObject(insuranceObjectAPI);
+        occurrence.setDescription(descriptionAPI);
+        occurrence.setObjectInsured(insuranceObjectAPI);
 
         return occurrence;
     }
@@ -178,9 +200,9 @@ public class OccurrenceBean {
         }
 
         //verificar que o perito é da mesma seguradora
-        if(expert.getCompany() != occurrence.getInsurance().getCompany()){
-            return -5; //devolver exception
-        }
+//        if(expert.getCompany() != occurrence.getInsurance().getCompany()){
+//            return -5; //devolver exception
+//        }
 
         occurrence.addExpert(expert);
         return 0;
@@ -303,8 +325,9 @@ public class OccurrenceBean {
                 response.append(output);
             }
             System.out.println(response);
-
-            jsonObject = new JSONObject(response.toString());
+            JSONArray jsonArray = new JSONArray(response.toString());
+            jsonObject = jsonArray.getJSONObject(0);
+            System.out.println(jsonArray);
 
         } catch (Exception e) {
             e.printStackTrace();

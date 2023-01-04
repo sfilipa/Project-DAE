@@ -10,5 +10,6 @@ public enum InsuredAssetType {
     PET,
     TRAVEL,
     UMBRELLA,
-    BUSINESS
+    BUSINESS,
+    OTHER
 }

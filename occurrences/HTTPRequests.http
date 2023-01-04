@@ -5,8 +5,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "client2",
-  "password": "client"
+  "username": "expert2",
+  "password": "exp"
 }
 
 ##### Occurrences
@@ -229,30 +229,6 @@ Content-Type: application/json
 ###MOCKAPI
 ###Get All Policies from MockApi
 GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances
-Accept: application/json
-
-###Get specific client form Policies from MockApi
-GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies?nif_nipc=239292078
-Accept: application/json
-
-###Get policie with specific code from MockApi
-GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=ALL-1298666
-Accept: application/json
-
-###Get All Users from MockApi
-GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/users
-Accept: application/json
-
-###Get specific user from MockApi
-GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/users/239292078
-Accept: application/json
-
-###Get All insurances from MockApi
-GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances
-Accept: application/json
-
-###Get specific insurance from MockApi
-GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?name=Allianz
 Accept: application/json
 
 ###

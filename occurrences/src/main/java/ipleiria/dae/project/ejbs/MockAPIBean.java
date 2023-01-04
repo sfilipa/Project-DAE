@@ -1,6 +1,7 @@
 package ipleiria.dae.project.ejbs;
 
 import org.jboss.resteasy.spi.HttpRequest;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.ejb.Stateless;
@@ -15,25 +16,32 @@ import java.net.http.HttpResponse;
 @Stateless
 public class MockAPIBean {
 
-    public String getAllDataAPI() {
+    public JSONObject getAllDataAPI() {
         JSONObject jsonObject = null;
         try {
-            var client = HttpClient.newHttpClient();
+            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies");
 
-            var request = java.net.http.HttpRequest.newBuilder()
-                    .uri(URI.create("https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances"))
-                    .build();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.connect();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (conn.getResponseCode() < 200 || conn.getResponseCode() > 299) {
+                // throw an exception or handle the error
+            }
 
-            int statusCode = response.statusCode();
-            String responseBody = response.body();
-            System.out.println("RESPONSSSSSSSSSSSSSSSSSSSSSEEEEEEEEEEEEEEE"+ responseBody + " " + statusCode);
+            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
 
+            String output;
+            StringBuilder response = new StringBuilder();
+            while ((output = br.readLine()) != null) {
+                response.append(output);
+            }
+            System.out.println(response);
+            JSONArray jsonArray = new JSONArray(response.toString());
+            jsonObject = jsonArray.getJSONObject(0);
+            System.out.println(jsonArray);
 
-            jsonObject = new JSONObject(responseBody);
-
-            return responseBody;
+            return jsonObject;
 
            /* URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -59,7 +67,7 @@ public class MockAPIBean {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "";
+        return jsonObject;
     }
 
     public String getDataAPICode(String code) {
