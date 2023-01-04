@@ -27,12 +27,7 @@ public class ExpertBean {
     }
 
     public Expert create(String username, String password, String name, String email, String insuranceCompany) throws MyEntityExistsException {
-       Expert expert = find(username);
-        if (expert != null) {
-            throw new MyEntityExistsException("Expert with username: " + username + " already exists");
-        }
-        //como tava antes - mudei pq n tava a guardar na bd
-        /* try {
+        try {
             // Find Insurance Company
             String company = findInsuranceCompany(insuranceCompany);
 
@@ -46,10 +41,7 @@ public class ExpertBean {
             return find(username);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
-        }*/
-        expert = new Expert(username, hasher.hash(password), name, email, insuranceCompany);
-        em.persist(expert);
-        return expert;
+        }
     }
 
     public Expert update(String username, String password, String name, String email, String insuranceCompany) {

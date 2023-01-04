@@ -101,7 +101,7 @@ Content-Type: application/json
   "password": "123",
   "name": "Expert 3",
   "email": "expert3@mail.pt",
-  "company_username": "Allianzzz"
+  "company_username": "Allianz"
 }
 
 ### Create Repairer
@@ -210,8 +210,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "pedro",
-  "password": "pedro1234"
+  "username": "expert2",
+  "password": "exp"
 }
 
 ### Get Client Details
