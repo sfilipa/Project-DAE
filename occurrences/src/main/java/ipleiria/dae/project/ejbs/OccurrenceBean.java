@@ -13,10 +13,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +39,7 @@ public class OccurrenceBean {
     }
 
     public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, String description) throws MyEntityNotFoundException {
-        JSONArray jsonArray = mockAPIBean.getDataAPICode("insurances",insuranceCode);
+        JSONArray jsonArray = mockAPIBean.getDataAPI("insurances",insuranceCode);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
         if(jsonObject == null){
@@ -107,7 +103,7 @@ public class OccurrenceBean {
             throw new MyEntityNotFoundException("Occurrence not found");
         }
 
-        JSONArray jsonArray = mockAPIBean.getDataAPICode("insurances",insuranceCode);
+        JSONArray jsonArray = mockAPIBean.getDataAPI("insurances",insuranceCode);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
         if(jsonObject == null){

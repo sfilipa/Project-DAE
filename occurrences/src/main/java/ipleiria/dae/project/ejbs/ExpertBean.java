@@ -4,6 +4,7 @@ import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.entities.*;
 import ipleiria.dae.project.enumerators.State;
+import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.security.Hasher;
 
 import javax.ejb.Stateless;
@@ -25,8 +26,13 @@ public class ExpertBean {
         return (List<Expert>) em.createNamedQuery("getAllExperts").getResultList();
     }
 
-    public Expert create(String username, String password, String name, String email, String insuranceCompany) {
-        try {
+    public Expert create(String username, String password, String name, String email, String insuranceCompany) throws MyEntityExistsException {
+       Expert expert = find(username);
+        if (expert != null) {
+            throw new MyEntityExistsException("Expert with username: " + username + " already exists");
+        }
+        //como tava antes - mudei pq n tava a guardar na bd
+        /* try {
             // Find Insurance Company
             String company = findInsuranceCompany(insuranceCompany);
 
@@ -40,7 +46,10 @@ public class ExpertBean {
             return find(username);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
-        }
+        }*/
+        expert = new Expert(username, hasher.hash(password), name, email, insuranceCompany);
+        em.persist(expert);
+        return expert;
     }
 
     public Expert update(String username, String password, String name, String email, String insuranceCompany) {

@@ -5,8 +5,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "client3",
-  "password": "client"
+  "username": "expert2",
+  "password": "exp"
 }
 
 ##### Occurrences

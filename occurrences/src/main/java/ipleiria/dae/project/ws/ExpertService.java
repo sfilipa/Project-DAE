@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ipleiria.dae.project.dtos.ExpertDTO;
 import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.entities.Expert;
+import ipleiria.dae.project.exceptions.MyEntityExistsException;
 
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletRequest;
@@ -124,7 +125,7 @@ public class ExpertService {
 
     @POST
     @Path("/")
-    public Response create(ExpertDTO expertDTO) {
+    public Response create(ExpertDTO expertDTO) throws MyEntityExistsException {
         Expert expert = expertBean.create(
                 expertDTO.getUsername(),
                 expertDTO.getPassword(),

@@ -36,11 +36,8 @@ public class ClientBean {
         if (!validateNif(nif_nipc)) {
             throw new MyEntityExistsException("Client with nif_nipc: " + nif_nipc + " is not valid");//TODO: MUDAR ESTAS EXCEÇOES
         }
-        //TODO:MAKE THIS VERIFICATION
-        //see if the nif_nipc has already been used
-
         if (nif_nipcAlreadyUsed(nif_nipc)) {
-            throw new MyEntityExistsException("Client with nif_nipc: " + nif_nipc + " already exists");
+            throw new MyEntityExistsException("Client with nif_nipc: " + nif_nipc + " already exists");//TODO: MUDAR ESTAS EXCEÇOES
         }
         client = new Client(username, hasher.hash(password), name, email, address, phoneNumber, nif_nipc);
         em.persist(client);
