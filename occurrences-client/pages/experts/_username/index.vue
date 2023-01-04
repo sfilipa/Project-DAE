@@ -6,9 +6,7 @@
         <p class="profile-field"><span class="profile-label">Username:</span> {{this.username}}</p>
         <p class="profile-field"><span class="profile-label">Name:</span> {{ this.name }}</p>
         <p class="profile-field"><span class="profile-label">Email:</span> {{this.email}}</p>
-        <p class="profile-field"><span class="profile-label">NIF/NIPC:</span> {{this.nif_nipc}}</p>
-        <p class="profile-field"><span class="profile-label">Address:</span> {{ this.address }}</p>
-        <p class="profile-field"><span class="profile-label">Phone Number:</span> {{ this.phoneNumber }}</p>
+        <p class="profile-field"><span class="profile-label">Insurance Company:</span> {{this.company_username}}</p>
       </div>
     </div>
   </b-container>
@@ -22,20 +20,16 @@ export default {
       username: "",
       name: "",
       email: "",
-      nif_nipc: "",
-      address: "",
-      phoneNumber: null,
+      company_username: "",
     }
   },
   created () {
-    this.$axios.$get(`/api/clients/${this.$auth.user.username}`)
+    this.$axios.$get(`/api/experts/${this.$auth.user.username}`)
       .then((response) => {
         this.username = response.username;
         this.name = response.name;
         this.email = response.email;
-        this.address = response.address;
-        this.phoneNumber = response.phoneNumber;
-        this.nif_nipc = response.nif_nipc;
+        this.company_username = response.company_username;
       })
   }
 }

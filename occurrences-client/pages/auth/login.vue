@@ -48,7 +48,8 @@ export default {
       })
       promise.then(() => {
         this.$toast.success('You are logged in!').goAway(3000)
-        this.$router.push('/')
+        this.$router.push(`/experts/`)
+        // this.$router.push(`/${this.$auth.user.role.toLowerCase()}s/`)
       })
       promise.catch(() => {
         this.$toast.error('Sorry, you cant login. Ensure your credentials are correct').goAway(3000)
