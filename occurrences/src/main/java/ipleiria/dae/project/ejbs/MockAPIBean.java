@@ -28,7 +28,7 @@ public class MockAPIBean {
 
             int statusCode = response.statusCode();
             String responseBody = response.body();
-            System.out.println("RESPONSSSSSSSSSSSSSSSSSSSSSEEEEEEEEEEEEEEE"+ responseBody + " " + statusCode);
+            System.out.println("RESPONSSSSSSSSSSSSSSSSSSSSSEEEEEEEEEEEEEEE" + responseBody + " " + statusCode);
 
 
             jsonObject = new JSONObject(responseBody);
@@ -89,5 +89,44 @@ public class MockAPIBean {
             e.printStackTrace();
         }
         return "";
+    }
+
+    public static String getInsuranceCompany(String companyUsername) {
+        StringBuilder stringBuilder = get("insuranceCompanies", "name", companyUsername);
+        return stringBuilder.toString();
+    }
+
+    public static StringBuilder get(String resource, String attribute, String name) {
+        try {
+            // Set up the API endpoint URL
+            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource + "?=" + attribute + "=" + name);
+
+            // Open a connection to the API endpoint
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // Set the request method to GET
+            connection.setRequestMethod("GET");
+
+            // Set the request properties
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            // Send the request to the API server
+            connection.connect();
+
+            // Read the response from the API server
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+
+            // Return the response from the API server
+            return response;
+
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Couldn't get data from API");
+        }
     }
 }

@@ -1,15 +1,11 @@
 package ipleiria.dae.project.dtos;
 
-import ipleiria.dae.project.entities.Client;
-import ipleiria.dae.project.entities.Insurance;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
 
 import javax.persistence.Id;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
