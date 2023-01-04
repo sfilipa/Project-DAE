@@ -55,6 +55,49 @@ public class RepairerBean {
         em.remove(find(username));
     }
 
+    public void assignOccurrence(String username, long occurrenceCode) {
+        try {
+            // Find Repairer
+            Repairer repairer = find(username);
+            validateRepairer(repairer);
+
+            // Find Occurrence
+            Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
+            validateOccurrence(occurrence, State.APPROVED);
+
+            occurrence.setState(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
+            occurrence.setRepairer(repairer);
+            repairer.addOccurrence(occurrence);
+
+        }catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    public void unassignOccurrence(String username, long occurrenceCode) {
+        try {
+            // Find Repairer
+            Repairer repairer = find(username);
+            validateRepairer(repairer);
+
+            // Find Occurrence
+            Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
+            validateOccurrence(occurrence, null);
+//            if(occurrence.getState() != State.REPAIRER_WAITING_LIST && occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){
+//                return -3; //devolver exception (pois se estiver no .ACTIVE, não posso fazer unassign de um repairer que já está mesmo a reparar)
+//            }
+
+            //validateRepairerIsAssignedToOccurrence(repairer, occurrence);
+
+            occurrence.setState(State.APPROVED);
+            occurrence.setRepairer(null);
+            repairer.removeOccurrence(occurrence);
+
+        }catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
     public void startOccurrence(String username, long occurrenceCode) {
         try {
             // Find Repairer
@@ -63,7 +106,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(repairer, occurrence, State.REPAIRER_WAITING_LIST);
+            validateOccurrence(occurrence, State.REPAIRER_WAITING_LIST);
 
             // Start Occurrence
             occurrence.setState(State.ACTIVE);
@@ -80,7 +123,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(repairer, occurrence, State.ACTIVE);
+            validateOccurrence(occurrence, State.ACTIVE);
 
             // Fail Occurrence
             occurrence.setState(State.FAILED);
@@ -105,10 +148,12 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(repairer, occurrence, State.ACTIVE);
+            validateOccurrence(occurrence, State.ACTIVE);
 
             // Approve Occurrence
             occurrence.setState(State.RESOLVED);
+
+            //TODO: fazer update do final date da occurrence
 
             // Get Occurrence Description
             String occurrenceDescription = occurrence.getDescription();
@@ -134,10 +179,12 @@ public class RepairerBean {
         }
     }
 
-    private void validateOccurrence(Repairer repairer, Occurrence occurrence, State state) {
+    private void validateOccurrence(Occurrence occurrence, State state) {
         try {
             validateOccurrenceExists(occurrence);
-            //validateRepairerIsAssignedToOccurrence(repairer, occurrence);
+            if(state == null){
+                return;
+            }
             validateOccurrenceState(occurrence, state);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());

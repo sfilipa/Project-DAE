@@ -26,6 +26,72 @@ public class RepairerService {
     @EJB
     private RepairerBean repairerBean;
 
+    @GET // means: to call this endpoint, we need to use the HTTP GET method
+    @Path("/") // means: the relative url path is “/api/repairers/”
+    public List<RepairerDTO> getAllRepairers() {
+        return RepairerDTO.from(repairerBean.getAllRepairers());
+    }
+
+    @GET
+    @Path("/{username}")
+    public Response getRepairer(@PathParam("username") String username) {
+        Repairer repairer = repairerBean.find(username);
+        if(repairer == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.ok(RepairerDTO.from(repairer)).build();
+    }
+
+    @POST
+    @Path("/")
+    public Response create(RepairerDTO repairerDTO) {
+
+        Repairer repairer = repairerBean.create(
+                repairerDTO.getUsername(),
+                repairerDTO.getPassword(),
+                repairerDTO.getName(),
+                repairerDTO.getEmail(),
+                repairerDTO.getAddress()
+        );
+
+        return Response.status(Response.Status.CREATED)
+                .entity(RepairerDTO.from(repairer))
+                .build();
+    }
+
+    @DELETE
+    @Path("/{username}")
+    public Response delete(@PathParam("username") String username) {
+
+        repairerBean.delete(username);
+
+        return Response.status(Response.Status.ACCEPTED).build();
+    }
+
+    @PATCH
+    @Path("/{username}/occurrences/{occurrence_code}/assign")
+    public Response assignOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+        try {
+            repairerBean.assignOccurrence(username, occurrence_code);
+            return Response.ok().build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+    @PATCH
+    @Path("/{username}/occurrences/{occurrence_code}/unassign")
+    public Response unassignOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+        try {
+            repairerBean.unassignOccurrence(username, occurrence_code);
+            return Response.ok().build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+
     @PATCH
     @Path("/{username}/occurrences/{occurrence_code}/start")
     public Response startOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
@@ -78,49 +144,4 @@ public class RepairerService {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
-
-    @GET // means: to call this endpoint, we need to use the HTTP GET method
-    @Path("/") // means: the relative url path is “/api/repairers/”
-    public List<RepairerDTO> getAllRepairers() {
-        return RepairerDTO.from(repairerBean.getAllRepairers());
-    }
-
-    @GET
-    @Path("/{username}")
-    public Response getRepairer(@PathParam("username") String username) {
-        Repairer repairer = repairerBean.find(username);
-        if(repairer == null){
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        return Response.ok(RepairerDTO.from(repairer)).build();
-    }
-
-    @POST
-    @Path("/")
-    public Response create(RepairerDTO repairerDTO) {
-
-        Repairer repairer = repairerBean.create(
-                repairerDTO.getUsername(),
-                repairerDTO.getPassword(),
-                repairerDTO.getName(),
-                repairerDTO.getEmail(),
-                repairerDTO.getAddress()
-        );
-
-        return Response.status(Response.Status.CREATED)
-                .entity(RepairerDTO.from(repairer))
-                .build();
-    }
-
-    @DELETE
-    @Path("/{username}")
-    public Response delete(@PathParam("username") String username) {
-
-        repairerBean.delete(username);
-
-        return Response.status(Response.Status.ACCEPTED).build();
-    }
-
-
 }
