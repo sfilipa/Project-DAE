@@ -28,23 +28,22 @@ public class ConfigBean {
 
     @EJB
     RepairerBean repairerBean;
-    @EJB
-    InsuranceCompanyBean insuranceCompanyBean;
 
     @PostConstruct
     public void populateDB() {
         System.out.println("Hello Java EE!");
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        String dateInString = sdf.format(new Date());
         try {
             //expertBean.create("expert1", "exp", "Expert Joca", "expert@mail.pt", "company1");
-            //InsuranceCompany insuranceCompany = insuranceCompanyBean.create("Fidelidade");
             clientBean.create("client2", "client", "Client Isabel", "client2@mail.pt", "Rua dos pinheiros tortos", 912345678, 267503959);
             clientBean.create("client3", "client", "Client Nando", "client3@mail.pt", "Rua dos pinheiros tortos", 912345678,236589547);
             //insuranceBean.create("AL-123", company, "Allianz");
-            expertBean.create("expert2", "exp", "Expert Sofia", "sofia@mail.pt", "Fidelidade");
-            Occurrence o = occurrenceBean.create("client2", "10/9/2023", State.PENDING, "FIDEL-1298302");
+           // expertBean.create("expert2", "exp", "Expert Sofia", "sofia@mail.pt", "Fidelidade");
+            Occurrence o = occurrenceBean.create("client2", "10/1/2023", State.PENDING, "FIDEL-1298302", "lalalalla");
             //occurrenceBean.addExpert(o.getId(),"expert");
-            repairerBean.create("repairer1", "repairer", "Repairer Bob", "bob_o_construtor@mail.pt", "rua dos calduços");
+            //repairerBean.create("repairer1", "repairer", "Repairer Bob", "bob_o_construtor@mail.pt", "rua dos calduços");
         } catch (Exception exception) {
             logger.severe(exception.getMessage());
         }

@@ -120,13 +120,33 @@ Content-Type: application/json
 GET http://localhost:8080/occurrences/api/experts
 Accept: application/json
 
-#### OCCURRENCE DISAPPROVE
-PATCH http://localhost:8080/occurrences/api/occurrences/1/disapprove
+### INSURANCE COMPANY ADDS EXPERT TO OCCURRENCE
+PATCH http://localhost:8080/occurrences/api/occurrences/1/expert/expert1/add
 Content-Type: application/json
 
-#### OCCURRENCE APPROVED
-PATCH http://localhost:8080/occurrences/api/occurrences/1/approve
-Content-Type: application/json
+#### OCCURRENCE DISAPPROVE BY AN EXPERT
+#PATCH http://localhost:8080/occurrences/api/occurrences/1/expert/expert1/remove
+#Content-Type: application/json
+#
+#### OCCURRENCE APPROVED BY AN EXPERT
+#PATCH http://localhost:8080/occurrences/api/occurrences/1/approve
+#Content-Type: application/json
+#
+#### CLIENT ASSIGNS A REPAIRER TO AN OCCURRENCE
+#PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/repairer1/assign
+#Content-Type: application/json
+#
+#### CLIENT UNASSIGNS A REPAIRER TO AN OCCURRENCE
+#PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/unassign
+#Content-Type: application/json
+#
+#### OCCURRENCE REPAIRER APPROVED BY AN EXPERT
+#PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/accept
+#Content-Type: application/json
+#
+#### OCCURRENCE REPAIRER DISAPPROVED BY AN EXPERT
+#PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/reject
+#Content-Type: application/json
 
 ### Expert Disapprove Occurrence
 PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/disapprove
@@ -146,14 +166,6 @@ Content-Type: application/json
 
 ### Get All Repairers
 GET http://localhost:8080/occurrences/api/repairers
-Content-Type: application/json
-
-### Client assigns Occurrence to a Repairer
-PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/repairer1/assign
-Content-Type: application/json
-
-### Client unassigns Occurrence to a Repairer
-PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/unassign
 Content-Type: application/json
 
 ### Repairer Starts Occurrence

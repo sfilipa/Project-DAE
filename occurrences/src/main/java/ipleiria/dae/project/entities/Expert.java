@@ -14,11 +14,8 @@ import java.util.List;
         ),
 })
 public class Expert extends User implements Serializable {
-
     @NotNull
-    @ManyToOne
-    @JoinColumn(name = "insurance_name")
-    InsuranceCompany insuranceCompany;
+    String insuranceCompany;
 
     @ManyToMany
     @JoinTable(
@@ -32,17 +29,17 @@ public class Expert extends User implements Serializable {
         occurrences = new LinkedList<>();
     }
 
-    public Expert(String username, String password, String name, String email, InsuranceCompany insuranceCompany) {
+    public Expert(String username, String password, String name, String email, String insuranceCompany) {
         super(username,password, name, email);
         this.insuranceCompany = insuranceCompany;
         occurrences = new LinkedList<>();
     }
 
-    public InsuranceCompany getCompany() {
+    public String getInsuranceCompany() {
         return insuranceCompany;
     }
 
-    public void setCompany(InsuranceCompany insuranceCompany) {
+    public void setInsuranceCompany(String insuranceCompany) {
         this.insuranceCompany = insuranceCompany;
     }
 

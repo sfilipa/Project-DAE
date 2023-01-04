@@ -38,7 +38,7 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode) throws MyEntityNotFoundException {
+    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, String description) throws MyEntityNotFoundException {
         JSONObject jsonObject = getDataAPI(insuranceCode);
         if(jsonObject == null){
             throw new MyEntityNotFoundException("Insurance not found");
@@ -51,7 +51,6 @@ public class OccurrenceBean {
         String validUntilAPI = jsonObject.getString("validUntil");
         String insuranceTypeAPI = jsonObject.getString("type").toUpperCase();
         String insuranceObjectAPI = jsonObject.getString("object");
-        String descriptionAPI = jsonObject.getString("description");
         JSONArray insuranceCoversAPI = jsonObject.getJSONArray("covers");
 
         Client client = em.find(Client.class, usernameClient);
@@ -77,13 +76,13 @@ public class OccurrenceBean {
             throw new MyEntityNotFoundException("Insurance type not found");
         }
 
-        Insurance insurance = new Insurance(insuranceCode, policyNumberAPI, insuranceCompanyAPI, clientNifAPI, clientNameAPI, initialDateAPI, validUntilAPI, insuranceObjectAPI, insuredAssetType, descriptionAPI);
+        Insurance insurance = new Insurance(insuranceCode, policyNumberAPI, insuranceCompanyAPI, clientNifAPI, clientNameAPI, initialDateAPI, validUntilAPI, insuranceObjectAPI, insuredAssetType, description);
 
         List<CoverageType> covers = CoverageType.getCoverageTypeList(insuranceCoversAPI);
 
         insurance.setCovers(covers);
 
-        Occurrence occurrence = new Occurrence(entryDate, insuranceObjectAPI, descriptionAPI, insurance, state, client);
+        Occurrence occurrence = new Occurrence(entryDate, insuranceObjectAPI, description, insurance, state, client);
         em.persist(occurrence);
         return occurrence;
     }
@@ -96,7 +95,7 @@ public class OccurrenceBean {
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode) throws MyEntityNotFoundException {//TODO : Exceptions
+    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, String description) throws MyEntityNotFoundException {//TODO : Exceptions
         Occurrence occurrence = em.find(Occurrence.class, id);
         if(occurrence == null){
             throw new MyEntityNotFoundException("Occurrence not found");
@@ -116,7 +115,6 @@ public class OccurrenceBean {
         String validUntilAPI = jsonObject.getString("validUntil");
         String insuranceTypeAPI = jsonObject.getString("type").toUpperCase();
         String insuranceObjectAPI = jsonObject.getString("object");
-        String descriptionAPI = jsonObject.getString("description");
         JSONArray insuranceCoversAPI = jsonObject.getJSONArray("covers");
 
 
@@ -126,11 +124,7 @@ public class OccurrenceBean {
             throw new MyEntityNotFoundException("Client is not the owner of the insurance");
         }
         InsuredAssetType insuredAssetType = null;
-        InsuranceCompany insuranceCompany = em.find(InsuranceCompany.class, insuranceCompanyAPI);
-        if (insuranceCompany == null){
-            throw new IllegalArgumentException("Insurance Company not found");
-        }
-        Insurance insurance = new Insurance(insuranceCode, policyNumberAPI, insuranceCompanyAPI, clientNifAPI, clientNameAPI, initialDateAPI, validUntilAPI, insuranceObjectAPI, insuredAssetType, descriptionAPI);
+        Insurance insurance = new Insurance(insuranceCode, policyNumberAPI, insuranceCompanyAPI, clientNifAPI, clientNameAPI, initialDateAPI, validUntilAPI, insuranceObjectAPI, insuredAssetType, description);
 
 
         try {
@@ -143,88 +137,54 @@ public class OccurrenceBean {
         occurrence.setEntryDate(entryDate);
         occurrence.setState(state);
         occurrence.setInsurance(insurance);
-        occurrence.setDescription(descriptionAPI);
+        occurrence.setDescription(description);
         occurrence.setObjectInsured(insuranceObjectAPI);
 
         return occurrence;
     }
 
-    public int disapproveOccurrence(long id) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1;
-        }
-        if(occurrence.getExperts().isEmpty()){
-            return -2;
-        }
-        //TODO: Verificar se o expert logged está na lista de experts da occurrence
-//        if(!occurrence.isExpertInOccurrence(expertLoggedIn)){
-//            return -3;
+//    public int addExpert(long id, String username) {
+//        Occurrence occurrence = em.find(Occurrence.class, id);
+//        if (occurrence == null) {
+//            return -1; //devolver exception
 //        }
-
-        occurrence.setState(State.DISAPPROVED);
-        return 0;
-    }
-
-    public int approveOccurrence(long id) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1;
-        }
-        if(occurrence.getExperts().isEmpty()){
-            return -2;
-        }
-        //TODO: Verificar se o expert logged está na lista de experts da occurrence
-//        if(!occurrence.isExpertInOccurrence(expertLoggedIn)){
-//            return -3;
+//        if(occurrence.getState() != State.PENDING) {
+//            return -2; //devolver exception
 //        }
-
-        occurrence.setState(State.APPROVED);
-        return 0;
-    }
-
-    public int addExpert(long id, String username) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-        if(occurrence.getState() != State.PENDING) {
-            return -2; //devolver exception
-        }
-        Expert expert = em.find(Expert.class, username);
-        if (expert == null) {
-            return -3; //devolver exception
-        }
-        if(occurrence.isExpertInOccurrence(expert)){
-            return -4; //devolver exception
-        }
-
-        //verificar que o perito é da mesma seguradora
+//        Expert expert = em.find(Expert.class, username);
+//        if (expert == null) {
+//            return -3; //devolver exception
+//        }
+//        if(occurrence.isExpertInOccurrence(expert)){
+//            return -4; //devolver exception
+//        }
+//
+//        //verificar que o perito é da mesma seguradora
 //        if(expert.getCompany() != occurrence.getInsurance().getCompany()){
 //            return -5; //devolver exception
 //        }
-
-        occurrence.addExpert(expert);
-        return 0;
-    }
-
-    public int removeExpert(long id, String username){
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-        Expert expert = em.find(Expert.class, username);
-        if (expert == null) {
-            return -2; //devolver exception
-        }
-        if(!occurrence.isExpertInOccurrence(expert)){
-            return -3; //devolver exception
-        }
-
-        occurrence.removeExpert(expert);
-        expert.removeOccurrence(occurrence);
-        return 0;
-    }
+//
+//        occurrence.addExpert(expert);
+//        return 0;
+//    }
+//
+//    public int removeExpert(long id, String username){
+//        Occurrence occurrence = em.find(Occurrence.class, id);
+//        if (occurrence == null) {
+//            return -1; //devolver exception
+//        }
+//        Expert expert = em.find(Expert.class, username);
+//        if (expert == null) {
+//            return -2; //devolver exception
+//        }
+//        if(!occurrence.isExpertInOccurrence(expert)){
+//            return -3; //devolver exception
+//        }
+//
+//        occurrence.removeExpert(expert);
+//        expert.removeOccurrence(occurrence);
+//        return 0;
+//    }
 
     public int assignRepairer(long id, String username) {
         Occurrence occurrence = em.find(Occurrence.class, id);
@@ -263,45 +223,6 @@ public class OccurrenceBean {
         occurrence.setState(State.APPROVED); //volta para o estado anterior
         occurrence.setRepairer(null);
         repairer.removeOccurrence(occurrence);
-        return 0;
-    }
-
-    public int rejectRepairer(long id) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-
-        if(occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){
-            return -2; //devolver exception
-        }
-
-        Repairer repairer = occurrence.getRepairer();
-        if (repairer == null) {
-            return -3; //devolver exception
-        }
-
-        occurrence.setState(State.APPROVED); //goes back 1 state (now the client needs to choose another repairer)
-        //TODO: meter na description da ocorrencia o pq de o perito nao aceitar o repairer
-        return 0;
-    }
-
-    public int acceptRepairer(long id) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-
-        if(occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){ //é melhor fazer esta verificação 1º pois assim de certeza que o repairer está a null e sai logo
-            return -2; //devolver exception
-        }
-
-        Repairer repairer = occurrence.getRepairer();
-        if (repairer == null) {
-            return -3; //devolver exception
-        }
-
-        occurrence.setState(State.REPAIRER_WAITING_LIST);
         return 0;
     }
 

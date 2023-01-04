@@ -71,7 +71,7 @@ public class ExpertDTO {
                 expert.getPassword(),
                 expert.getName(),
                 expert.getEmail(),
-                expert.getCompany().getName()
+                expert.getInsuranceCompany()
         );
     }
 

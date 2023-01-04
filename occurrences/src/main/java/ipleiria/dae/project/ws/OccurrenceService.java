@@ -68,7 +68,8 @@ public class OccurrenceService {
                 occurrenceDTO.getUsernameClient(),
                 occurrenceDTO.getEntryDate(),
                 occurrenceDTO.getState(),
-                occurrenceDTO.getInsuranceCode()
+                occurrenceDTO.getInsuranceCode(),
+                occurrenceDTO.getDescription()
         );
 
         if (occurrence == null) {
@@ -93,7 +94,8 @@ public class OccurrenceService {
                 occurrenceDTO.getUsernameClient(),
                 occurrenceDTO.getEntryDate(),
                 occurrenceDTO.getState(),
-                occurrenceDTO.getInsuranceCode()
+                occurrenceDTO.getInsuranceCode(),
+                occurrenceDTO.getDescription()
         );
 
         if (occurrence == null) {
@@ -104,139 +106,80 @@ public class OccurrenceService {
                 .build();
     }
 
-    @PATCH
-    @Path("/{id}/expert/{username}/add")
-    //a seguradora atribui um perito à ocorrencia - verificar que o perito é da mesma seguradora
-    public Response addExpert(@PathParam("id") long id, @PathParam("username") String username) {
-        Occurrence occurrence = occurrenceBean.find(id);
-        if (occurrence == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ERROR_FINDING_OCCURRENCE")
-                    .build();
-        }
-        Expert expert = expertBean.find(username);
-        if (expert == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ERROR_FINDING_EXPERT")
-                    .build();
-        }
+//    @PATCH
+//    @Path("/{id}/expert/{username}/add")
+//    //a seguradora atribui um perito à ocorrencia - verificar que o perito é da mesma seguradora
+//    public Response addExpert(@PathParam("id") long id, @PathParam("username") String username) {
+//        Occurrence occurrence = occurrenceBean.find(id);
+//        if (occurrence == null) {
+//            return Response.status(Response.Status.BAD_REQUEST)
+//                    .entity("ERROR_FINDING_OCCURRENCE")
+//                    .build();
+//        }
+//        Expert expert = expertBean.find(username);
+//        if (expert == null) {
+//            return Response.status(Response.Status.BAD_REQUEST)
+//                    .entity("ERROR_FINDING_EXPERT")
+//                    .build();
+//        }
+//
+//        int response = occurrenceBean.addExpert(id, username);
+//        switch (response) {
+//            case -1:
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("ERROR_FINDING_OCCURRENCE")
+//                        .build();
+//            case -2:
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("OCCURRENCE_IS_NOT_PENDING_FOR_APPROVAL")
+//                        .build();
+//            case -3:
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("ERROR_FINDING_EXPERT")
+//                        .build();
+//            case -4:
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("EXPERT_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
+//                        .build();
+//            case -5:
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("EXPERT_NOT_FROM_SAME_INSURANCE")
+//                        .build();
+//            default:
+//                return Response.status(Response.Status.ACCEPTED)
+//                        .entity(OccurrenceDTO.from(occurrence))
+//                        .build();
+//        }
+//    }
 
-        int response = occurrenceBean.addExpert(id, username);
-        switch (response) {
-            case -1:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_OCCURRENCE")
-                        .build();
-            case -2:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("OCCURRENCE_IS_NOT_PENDING_FOR_APPROVAL")
-                        .build();
-            case -3:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_EXPERT")
-                        .build();
-            case -4:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("EXPERT_IS_ALREADY_ASSOCIATED_TO_THAT_OCCURRENCE")
-                        .build();
-            case -5:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("EXPERT_NOT_FROM_SAME_INSURANCE")
-                        .build();
-            default:
-                return Response.status(Response.Status.ACCEPTED)
-                        .entity(OccurrenceDTO.from(occurrence))
-                        .build();
-        }
-    }
+//    @PATCH
+//    @Path("/{id}/expert/{username}/remove")
+//    public Response removeExpert(@PathParam("id") long id, @PathParam("username") String username) {
+//        Occurrence occurrence = occurrenceBean.find(id);
+//        if (occurrence == null) {
+//            return Response.status(Response.Status.BAD_REQUEST)
+//                    .entity("ERROR_FINDING_OCCURRENCE")
+//                    .build();
+//        }
+//        int response = occurrenceBean.removeExpert(id, username);
+//        switch (response) {
+//            case -1:
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("ERROR_FINDING_OCCURRENCE")
+//                        .build();
+//            case -2:
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("ERROR_FINDING_EXPERT")
+//                        .build();
+//            case -3:
+//                return Response.status(Response.Status.BAD_REQUEST)
+//                        .entity("EXPERT_IS_NOT_ASSIGNED_TO_THAT_OCCURRENCE")
+//                        .build();
+//            default:
+//                return Response.status(Response.Status.OK).build();
+//        }
+//    }
 
-    @PATCH
-    @Path("/{id}/expert/{username}/unassign")
-    public Response unassignExpert(@PathParam("id") long id, @PathParam("username") String username) {
-        Occurrence occurrence = occurrenceBean.find(id);
-        if (occurrence == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ERROR_FINDING_OCCURRENCE")
-                    .build();
-        }
-        int response = occurrenceBean.removeExpert(id, username);
-        switch (response) {
-            case -1:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_OCCURRENCE")
-                        .build();
-            case -2:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_EXPERT")
-                        .build();
-            case -3:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("EXPERT_IS_NOT_ASSIGNED_TO_THAT_OCCURRENCE")
-                        .build();
-            default:
-                return Response.status(Response.Status.ACCEPTED)
-                        .entity(OccurrenceDTO.from(occurrence))
-                        .build();
-        }
-    }
-
-    @PATCH
-    @Path("/{id}/approve")
-    public Response approveOccurrence(@PathParam("id") long id) {
-        Occurrence occurrence = occurrenceBean.find(id);
-        if (occurrence == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ERROR_FINDING_OCCURRENCE")
-                    .build();
-        }
-
-        int response = occurrenceBean.approveOccurrence(id);
-        switch (response){
-            case -1:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_OCCURRENCE")
-                        .build();
-            case -2:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("OCCURRENCE_DOESNT_HAVE_EXPERT")
-                        .build();
-            case -3:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("LOGGED_USER_ISN'T_AN_EXPERT_ASSOCIATED_TO_THAT_OCCURRENCE")
-                        .build();
-            default:
-                return Response.status(Response.Status.OK).build();
-        }
-    }
-
-    @PATCH
-    @Path("/{id}/disapprove")
-    public Response disapproveOccurrence(@PathParam("id") long id) {
-        Occurrence occurrence = occurrenceBean.find(id);
-        if (occurrence == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ERROR_FINDING_OCCURRENCE")
-                    .build();
-        }
-
-        int response = occurrenceBean.disapproveOccurrence(id);
-        switch (response){
-            case -1:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_OCCURRENCE")
-                        .build();
-            case -2:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("OCCURRENCE_DOESNT_HAVE_EXPERT")
-                        .build();
-            case -3:
-                return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("LOGGED_USER_ISN'T_AN_EXPERT_ASSOCIATED_TO_THAT_OCCURRENCE")
-                    .build();
-            default:
-                return Response.status(Response.Status.OK).build();
-        }
-    }
 
     @PATCH
     @Path("/{id}/repairer/{username}/assign")
@@ -263,68 +206,6 @@ public class OccurrenceService {
             case -2:
                 return Response.status(Response.Status.BAD_REQUEST)
                         .entity("OCCURRENCE_IS_NOT_APPROVED_YET")
-                        .build();
-            case -3:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_REPAIRER")
-                        .build();
-            default:
-                return Response.status(Response.Status.ACCEPTED)
-                        .entity(OccurrenceDTO.from(occurrence))
-                        .build();
-        }
-    }
-
-    @PATCH
-    @Path("/{id}/repairer/accept")
-    public Response acceptRepairerByExpert(@PathParam("id") long id){
-        Occurrence occurrence = occurrenceBean.find(id);
-        if (occurrence == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ERROR_FINDING_OCCURRENCE")
-                    .build();
-        }
-
-        int response = occurrenceBean.acceptRepairer(id);
-        switch (response) {
-            case -1:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_OCCURRENCE")
-                        .build();
-            case -2:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("OCCURRENCE_ISNT_WAITING_FOR_APPROVAL_OF_EXPERT")
-                        .build();
-            case -3:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_REPAIRER")
-                        .build();
-            default:
-                return Response.status(Response.Status.ACCEPTED)
-                        .entity(OccurrenceDTO.from(occurrence))
-                        .build();
-        }
-    }
-
-    @PATCH
-    @Path("/{id}/repairer/reject")
-    public Response rejectRepairerByExpert(@PathParam("id") long id){
-        Occurrence occurrence = occurrenceBean.find(id);
-        if (occurrence == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ERROR_FINDING_OCCURRENCE")
-                    .build();
-        }
-
-        int response = occurrenceBean.rejectRepairer(id);
-        switch (response) {
-            case -1:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("ERROR_FINDING_OCCURRENCE")
-                        .build();
-            case -2:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("OCCURRENCE_ISNT_WAITING_FOR_APPROVAL_OF_EXPERT")
                         .build();
             case -3:
                 return Response.status(Response.Status.BAD_REQUEST)
