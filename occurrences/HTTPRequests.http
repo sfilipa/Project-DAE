@@ -97,11 +97,11 @@ POST http://localhost:8080/occurrences/api/experts
 Content-Type: application/json
 
 {
-  "username": "expert1",
+  "username": "expert3",
   "password": "123",
-  "name": "Expert 1",
-  "email": "expert@mail.pt",
-  "company_username": "company1"
+  "name": "Expert 3",
+  "email": "expert3@mail.pt",
+  "company_username": "Allianzzz"
 }
 
 ### Create Repairer

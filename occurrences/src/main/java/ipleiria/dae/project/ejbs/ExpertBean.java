@@ -32,7 +32,7 @@ public class ExpertBean {
 
             // Verify if the username already exists
             Expert expert = find(username);
-            validateExpertExists(expert);
+            validateExpertDoesNotExist(expert);
 
             // Create Expert
             Expert newExpert = new Expert(username, hasher.hash(password), name, email, company);
@@ -236,6 +236,12 @@ public class ExpertBean {
     private void validateExpertExists(Expert expert) {
         if (expert == null){
             throw new IllegalArgumentException("Expert not found");
+        }
+    }
+
+    private void validateExpertDoesNotExist(Expert expert) {
+        if (expert != null){
+            throw new IllegalArgumentException("Expert already exists");
         }
     }
 

@@ -83,14 +83,24 @@ public class MockAPIBean {
     }
 
     public static String getInsuranceCompany(String companyUsername) {
-        StringBuilder stringBuilder = get("insuranceCompanies", "name", companyUsername);
-        return stringBuilder.toString();
+        try {
+            // Receive Insurance Company in a JSONArray format
+            JSONArray jsonArray = get("insuranceCompanies", "name", companyUsername);
+
+            // Get the first element of the JSONArray
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+
+            // Return the name of the Insurance Company
+            return jsonObject.getString("name");
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Insurance Company not found");
+        }
     }
 
-    public static StringBuilder get(String resource, String attribute, String name) {
+    public static JSONArray get(String resource, String attribute, String name) {
         try {
             // Set up the API endpoint URL
-            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource + "?=" + attribute + "=" + name);
+            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource + "?" + attribute + "=" + name);
 
             // Open a connection to the API endpoint
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -113,8 +123,11 @@ public class MockAPIBean {
             }
             reader.close();
 
-            // Return the response from the API server
-            return response;
+            // Transform the response into a String
+            String jsonString = response.toString();
+
+            // Transform response String to JSONArray
+            return new JSONArray(jsonString);
 
         } catch (Exception e) {
             throw new IllegalArgumentException("Couldn't get data from API");
