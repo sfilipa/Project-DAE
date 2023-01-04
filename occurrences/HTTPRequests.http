@@ -242,6 +242,10 @@ GET http://localhost:8080/occurrences/api/clients/client3/insurances
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyODcwNzg3LCJleHAiOjE2NzI4NzQzODd9.Gv4KufuxtoFWuYWViIP5hERnYaeldRqziqoqX07oHuU
 Accept: application/json
 
+### Get Expert Occurrences
+GET http://localhost:8080/occurrences/api/experts/expert2/occurrences/assigned
+Accept: application/json
+
 ###MOCKAPI
 ###Get All Policies from MockApi
 GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=FIDEL-1298302

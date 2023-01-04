@@ -6,6 +6,7 @@ import ipleiria.dae.project.entities.*;
 import ipleiria.dae.project.enumerators.State;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.security.Hasher;
+import org.hibernate.Hibernate;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -184,6 +185,20 @@ public class ExpertBean {
         }
     }
 
+    public List<Occurrence> occurrences(String username) {
+        try {
+            // Find Expert
+            Expert expert = find(username);
+            validateExpertExists(expert);
+
+            // Get Occurrences
+            Hibernate.initialize(expert.getOccurrences());
+            return expert.getOccurrences();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
     public void acceptRepairer(String username, long occurrenceCode){
         try{
             // Find Expert
@@ -281,4 +296,5 @@ public class ExpertBean {
             throw new IllegalArgumentException("Occurrence is not in the correct state");
         }
     }
+
 }
