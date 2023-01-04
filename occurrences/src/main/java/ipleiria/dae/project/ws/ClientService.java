@@ -1,10 +1,10 @@
 package ipleiria.dae.project.ws;
 
 import ipleiria.dae.project.dtos.ClientDTO;
+import ipleiria.dae.project.dtos.InsuranceDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.ejbs.ClientBean;
 import ipleiria.dae.project.entities.Client;
-import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Authenticated;
@@ -107,4 +107,14 @@ public class ClientService {
     public Response getClientOccurrences(@PathParam("username") String username) {
         return Response.ok(OccurrenceDTO.from(clientBean.clientOccurrences(username))).build();
     }
+
+    // GET of insurances
+    @GET
+    @Authenticated
+    @RolesAllowed({"Client"})
+    @Path("{username}/insurances")
+    public Response getClientInsurances(@PathParam("username") String username) {
+        return Response.ok(InsuranceDTO.from(clientBean.insurances(username))).build();
+    }
+
 }
