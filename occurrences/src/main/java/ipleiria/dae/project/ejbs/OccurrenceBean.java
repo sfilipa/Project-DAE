@@ -127,82 +127,48 @@ public class OccurrenceBean {
         return occurrence;
     }
 
-    public int disapproveOccurrence(long id) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1;
-        }
-        if(occurrence.getExperts().isEmpty()){
-            return -2;
-        }
-        //TODO: Verificar se o expert logged está na lista de experts da occurrence
-//        if(!occurrence.isExpertInOccurrence(expertLoggedIn)){
-//            return -3;
+//    public int addExpert(long id, String username) {
+//        Occurrence occurrence = em.find(Occurrence.class, id);
+//        if (occurrence == null) {
+//            return -1; //devolver exception
 //        }
-
-        occurrence.setState(State.DISAPPROVED);
-        return 0;
-    }
-
-    public int approveOccurrence(long id) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1;
-        }
-        if(occurrence.getExperts().isEmpty()){
-            return -2;
-        }
-        //TODO: Verificar se o expert logged está na lista de experts da occurrence
-//        if(!occurrence.isExpertInOccurrence(expertLoggedIn)){
-//            return -3;
+//        if(occurrence.getState() != State.PENDING) {
+//            return -2; //devolver exception
 //        }
-
-        occurrence.setState(State.APPROVED);
-        return 0;
-    }
-
-    public int addExpert(long id, String username) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-        if(occurrence.getState() != State.PENDING) {
-            return -2; //devolver exception
-        }
-        Expert expert = em.find(Expert.class, username);
-        if (expert == null) {
-            return -3; //devolver exception
-        }
-        if(occurrence.isExpertInOccurrence(expert)){
-            return -4; //devolver exception
-        }
-
-        //verificar que o perito é da mesma seguradora
-        if(expert.getCompany() != occurrence.getInsurance().getCompany()){
-            return -5; //devolver exception
-        }
-
-        occurrence.addExpert(expert);
-        return 0;
-    }
-
-    public int removeExpert(long id, String username){
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-        Expert expert = em.find(Expert.class, username);
-        if (expert == null) {
-            return -2; //devolver exception
-        }
-        if(!occurrence.isExpertInOccurrence(expert)){
-            return -3; //devolver exception
-        }
-
-        occurrence.removeExpert(expert);
-        expert.removeOccurrence(occurrence);
-        return 0;
-    }
+//        Expert expert = em.find(Expert.class, username);
+//        if (expert == null) {
+//            return -3; //devolver exception
+//        }
+//        if(occurrence.isExpertInOccurrence(expert)){
+//            return -4; //devolver exception
+//        }
+//
+//        //verificar que o perito é da mesma seguradora
+//        if(expert.getCompany() != occurrence.getInsurance().getCompany()){
+//            return -5; //devolver exception
+//        }
+//
+//        occurrence.addExpert(expert);
+//        return 0;
+//    }
+//
+//    public int removeExpert(long id, String username){
+//        Occurrence occurrence = em.find(Occurrence.class, id);
+//        if (occurrence == null) {
+//            return -1; //devolver exception
+//        }
+//        Expert expert = em.find(Expert.class, username);
+//        if (expert == null) {
+//            return -2; //devolver exception
+//        }
+//        if(!occurrence.isExpertInOccurrence(expert)){
+//            return -3; //devolver exception
+//        }
+//
+//        occurrence.removeExpert(expert);
+//        expert.removeOccurrence(occurrence);
+//        return 0;
+//    }
 
     public int assignRepairer(long id, String username) {
         Occurrence occurrence = em.find(Occurrence.class, id);
@@ -241,45 +207,6 @@ public class OccurrenceBean {
         occurrence.setState(State.APPROVED); //volta para o estado anterior
         occurrence.setRepairer(null);
         repairer.removeOccurrence(occurrence);
-        return 0;
-    }
-
-    public int rejectRepairer(long id) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-
-        if(occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){
-            return -2; //devolver exception
-        }
-
-        Repairer repairer = occurrence.getRepairer();
-        if (repairer == null) {
-            return -3; //devolver exception
-        }
-
-        occurrence.setState(State.APPROVED); //goes back 1 state (now the client needs to choose another repairer)
-        //TODO: meter na description da ocorrencia o pq de o perito nao aceitar o repairer
-        return 0;
-    }
-
-    public int acceptRepairer(long id) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-
-        if(occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){ //é melhor fazer esta verificação 1º pois assim de certeza que o repairer está a null e sai logo
-            return -2; //devolver exception
-        }
-
-        Repairer repairer = occurrence.getRepairer();
-        if (repairer == null) {
-            return -3; //devolver exception
-        }
-
-        occurrence.setState(State.REPAIRER_WAITING_LIST);
         return 0;
     }
 

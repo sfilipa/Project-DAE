@@ -63,22 +63,46 @@ public class ExpertService {
             expertBean.approveOccurrence(username, occurrence_code, description);
             return Response.ok().build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
 
     @PATCH
     @Path("/{username}/occurrences/{occurrence_code}/acceptRepairer")
     public Response acceptRepairer(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code){
-        expertBean.acceptRepairer(username, occurrence_code);
-        return Response.status(Response.Status.OK).build();
+        try{
+            expertBean.acceptRepairer(username, occurrence_code);
+            return Response.status(Response.Status.OK).build();
+        }catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @PATCH
     @Path("/{username}/occurrences/{occurrence_code}/rejectRepairer")
-    public Response rejectRepairer(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code){
-        expertBean.rejectRepairer(username, occurrence_code);
-        return Response.status(Response.Status.OK).build();
+    public Response rejectRepairer(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code){
+        try{
+            // Get the input stream from the request
+            InputStream inputStream = request.getInputStream();
+
+            // Read the message body from the input stream
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(inputStream);
+
+            // Extract the values from the JSON object
+            String description = rootNode.get("description").asText();
+
+            expertBean.rejectRepairer(username, occurrence_code, description);
+            return Response.status(Response.Status.OK).build();
+        }catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @GET // means: to call this endpoint, we need to use the HTTP GET method
@@ -121,42 +145,26 @@ public class ExpertService {
     @PATCH
     @Path("/{username}/occurrences/{code}/assign")
     public Response assignOccurrence(@PathParam("username") String username, @PathParam("code") String code) {
-        int response = expertBean.addOccurrence(username, code);
-        switch (response) {
-            case 0:
-                return Response.status(Response.Status.OK)
-                        .build();
-            case -1:
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("ERROR_FINDING_EXPERT")
-                        .build();
-            case -2:
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("ERROR_FINDING_OCCURRENCE")
-                        .build();
-            default:
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        try{
+            expertBean.addOccurrence(username, code);
+            return Response.status(Response.Status.OK).build();
+        }catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
 
     @PATCH
     @Path("/{username}/occurrences/{code}/unassign")
     public Response unassignOccurrence(@PathParam("username") String username, @PathParam("code") String code) {
-        int response = expertBean.removeOccurrence(username, code);
-        switch (response) {
-            case 0:
-                return Response.status(Response.Status.OK)
-                        .build();
-            case -1:
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("ERROR_FINDING_EXPERT")
-                        .build();
-            case -2:
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("ERROR_FINDING_OCCURRENCE")
-                        .build();
-            default:
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        try{
+            expertBean.removeOccurrence(username, code);
+            return Response.status(Response.Status.OK).build();
+        }catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
 
@@ -168,7 +176,4 @@ public class ExpertService {
 
         return Response.status(Response.Status.ACCEPTED).build();
     }
-
-    //TODO: metodos de approve e disapprove do repairer escolhido pelo cliente
-
 }

@@ -42,37 +42,6 @@ public class ExpertBean {
         return find(username);
     }
 
-    public int addOccurrence(String username, String occurrence_code) {
-        Expert expert = find(username);
-        if (expert == null){
-            return -1;
-        }
-        Occurrence occurrence = em.find(Occurrence.class, occurrence_code);
-        if (occurrence == null){
-            return -2;
-        }
-
-        expert.addOccurrence(occurrence);
-        occurrence.addExpert(expert);
-        return 0;
-    }
-
-    public int removeOccurrence(String username, String occurrence_code) {
-        Expert expert = find(username);
-        if (expert == null){
-            return -1;
-        }
-        Occurrence occurrence = em.find(Occurrence.class, occurrence_code);
-        if (occurrence == null){
-            return -2;
-        }
-
-        expert.removeOccurrence(occurrence);
-        occurrence.removeExpert(expert);
-        return 0;
-    }
-
-
     //penso que nunca se vai fazer updates pq isto vem da API
     public Expert update(String username, String password, String name, String email, long company_usernmae) {
         Expert expert = find(username);
@@ -116,6 +85,8 @@ public class ExpertBean {
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
             validateOccurrence(expert, occurrence);
 
+            validateOccurrenceState(occurrence, State.PENDING);
+
             // Disapprove Occurrence
             occurrence.setState(State.DISAPPROVED);
 
@@ -141,6 +112,8 @@ public class ExpertBean {
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
             validateOccurrence(expert, occurrence);
 
+            validateOccurrenceState(occurrence, State.PENDING);
+
             // Approve Occurrence
             occurrence.setState(State.APPROVED);
 
@@ -156,29 +129,93 @@ public class ExpertBean {
         }
     }
 
-    public int acceptRepairer(String username, long occurrence_code){
-        Occurrence occurrence = em.find(Occurrence.class, occurrence_code);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-        Expert expert = em.find(Expert.class, username);
-        //validateExpertIsAssignedToOccurrence(expert, occurrence);
+    public void addOccurrence(String username, String occurrenceCode) {
+        try{
+            // Find Expert
+            Expert expert = find(username);
+            validateExpert(expert);
 
-        if(occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){ //é melhor fazer esta verificação 1º pois assim de certeza que o repairer está a null e sai logo
-            return -2; //devolver exception
-        }
+            // Find Occurrence
+            Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
 
-        Repairer repairer = occurrence.getRepairer();
-        if (repairer == null) {
-            return -3; //devolver exception
-        }
+            if(expert.getCompany() != occurrence.getInsurance().getCompany()){
+                throw new IllegalArgumentException("Expert and Occurrence are not from the same company");
+            }
 
-        occurrence.setState(State.REPAIRER_WAITING_LIST);
-        return 0;
+            validateOccurrence(expert, occurrence);
+
+            expert.addOccurrence(occurrence);
+            occurrence.addExpert(expert);
+        }catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
-    public void rejectRepairer(String username, long occurrence_code){
+    public void removeOccurrence(String username, String occurrenceCode) {
+        try{
+            // Find Expert
+            Expert expert = find(username);
+            validateExpert(expert);
 
+            // Find Occurrence
+            Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
+            validateOccurrence(expert, occurrence);
+
+            expert.removeOccurrence(occurrence);
+            occurrence.removeExpert(expert);
+        }catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    public void acceptRepairer(String username, long occurrenceCode){
+        try{
+            // Find Expert
+            Expert expert = find(username);
+            validateExpert(expert);
+
+            // Find Occurrence
+            Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
+            validateOccurrence(expert, occurrence);
+
+            validateExpertIsAssignedToOccurrence(expert, occurrence);
+
+            validateOccurrenceState(occurrence, State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
+
+            occurrence.setState(State.REPAIRER_WAITING_LIST);
+        }catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    public void rejectRepairer(String username, long occurrenceCode, String description){
+        try{
+            // Find Expert
+            Expert expert = find(username);
+            validateExpert(expert);
+
+            // Find Occurrence
+            Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
+            validateOccurrence(expert, occurrence);
+
+            validateExpertIsAssignedToOccurrence(expert, occurrence);
+
+            validateOccurrenceState(occurrence, State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
+
+            //Reject current assigned repairer
+            occurrence.setRepairer(null);
+
+            occurrence.setState(State.APPROVED);
+
+            // Get Occurrence Description
+            String occurrenceDescription = occurrence.getDescription();
+
+            // Build Occurrence Description
+            String newOccurrenceDescription = occurrenceDescription + "\n- " + expert.getUsername() + ": " + description;
+            occurrence.setDescription(newOccurrenceDescription);
+        }catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
     private void validateExpert(Expert expert) {
@@ -196,8 +233,8 @@ public class ExpertBean {
     private void validateOccurrence(Expert expert, Occurrence occurrence) {
         try {
             validateOccurrenceExists(occurrence);
-            //validateExpertIsAssignedToOccurrence(expert, occurrence);
-            validateOccurrenceIsPending(occurrence);
+            //validateExpertIsAssignedToOccurrence(expert, occurrence); -> nao se pode fazer esta validação para o removeOccurrence
+            validateOccurrenceState(occurrence, State.PENDING);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -210,9 +247,9 @@ public class ExpertBean {
         }
     }
 
-    private void validateOccurrenceIsPending(Occurrence occurrence) {
+    private void validateOccurrenceState(Occurrence occurrence, State state) {
         // Check if Occurrence is in the correct state
-        if(occurrence.getState() != State.PENDING) {
+        if(occurrence.getState() != state) {
             throw new IllegalArgumentException("Occurrence is not in the correct state");
         }
     }
