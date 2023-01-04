@@ -1,5 +1,7 @@
 package ipleiria.dae.project.ejbs;
 
+import ipleiria.dae.project.entities.Insurance;
+import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,6 +11,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 
 @Stateless
 public class MockAPIBean {
@@ -60,6 +64,51 @@ public class MockAPIBean {
             return jsonObject.getString("name");
         } catch (Exception e) {
             throw new IllegalArgumentException("Insurance Company not found");
+        }
+    }
+
+    public static List<Insurance> getInsurances(long nifNipc) {
+        try {
+            // Create Insurance List
+            List<Insurance> insurances = new LinkedList<>();
+
+            // Receive Insurance in a JSONArray format
+            JSONArray jsonArray = get("insurances", "clientNif", String.valueOf(nifNipc));
+            if (jsonArray.length() == 0) {
+                throw new IllegalArgumentException("No insurances found");
+            }
+
+            // For each JSONObject in the JSONArray add to the Insurance List
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                // Set Insurance Asset Type
+                InsuredAssetType insuredAssetTypeName = null;
+                for (InsuredAssetType insuredAssetType : InsuredAssetType.values()) {
+                    if (insurances.toString().equals(jsonObject.getString("insuredAssetType"))) {
+                        insuredAssetTypeName = insuredAssetType;
+                    }
+                }
+
+                // Add Insurance to the List
+                insurances.add(new Insurance(
+                        jsonObject.getString("code"),
+                        jsonObject.getLong("policyNumber"),
+                        jsonObject.getString("insuranceCompany"),
+                        jsonObject.getLong("clientNif"),
+                        jsonObject.getString("clientName"),
+                        jsonObject.getString("initialDate"),
+                        jsonObject.getString("validUntil"),
+                        jsonObject.getString("object"),
+                        insuredAssetTypeName,
+                        jsonObject.getString("description")
+                ));
+            }
+
+            // Return the Insurance List
+            return insurances;
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 

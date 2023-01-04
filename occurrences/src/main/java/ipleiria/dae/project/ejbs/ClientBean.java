@@ -1,22 +1,19 @@
 package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Client;
+import ipleiria.dae.project.entities.Insurance;
 import ipleiria.dae.project.entities.Occurrence;
-import ipleiria.dae.project.exceptions.MyConstraintViolationException;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Hasher;
 import org.hibernate.Hibernate;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
-import javax.validation.ConstraintViolationException;
 import java.util.List;
-import java.util.Objects;
 
 @Stateless
 public class ClientBean {
@@ -107,5 +104,20 @@ public class ClientBean {
         Hibernate.initialize(occurrences);
 
         return occurrences;
+    }
+
+    public List<Insurance> insurances(String username) {
+        try {
+            // Get client
+            Client client = findOrFail(username);
+            if (client == null) {
+                throw new MyEntityNotFoundException("Client " + username + " not found");
+            }
+
+            // Get insurances
+            return MockAPIBean.getInsurances(client.getNif_nipc());
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 }

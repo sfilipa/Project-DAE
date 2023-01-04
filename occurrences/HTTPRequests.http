@@ -210,13 +210,13 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "expert2",
-  "password": "exp"
+  "username": "client3",
+  "password": "client"
 }
 
 ### Get Client Details
-GET http://localhost:8080/occurrences/api/clients/pedro
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRybyIsImlhdCI6MTY3MjY3NDE5MCwiZXhwIjoxNjcyNjc3NzkwfQ.YgVeoucpbiJEuaDREWuPHQVXZfE9uKkJku2Ypnz53lQ
+GET http://localhost:8080/occurrences/api/clients/client3
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyODcwNzg3LCJleHAiOjE2NzI4NzQzODd9.Gv4KufuxtoFWuYWViIP5hERnYaeldRqziqoqX07oHuU
 Accept: application/json
 
 ### Update Client
@@ -237,6 +237,10 @@ DELETE http://localhost:8080/occurrences/api/clients/pedro
 //Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRybyIsImlhdCI6MTY3MjY3NDE5MCwiZXhwIjoxNjcyNjc3NzkwfQ.YgVeoucpbiJEuaDREWuPHQVXZfE9uKkJku2Ypnz53lQ
 Content-Type: application/json
 
+### Get Client Insurances
+GET http://localhost:8080/occurrences/api/clients/client3/insurances
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyODcwNzg3LCJleHAiOjE2NzI4NzQzODd9.Gv4KufuxtoFWuYWViIP5hERnYaeldRqziqoqX07oHuU
+Accept: application/json
 
 ###MOCKAPI
 ###Get All Policies from MockApi
