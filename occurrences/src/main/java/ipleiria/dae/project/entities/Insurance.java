@@ -39,6 +39,20 @@ public class Insurance implements Serializable {
         covers = new LinkedList<>();
     }
 
+    public Insurance(String code, long policyNumber, String insuranceCompany, long clientNif, String clientName, String initialDate, String validUntil, String objectInsured, InsuredAssetType insuredAssetType, String description, List<CoverageType> covers) {
+        this.code = code;
+        this.policyNumber = policyNumber;
+        this.insuranceCompany = insuranceCompany;
+        this.clientNif = clientNif;
+        this.clientName = clientName;
+        this.initialDate = initialDate;
+        this.validUntil = validUntil;
+        this.objectInsured = objectInsured;
+        this.insuredAssetType = insuredAssetType;
+        this.description = description;
+        this.covers = covers;
+    }
+
     public String getCode() {
         return code;
     }

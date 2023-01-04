@@ -1,6 +1,7 @@
 package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Insurance;
+import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import org.json.JSONArray;
@@ -83,11 +84,13 @@ public class MockAPIBean {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                 // Set Insurance Asset Type
-                InsuredAssetType insuredAssetTypeName = null;
-                for (InsuredAssetType insuredAssetType : InsuredAssetType.values()) {
-                    if (insuredAssetType.toString().equals(jsonObject.getString("insuredAssetType"))) {
-                        insuredAssetTypeName = insuredAssetType;
-                    }
+                InsuredAssetType insuredAssetTypeName = InsuredAssetType.valueOf(jsonObject.getString("insuredAssetType"));
+
+                // Set Insurance Covers
+                List<CoverageType> covers = new LinkedList<>();
+                JSONArray insuranceCoversAPI = jsonObject.getJSONArray("covers");
+                for (int j = 0; j < insuranceCoversAPI.length(); j++) {
+                    covers.add(CoverageType.valueOf(insuranceCoversAPI.getString(j)));
                 }
 
                 // Add Insurance to the List
@@ -101,7 +104,8 @@ public class MockAPIBean {
                         jsonObject.getString("validUntil"),
                         jsonObject.getString("object"),
                         insuredAssetTypeName,
-                        jsonObject.getString("description")
+                        jsonObject.getString("description"),
+                        covers
                 ));
             }
 
