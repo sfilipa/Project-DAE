@@ -1,15 +1,15 @@
 <template>
   <b-container class="login-page">
-    <h3 class="text-center mb-4">Login into Company</h3>
+    <h3 class="text-center mb-4">Sign in to the Company</h3>
     <b-form @submit.prevent="onSubmit" @reset="onReset">
-      <b-form-group class="mb-3" label="Username">
+      <b-form-group class="mb-3" label="Username:">
         <b-input
           name="username"
           placeholder="Enter your username"
           v-model.trim="username"
           required />
       </b-form-group>
-      <b-form-group class="mb-4" label="Password">
+      <b-form-group class="mb-4" label="Password:">
         <b-input
           name="password"
           type="password"
@@ -19,9 +19,13 @@
       </b-form-group>
       <div class="login-buttons">
         <button type="reset" class="btn btn-reset">Reset</button>
-        <button type="submit" class="btn btn-submit">Submit</button>
+        <button type="submit" class="btn btn-submit">Login</button>
       </div>
     </b-form>
+    <br>
+    <div style="display: flex">
+    <nuxt-link to="/auth/register" style="margin: auto">Don't have an account? <b>Sign Up</b></nuxt-link>
+    </div>
   </b-container>
 </template>
 
@@ -42,15 +46,9 @@ export default {
           password: this.password
         }
       })
-      promise.then((response) => {
+      promise.then(() => {
         this.$toast.success('You are logged in!').goAway(3000)
-        console.log(this.$auth.user, response.data)
-        // const { token } = response.data;
-        // this.$axios.defaults.headers.common = { Authorization: `Bearer ${token}` };
-        // this.$auth.user.setToken('Bearer',response.data)
-        // this.$auth.setUserToken(response.data)
         this.$router.push('/')
-        // this.$router.push(`/${this.$auth.user.role.toLowerCase()}s`)
       })
       promise.catch(() => {
         this.$toast.error('Sorry, you cant login. Ensure your credentials are correct').goAway(3000)
