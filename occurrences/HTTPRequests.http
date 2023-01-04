@@ -5,8 +5,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "expert2",
-  "password": "exp"
+  "username": "client3",
+  "password": "client"
 }
 
 ##### Occurrences
@@ -19,12 +19,12 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNjY4NTQ0LCJleHAiOjE2NzI2NzIxNDR9.twJ6VmBx_BXRDNqdv-Jedc0zJOGwa9IFEwffiSFFe9M
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyODU1OTA0LCJleHAiOjE2NzI4NTk1MDR9.D1gCSQstEQ1JroH0p2CkdNx7PCTYWfiTN5LkBgSFJ1U
 Content-Type: application/json
 
 {
   "usernameClient": "client3",
-  "date": "2021/07/20",
+  "entryDate": "10/1/2023",
   "state": "PENDING",
   "insuranceCode": "ALL-1298389",
   "description": "ola"
@@ -32,14 +32,14 @@ Content-Type: application/json
 
 ### Update Ocurrence
 PUT http://localhost:8080/occurrences/api/occurrences/2
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNDEyNTIyLCJleHAiOjE2NzI0MTYxMjJ9.mgJrZw2wfftcSwqNXp2lQ6TuVvFxbihS05829rz7Kmk
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyODU1OTA0LCJleHAiOjE2NzI4NTk1MDR9.D1gCSQstEQ1JroH0p2CkdNx7PCTYWfiTN5LkBgSFJ1U
 Content-Type: application/json
 
 {
   "usernameClient": "client3",
-  "date": "2021-07-20",
-  "state": "PENDING",
-  "insuranceCode": "FIDEL-1298999",
+  "entryDate": "10/1/2023",
+  "state": "DISAPPROVED",
+  "insuranceCode": "ALL-1298389",
   "description": "ola"
 }
 
@@ -240,13 +240,13 @@ Content-Type: application/json
 
 ###MOCKAPI
 ###Get All Policies from MockApi
-GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances
+GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=FIDEL-1298302
 Accept: application/json
 
 ###
-GET http://localhost:8080/occurrences/api/mock
+GET http://localhost:8080/occurrences/api/mock/insurances
 Accept: application/json
 
 ###
-GET http://localhost:8080/occurrences/api/mock/ALL-1298389
+GET http://localhost:8080/occurrences/api/mock/insurances/FIDEL-1298302
 Accept: application/json

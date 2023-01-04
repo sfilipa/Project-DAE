@@ -1,10 +1,14 @@
 package ipleiria.dae.project.ws;
 
 import ipleiria.dae.project.ejbs.MockAPIBean;
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.Optional;
 
 @Path("mock")
 @Consumes({"application/json"})
@@ -14,15 +18,17 @@ public class MockAPIService {
     private MockAPIBean mockAPIBean;
 
     @GET
-    @Path("/")
-    public Response getMockData() {
-        return Response.ok(mockAPIBean.getAllDataAPI()).build();
+    @Path("/{resource}")
+    public Response getMockData(@PathParam("resource") String resource) throws MyEntityNotFoundException {
+        JSONArray jsonArray = mockAPIBean.getDataAPICode(resource, "");
+        return Response.ok(jsonArray.toString()).build();
     }
 
     @GET
-    @Path("/{code}")
-    public Response getMockDataByCode(@PathParam("code") String code) {
-        return Response.ok(mockAPIBean.getDataAPICode(code)).build();
+    @Path("/{resource}/{code}")
+    public Response getMockDataByCode(@PathParam("code") String code, @PathParam("resource") String resource) throws MyEntityNotFoundException {
+        JSONArray jsonArray = mockAPIBean.getDataAPICode(resource, code);
+        return Response.ok(jsonArray.toString()).build();
     }
 
 

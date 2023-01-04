@@ -9,6 +9,7 @@ import org.hibernate.Hibernate;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,6 +24,9 @@ import java.util.List;
 public class OccurrenceBean {
     @PersistenceContext
     private EntityManager em;
+
+    @EJB
+    private MockAPIBean mockAPIBean;
 
     public Occurrence find(long id) {
         return em.find(Occurrence.class, id);
@@ -39,7 +43,9 @@ public class OccurrenceBean {
     }
 
     public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, String description) throws MyEntityNotFoundException {
-        JSONObject jsonObject = getDataAPI(insuranceCode);
+        JSONArray jsonArray = mockAPIBean.getDataAPICode("insurances",insuranceCode);
+
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
         if(jsonObject == null){
             throw new MyEntityNotFoundException("Insurance not found");
         }
@@ -101,7 +107,9 @@ public class OccurrenceBean {
             throw new MyEntityNotFoundException("Occurrence not found");
         }
 
-        JSONObject jsonObject = getDataAPI(insuranceCode);
+        JSONArray jsonArray = mockAPIBean.getDataAPICode("insurances",insuranceCode);
+
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
         if(jsonObject == null){
             throw new MyEntityNotFoundException("Insurance not found");
         }
@@ -225,35 +233,4 @@ public class OccurrenceBean {
         repairer.removeOccurrence(occurrence);
         return 0;
     }
-
-    public JSONObject getDataAPI(String code) {
-        JSONObject jsonObject = null;
-        try {
-            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=" + code);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
-
-            if (conn.getResponseCode() < 200 || conn.getResponseCode() > 299) {
-                // throw an exception or handle the error
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-            String output;
-            StringBuilder response = new StringBuilder();
-            while ((output = br.readLine()) != null) {
-                response.append(output);
-            }
-            System.out.println(response);
-            JSONArray jsonArray = new JSONArray(response.toString());
-            jsonObject = jsonArray.getJSONObject(0);
-            System.out.println(jsonArray);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return jsonObject;
-    }
-
 }

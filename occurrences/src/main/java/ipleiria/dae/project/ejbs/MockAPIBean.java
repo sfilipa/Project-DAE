@@ -1,5 +1,6 @@
 package ipleiria.dae.project.ejbs;
 
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -12,14 +13,15 @@ import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
+import java.util.Optional;
 
 @Stateless
 public class MockAPIBean {
 
-    public JSONObject getAllDataAPI() {
-        JSONObject jsonObject = null;
+    public JSONArray getAllDataAPI(String resource) {
+        JSONArray jsonArray = new JSONArray();
         try {
-            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies");
+            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource);
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -36,49 +38,32 @@ public class MockAPIBean {
             while ((output = br.readLine()) != null) {
                 response.append(output);
             }
-            System.out.println(response);
-            JSONArray jsonArray = new JSONArray(response.toString());
-            jsonObject = jsonArray.getJSONObject(0);
-            System.out.println(jsonArray);
+            jsonArray = new JSONArray(response.toString());
 
-            return jsonObject;
-
-           /* URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.connect();
-
-            if (conn.getResponseCode() < 200 || conn.getResponseCode() > 299) {
-                return null;
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-
-            String output;
-            StringBuilder response = new StringBuilder();
-            while ((output = br.readLine()) != null) {
-                response.append(output);
-            }
-            System.out.println(response);
-
-            return response.toString();*/
-
-
+            return jsonArray;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return jsonObject;
+        return jsonArray;
     }
 
-    public String getDataAPICode(String code) {
+    public JSONArray getDataAPICode(String resource, String code) throws MyEntityNotFoundException {
+        JSONArray jsonArray = new JSONArray();
         try {
-            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances/" + code);
+            URL url = null;
+            if (!code.trim().isEmpty()) {
+                url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource + "?code=" + code);
+                System.out.println("ENTROUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"+url);
+            } else {
+                url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource);
+            }
+
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
 
             if (conn.getResponseCode() < 200 || conn.getResponseCode() > 299) {
-                return null;
+                throw new MyEntityNotFoundException("Erro da API");//TODO: MUDAR ESTAS EXCEÇOES
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
@@ -88,16 +73,15 @@ public class MockAPIBean {
             while ((output = br.readLine()) != null) {
                 response.append(output);
             }
-            System.out.println(response);
+            jsonArray = new JSONArray(response.toString());
 
-            return response.toString();
-
-
+            return jsonArray;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "";
+        return jsonArray;
     }
+
     public static String getInsuranceCompany(String companyUsername) {
         StringBuilder stringBuilder = get("insuranceCompanies", "name", companyUsername);
         return stringBuilder.toString();
