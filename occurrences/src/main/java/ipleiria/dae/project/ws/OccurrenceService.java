@@ -153,8 +153,8 @@ public class OccurrenceService {
     }
 
     @PATCH
-    @Path("/{id}/expert/{username}/unassign")
-    public Response unassignExpert(@PathParam("id") long id, @PathParam("username") String username) {
+    @Path("/{id}/expert/{username}/remove")
+    public Response removeExpert(@PathParam("id") long id, @PathParam("username") String username) {
         Occurrence occurrence = occurrenceBean.find(id);
         if (occurrence == null) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -176,22 +176,13 @@ public class OccurrenceService {
                         .entity("EXPERT_IS_NOT_ASSIGNED_TO_THAT_OCCURRENCE")
                         .build();
             default:
-                return Response.status(Response.Status.ACCEPTED)
-                        .entity(OccurrenceDTO.from(occurrence))
-                        .build();
+                return Response.status(Response.Status.OK).build();
         }
     }
 
     @PATCH
     @Path("/{id}/approve")
     public Response approveOccurrence(@PathParam("id") long id) {
-        Occurrence occurrence = occurrenceBean.find(id);
-        if (occurrence == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ERROR_FINDING_OCCURRENCE")
-                    .build();
-        }
-
         int response = occurrenceBean.approveOccurrence(id);
         switch (response){
             case -1:
@@ -214,13 +205,6 @@ public class OccurrenceService {
     @PATCH
     @Path("/{id}/disapprove")
     public Response disapproveOccurrence(@PathParam("id") long id) {
-        Occurrence occurrence = occurrenceBean.find(id);
-        if (occurrence == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("ERROR_FINDING_OCCURRENCE")
-                    .build();
-        }
-
         int response = occurrenceBean.disapproveOccurrence(id);
         switch (response){
             case -1:

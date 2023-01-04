@@ -3,6 +3,7 @@ package ipleiria.dae.project.ejbs;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.InsuranceCompany;
 import ipleiria.dae.project.entities.Occurrence;
+import ipleiria.dae.project.entities.*;
 import ipleiria.dae.project.enumerators.State;
 import ipleiria.dae.project.security.Hasher;
 
@@ -153,6 +154,31 @@ public class ExpertBean {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+
+    public int acceptRepairer(String username, long occurrence_code){
+        Occurrence occurrence = em.find(Occurrence.class, occurrence_code);
+        if (occurrence == null) {
+            return -1; //devolver exception
+        }
+        Expert expert = em.find(Expert.class, username);
+        //validateExpertIsAssignedToOccurrence(expert, occurrence);
+
+        if(occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){ //é melhor fazer esta verificação 1º pois assim de certeza que o repairer está a null e sai logo
+            return -2; //devolver exception
+        }
+
+        Repairer repairer = occurrence.getRepairer();
+        if (repairer == null) {
+            return -3; //devolver exception
+        }
+
+        occurrence.setState(State.REPAIRER_WAITING_LIST);
+        return 0;
+    }
+
+    public void rejectRepairer(String username, long occurrence_code){
+
     }
 
     private void validateExpert(Expert expert) {

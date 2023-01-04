@@ -67,6 +67,20 @@ public class ExpertService {
         }
     }
 
+    @PATCH
+    @Path("/{username}/occurrences/{occurrence_code}/acceptRepairer")
+    public Response acceptRepairer(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code){
+        expertBean.acceptRepairer(username, occurrence_code);
+        return Response.status(Response.Status.OK).build();
+    }
+
+    @PATCH
+    @Path("/{username}/occurrences/{occurrence_code}/rejectRepairer")
+    public Response rejectRepairer(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code){
+        expertBean.rejectRepairer(username, occurrence_code);
+        return Response.status(Response.Status.OK).build();
+    }
+
     @GET // means: to call this endpoint, we need to use the HTTP GET method
     @Path("/") // means: the relative url path is “/api/students/”
     public List<ExpertDTO> getAllExperts() {
