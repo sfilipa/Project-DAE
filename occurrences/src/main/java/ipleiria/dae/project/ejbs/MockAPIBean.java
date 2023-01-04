@@ -85,7 +85,7 @@ public class MockAPIBean {
                 // Set Insurance Asset Type
                 InsuredAssetType insuredAssetTypeName = null;
                 for (InsuredAssetType insuredAssetType : InsuredAssetType.values()) {
-                    if (insurances.toString().equals(jsonObject.getString("insuredAssetType"))) {
+                    if (insuredAssetType.toString().equals(jsonObject.getString("insuredAssetType"))) {
                         insuredAssetTypeName = insuredAssetType;
                     }
                 }
