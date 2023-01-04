@@ -236,7 +236,7 @@ GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies?nif_nipc=239292078
 Accept: application/json
 
 ###Get policie with specific code from MockApi
-GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies/ALL-1298666
+GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=ALL-1298666
 Accept: application/json
 
 ###Get All Users from MockApi

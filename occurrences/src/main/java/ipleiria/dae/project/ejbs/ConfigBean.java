@@ -39,7 +39,7 @@ public class ConfigBean {
         String dateInString = sdf.format(new Date());
         try {
             //expertBean.create("expert1", "exp", "Expert Joca", "expert@mail.pt", "company1");
-            InsuranceCompany insuranceCompany = insuranceCompanyBean.create("Fidelidade");
+            //InsuranceCompany insuranceCompany = insuranceCompanyBean.create("Fidelidade");
             clientBean.create("client2", "client", "Client Isabel", "client2@mail.pt", "Rua dos pinheiros tortos", 912345678, 267503959);
             clientBean.create("client3", "client", "Client Nando", "client3@mail.pt", "Rua dos pinheiros tortos", 912345678,236589547);
             //insuranceBean.create("AL-123", company, "Allianz");
