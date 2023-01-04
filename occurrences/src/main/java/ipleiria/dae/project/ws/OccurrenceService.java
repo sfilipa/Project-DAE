@@ -60,7 +60,7 @@ public class OccurrenceService {
         }
         Occurrence occurrence = occurrenceBean.create(
                 occurrenceDTO.getUsernameClient(),
-                occurrenceDTO.getDate(),
+                occurrenceDTO.getEntryDate(),
                 occurrenceDTO.getState(),
                 occurrenceDTO.getInsuranceCode(),
                 occurrenceDTO.getDescription()
@@ -86,7 +86,7 @@ public class OccurrenceService {
         occurrence = occurrenceBean.update(
                 id,
                 occurrenceDTO.getUsernameClient(),
-                occurrenceDTO.getDate(),
+                occurrenceDTO.getEntryDate(),
                 occurrenceDTO.getState(),
                 occurrenceDTO.getInsuranceCode(),
                 occurrenceDTO.getDescription()

@@ -25,54 +25,52 @@ public class Occurrence implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotNull
-    private String date;
+    private String entryDate;
+    private String finalDate;
     @NotNull
-    private Insurance insurance;
-//    @NotNull
-//    private Policy policy;
-    @NotNull
-    private State state;
-    @NotNull
-    private InsuredAssetType insuredAssetType;
+    private String objectInsured;
     @NotNull
     private String description;
     @NotNull
-    private String object;
-
+    private Insurance insurance;
+    @NotNull
+    private State state;
     @ManyToOne
     @JoinColumn(name = "client_username")
     private Client client;
-
-    @OneToMany(mappedBy = "occurrence", fetch = FetchType.EAGER)
-    private List<Document> documents;
-
-    @ManyToMany(mappedBy = "occurrences", fetch = FetchType.LAZY)
-    private List<Expert> experts;
-
     @ManyToOne
     @JoinColumn(name = "repairer_name")
     private Repairer repairer;
+    @OneToMany(mappedBy = "occurrence", fetch = FetchType.EAGER)
+    private List<Document> documents;
+    @ManyToMany(mappedBy = "occurrences", fetch = FetchType.LAZY)
+    private List<Expert> experts;
 
     public Occurrence() {
         documents = new LinkedList<>();
+        experts = new LinkedList<>();
     }
 
     //de inicio, todas as occurrences devem ser criadas com o State.PENDING
-    public Occurrence(Client client, String date, State state, InsuredAssetType insuredAssetType, Insurance insurance, String description, String object, Repairer repairer) {
-        this.client = client;
-        this.date = date;
-        this.state = state;
-        this.insuredAssetType = insuredAssetType;
-        this.insurance = insurance;
-        this.repairer = repairer;
-        this.experts = new LinkedList<>();
-        this.documents = new LinkedList<>();
+
+
+    public Occurrence(String entryDate, String objectInsured, String description, Insurance insurance, State state, Client client) {
+        this.entryDate = entryDate;
+        this.objectInsured = objectInsured;
         this.description = description;
-        this.object = object;
+        this.insurance = insurance;
+        this.state = state;
+        this.client = client;
+        documents = new LinkedList<>();
+        experts = new LinkedList<>();
     }
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Insurance getInsurance() {
@@ -91,12 +89,20 @@ public class Occurrence implements Serializable {
         this.client = client;
     }
 
-    public String getDate() {
-        return date;
+    public String getEntryDate() {
+        return entryDate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setEntryDate(String entryDate) {
+        this.entryDate = entryDate;
+    }
+
+    public String getFinalDate() {
+        return finalDate;
+    }
+
+    public void setFinalDate(String finalDate) {
+        this.finalDate = finalDate;
     }
 
     public State getState() {
@@ -107,12 +113,12 @@ public class Occurrence implements Serializable {
         this.state = state;
     }
 
-    public InsuredAssetType getInsuredAssetType() {
-        return insuredAssetType;
+    public String getObjectInsured() {
+        return objectInsured;
     }
 
-    public void setInsuredAssetType(InsuredAssetType insuredAssetType) {
-        this.insuredAssetType = insuredAssetType;
+    public void setObjectInsured(String objectInsured) {
+        this.objectInsured = objectInsured;
     }
 
     public List<Document> getDocuments() {
@@ -173,19 +179,4 @@ public class Occurrence implements Serializable {
         this.documents.remove(document);
     }
 
-    public String getObject() {
-        return object;
-    }
-
-    public void setObject(String object) {
-        this.object = object;
-    }
-
-//    public Policy getPolicy() {
-//        return policy;
-//    }
-//
-//    public void setPolicy(Policy policy) {
-//        this.policy = policy;
-//    }
 }
