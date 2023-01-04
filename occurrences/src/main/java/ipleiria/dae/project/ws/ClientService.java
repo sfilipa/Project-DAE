@@ -50,7 +50,8 @@ public class ClientService {
                 clientDTO.getName(),
                 clientDTO.getEmail(),
                 clientDTO.getAddress(),
-                clientDTO.getPhoneNumber()
+                clientDTO.getPhoneNumber(),
+                clientDTO.getNif_nipc()
         );
 
         if (client == null) {
@@ -76,7 +77,8 @@ public class ClientService {
                 clientDTO.getName(),
                 clientDTO.getEmail(),
                 clientDTO.getAddress(),
-                clientDTO.getPhoneNumber()
+                clientDTO.getPhoneNumber(),
+                clientDTO.getNif_nipc()
         );
 
 

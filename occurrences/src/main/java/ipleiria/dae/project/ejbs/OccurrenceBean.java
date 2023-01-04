@@ -43,17 +43,20 @@ public class OccurrenceBean {
             throw new MyEntityNotFoundException("Insurance not found");
         }
         String insuranceCodeAPI = jsonObject.getString("code");
-        String insuranceNameAPI = jsonObject.getJSONObject("insurance").getString("name");
-        String clientUsernameAPI = jsonObject.getJSONObject("client").getString("username");
+        String insuranceNameAPI = jsonObject.getString("insurance");
+        long clientNif_NipcAPI = jsonObject.getLong("nif_nipc");
         String insuranceTypeAPI = jsonObject.getString("type").toUpperCase();
         String insuranceObjectAPI = jsonObject.getString("object");
         JSONArray insuranceCoversAPI = jsonObject.getJSONArray("covers");
 
-        if (!clientUsernameAPI.equals(usernameClient)){
+        Client client = em.find(Client.class, usernameClient);
+
+        System.out.println("NIFFFFFFFFFFFFFFFFFFFFFDAAAAAAAAAAAAAAPIIIIIIIIIIIIII" + clientNif_NipcAPI);
+        System.out.println("NIFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFBDDDDDDDDDDDDDD" + client.getNif_nipc());
+
+        if (clientNif_NipcAPI != client.getNif_nipc()){
             throw new MyEntityNotFoundException("Client is not the owner of the insurance");
         }
-
-        Client client = em.find(Client.class, usernameClient);
         InsuredAssetType insuredAssetType = null;
         InsuranceCompany insuranceCompany = new InsuranceCompany(insuranceNameAPI);
         Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
@@ -87,16 +90,17 @@ public class OccurrenceBean {
         if(jsonObject == null){
             throw new MyEntityNotFoundException("Insurance not found");
         }
-        String insuranceNameAPI = jsonObject.getJSONObject("insurance").getString("name");
-        String clientUsernameAPI = jsonObject.getJSONObject("client").getString("username");
+        String insuranceNameAPI = jsonObject.getString("insurance");
+        long clientNif_NipcAPI = jsonObject.getLong("nif_nipc");
         String insuranceTypeAPI = jsonObject.getString("type").toUpperCase();
         String insuranceObjectAPI = jsonObject.getString("object");
 
-        if (!clientUsernameAPI.equals(usernameClient)){
-            throw new MyEntityNotFoundException("Client is not the owner of the insurance");
-        }
 
         Client client = em.find(Client.class, usernameClient);
+
+        if (clientNif_NipcAPI != client.getNif_nipc()){
+            throw new MyEntityNotFoundException("Client is not the owner of the insurance");
+        }
         InsuredAssetType insuredAssetType = null;
         InsuranceCompany insuranceCompany = new InsuranceCompany(insuranceNameAPI);
         Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
@@ -229,7 +233,7 @@ public class OccurrenceBean {
     public JSONObject getDataAPI(String code) {
         JSONObject jsonObject = null;
         try {
-            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies/" + code);
+            URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=" + code);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
@@ -248,8 +252,6 @@ public class OccurrenceBean {
             System.out.println(response);
 
             jsonObject = new JSONObject(response.toString());
-
-
 
         } catch (Exception e) {
             e.printStackTrace();

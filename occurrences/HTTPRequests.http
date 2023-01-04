@@ -75,7 +75,7 @@ Content-Type: application/x-www-form-urlencoded
 
 ##### CLIENT Occurrences
 GET http://localhost:8080/occurrences/api/clients/client2/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyNjc1NDU0LCJleHAiOjE2NzI2NzkwNTR9.lDmY9p4zAbZlLO3YJfARoC3pQxDiSnE6vryutFdubXQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyODMzOTQ3LCJleHAiOjE2NzI4Mzc1NDd9.CcNJ95OwhXe09eomLj-K65j5yOTBeQ7N4BUHjXS1xiw
 Accept: application/json
 
 ### Create Company
@@ -183,7 +183,8 @@ Content-Type: application/json
   "name": "Pedro",
   "password": "pedro1234",
   "address": "Rua da Pedra n18",
-  "phoneNumber": 915958652
+  "phoneNumber": 915958652,
+  "nif_nipc": 267503958
 }
 
 ####LOGIN
@@ -219,3 +220,41 @@ Content-Type: application/json
 DELETE http://localhost:8080/occurrences/api/clients/pedro
 //Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRybyIsImlhdCI6MTY3MjY3NDE5MCwiZXhwIjoxNjcyNjc3NzkwfQ.YgVeoucpbiJEuaDREWuPHQVXZfE9uKkJku2Ypnz53lQ
 Content-Type: application/json
+
+
+###MOCKAPI
+###Get All Policies from MockApi
+GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances
+Accept: application/json
+
+###Get specific client form Policies from MockApi
+GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies?nif_nipc=239292078
+Accept: application/json
+
+###Get policie with specific code from MockApi
+GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/policies/ALL-1298666
+Accept: application/json
+
+###Get All Users from MockApi
+GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/users
+Accept: application/json
+
+###Get specific user from MockApi
+GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/users/239292078
+Accept: application/json
+
+###Get All insurances from MockApi
+GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances
+Accept: application/json
+
+###Get specific insurance from MockApi
+GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?name=Allianz
+Accept: application/json
+
+###
+GET http://localhost:8080/occurrences/api/mock
+Accept: application/json
+
+###
+GET http://localhost:8080/occurrences/api/mock/ALL-1298389
+Accept: application/json

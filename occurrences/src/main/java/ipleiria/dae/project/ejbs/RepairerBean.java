@@ -1,7 +1,5 @@
 package ipleiria.dae.project.ejbs;
 
-import ipleiria.dae.project.entities.Company;
-import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.enumerators.State;

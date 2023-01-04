@@ -1,6 +1,5 @@
 package ipleiria.dae.project.ejbs;
 
-import ipleiria.dae.project.entities.Company;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.InsuranceCompany;
 import ipleiria.dae.project.entities.Occurrence;

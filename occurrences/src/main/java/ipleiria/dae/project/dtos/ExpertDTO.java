@@ -1,8 +1,6 @@
 package ipleiria.dae.project.dtos;
 
-import ipleiria.dae.project.entities.Company;
 import ipleiria.dae.project.entities.Expert;
-import ipleiria.dae.project.entities.Repairer;
 
 import javax.persistence.Id;
 import java.util.List;

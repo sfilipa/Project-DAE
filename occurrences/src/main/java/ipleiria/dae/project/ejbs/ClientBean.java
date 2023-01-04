@@ -27,20 +27,47 @@ public class ClientBean {
     @Inject
     private Hasher hasher;
 
-    public Client create(String username, String password, String name, String email, String address, long phoneNumber) throws MyEntityExistsException {
+    public Client create(String username, String password, String name, String email, String address, long phoneNumber, long nif_nipc) throws MyEntityExistsException {
         Client client = find(username);
         if (client != null) {
             throw new MyEntityExistsException("Client with username: " + username + " already exists");
         }
-        client = new Client(username, hasher.hash(password), name, email, address, phoneNumber);
+        //see if nif_nipc is valid
+        if (!validateNif(nif_nipc)) {
+            throw new MyEntityExistsException("Client with nif_nipc: " + nif_nipc + " is not valid");//TODO: MUDAR ESTAS EXCEÇOES
+        }
+        //TODO:MAKE THIS VERIFICATION
+        //see if the nif_nipc has already been used
+
+        if (nif_nipcAlreadyUsed(nif_nipc)) {
+            throw new MyEntityExistsException("Client with nif_nipc: " + nif_nipc + " already exists");
+        }
+        client = new Client(username, hasher.hash(password), name, email, address, phoneNumber, nif_nipc);
         em.persist(client);
         return client;
     }
 
-    public Client update(String username, String password, String name, String email, String address, long phoneNumber) throws MyEntityNotFoundException {
+    private boolean nif_nipcAlreadyUsed(long nif_nipc) {
+        return em.createNamedQuery("clientNif", Client.class)
+                .setParameter("nif_nipc", nif_nipc)
+                .getResultList().size() > 0;
+    }
+
+    public Client update(String username, String password, String name, String email, String address, long phoneNumber, long nif_nipc) throws MyEntityNotFoundException {
         Client client = find(username);
         if (client == null) {
             throw new MyEntityNotFoundException("Client not found");
+        }
+        //see if nif_nipc is valid
+        if (!validateNif(nif_nipc)) {
+            throw new MyEntityNotFoundException("Client with nif_nipc: " + nif_nipc + " is not valid");//TODO: MUDAR ESTAS EXCEÇOES
+        }
+        //see if the nif_nipc has already been used
+        if (nif_nipc != client.getNif_nipc()) {
+            if (nif_nipcAlreadyUsed(nif_nipc)) {
+                throw new MyEntityNotFoundException("Client with nif_nipc: " + nif_nipc + " already exists");//TODO: MUDAR ESTAS EXCEÇOES
+            }
+            client.setNif_nipc(nif_nipc);
         }
         em.lock(client, LockModeType.OPTIMISTIC);
         client.setPassword(password);
@@ -68,6 +95,14 @@ public class ClientBean {
         Hibernate.initialize(client);
 
         return client;
+    }
+
+    private boolean validateNif(long nif_nipc) {
+        //see if nif_nipc has 9 digits
+        if (nif_nipc < 100000000 || nif_nipc > 999999999) {
+            return false;
+        }
+        return true;
     }
 
     public List<Occurrence> clientOccurrences(String username) {

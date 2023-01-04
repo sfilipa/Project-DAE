@@ -13,28 +13,31 @@ public class ClientDTO implements Serializable {
     String username;
     String password, name, email,address;
     Long phoneNumber;
+    long nif_nipc;
    // List<String> insurances;
 
     public ClientDTO() {
        // insurances = new LinkedList<>();
     }
 
-    public ClientDTO(String username, String password, String name, String email, String address, Long phoneNumber) {
+    public ClientDTO(String username, String password, String name, String email, String address, Long phoneNumber, long nif_nipc) {
         this.username = username;
         this.password = password;
         this.name = name;
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.nif_nipc = nif_nipc;
        // insurances = new LinkedList<>();
     }
 
-    public ClientDTO(String password, String name, String email, String address, Long phoneNumber) {
+    public ClientDTO(String password, String name, String email, String address, Long phoneNumber, long nif_nipc) {
         this.password = password;
         this.name = name;
         this.email = email;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.nif_nipc = nif_nipc;
         // insurances = new LinkedList<>();
     }
 
@@ -96,6 +99,14 @@ public class ClientDTO implements Serializable {
         this.phoneNumber = phoneNumber;
     }
 
+    public long getNif_nipc() {
+        return nif_nipc;
+    }
+
+    public void setNif_nipc(long nif_nipc) {
+        this.nif_nipc = nif_nipc;
+    }
+
     public static ClientDTO from(Client client) {
         return new ClientDTO(
                 client.getUsername(),
@@ -103,14 +114,14 @@ public class ClientDTO implements Serializable {
                 client.getName(),
                 client.getEmail(),
                 client.getAddress(),
-                client.getPhoneNumber()
+                client.getPhoneNumber(),
+                client.getNif_nipc()
         );
     }
 
     public static List<ClientDTO> from(List<Client> students) {
         return students.stream().map(ClientDTO::from).collect(Collectors.toList());
     }
-
 
 
     /*public List<String> getInsurances() {
