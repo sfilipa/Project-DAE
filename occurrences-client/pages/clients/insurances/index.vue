@@ -1,7 +1,22 @@
 <template>
-  <b-container v-if="this.$auth.user">
-    <h3 class="text-center index-header">Welcome to your occurrence management platform</h3>
-    <p>&nbsp; My Insurances</p>
+  <div>
+    <nuxt-link
+      class="btn pb-3 pr-5 text-uppercase"
+      :to="`/clients`">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        &nbsp; Back to HomePage
+      </div>
+    </nuxt-link>
+
+    <div style="padding: 10px; margin-bottom: 20px;">
+      <h4><b>My Insurances</b></h4>
+    </div>
+    <div v-if="insurances.length == 0">
+      <span>No Insurances Registered</span>
+    </div>
 
     <div v-for="insurance in insurances" class="insurance-box">
       <div class="details-left">
@@ -34,12 +49,10 @@
         </nuxt-link>
       </div>
     </div>
-  </b-container>
+  </div>
 </template>
-
 <script>
 export default {
-  name: "index.vue",
   data () {
     return {
       fields: ['name', 'actions'], //nomes do DTOs
@@ -57,24 +70,14 @@ export default {
     ]}
   },
   created () {
-    this.$axios.$get(`/api/clients/${this.$auth.user.username}`)
-      .then((response) => {
-        this.username = response.username;
-        this.name = response.name;
-        this.email = response.email;
-        this.address = response.address;
-        this.phoneNumber = response.phoneNumber;
-        this.nif_nipc = response.nif_nipc;
-      })
-    // this.$axios.$get('/api/administrators')
-    //   .then((administrators) => {
-    //     this.administrators = administrators
+    // this.$axios.$get('/api/insurances')
+    //   .then((insurances) => {
+    //     this.insurances = insurances
     //   })
     // this.$axios.$get('http://localhost:8080/occurrences/api/students')
   }
 }
 </script>
-
 <style scoped>
 
 .btn-register-occurrence-right{
@@ -83,10 +86,6 @@ export default {
   border-radius: 10px;
   background-color: #e8e8e8;
   padding: 20px;
-}
-
-.index-header{
-  margin-bottom: 3rem;
 }
 
 .btn-check-details:active, .btn-check-details:hover{
@@ -99,6 +98,7 @@ export default {
   width: fit-content;
   height: fit-content;
   border: 1px solid gray;
+  padding: 10px;
 }
 
 .details-right{
@@ -134,7 +134,6 @@ export default {
 }
 
 @media only screen and (max-width: 1200px) {
-
   .insurance-box{
     flex-direction: column;
     height: 340px;
@@ -157,5 +156,4 @@ export default {
     border-radius: 0 0 25px 25px;
   }
 }
-
 </style>
