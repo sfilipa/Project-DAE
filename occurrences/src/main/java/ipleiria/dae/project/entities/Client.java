@@ -25,6 +25,7 @@ public class Client extends User implements Serializable {
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Occurrence> occurrences;
 
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @Transient
     private List<Policy> policies;
 
