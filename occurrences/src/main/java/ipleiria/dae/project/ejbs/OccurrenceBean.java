@@ -54,12 +54,16 @@ public class OccurrenceBean {
 
         Client client = em.find(Client.class, usernameClient);
         InsuredAssetType insuredAssetType = null;
-        InsuranceCompany insuranceCompany = new InsuranceCompany(insuranceNameAPI);
+        InsuranceCompany insuranceCompany = em.find(InsuranceCompany.class, insuranceNameAPI);
+        if (insuranceCompany == null){
+            throw new IllegalArgumentException("Insurance Company not found");
+        }
+
         Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
 
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e){
             throw new MyEntityNotFoundException("Insurance type not found");
         }
 
@@ -97,8 +101,10 @@ public class OccurrenceBean {
 
         Client client = em.find(Client.class, usernameClient);
         InsuredAssetType insuredAssetType = null;
-        InsuranceCompany insuranceCompany = new InsuranceCompany(insuranceNameAPI);
-        Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
+        InsuranceCompany insuranceCompany = em.find(InsuranceCompany.class, insuranceNameAPI);
+        if (insuranceCompany == null){
+            throw new IllegalArgumentException("Insurance Company not found");
+        }        Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
 
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
