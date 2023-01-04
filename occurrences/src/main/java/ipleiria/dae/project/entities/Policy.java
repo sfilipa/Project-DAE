@@ -9,15 +9,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-@Table(name = "policies")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Entity
-@NamedQueries({
-        @NamedQuery(
-                name = "getAllPolicies",
-                query = "SELECT p FROM Policy p ORDER BY p.id" // JPQL
-        )
-})
 public class Policy {
     @Id
     @NotNull
@@ -27,10 +19,9 @@ public class Policy {
     @GeneratedValue
     private String type;
     @NotNull
-    @ManyToOne
-    @JoinColumn(name = "client_username")
     private Client client;
     @NotNull
+    @ElementCollection
     private List<InsuredAssetType> covers;
 
     public Policy() {

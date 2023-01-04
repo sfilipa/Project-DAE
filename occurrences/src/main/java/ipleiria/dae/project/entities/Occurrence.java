@@ -28,6 +28,8 @@ public class Occurrence implements Serializable {
     private String date;
     @NotNull
     private Insurance insurance;
+//    @NotNull
+//    private Policy policy;
     @NotNull
     private State state;
     @NotNull
@@ -47,15 +49,9 @@ public class Occurrence implements Serializable {
     @ManyToMany(mappedBy = "occurrences", fetch = FetchType.LAZY)
     private List<Expert> experts;
 
-//    @ManyToOne
-//    @JoinColumn(name = "expert_name")
-//    private Expert expert;
-
     @ManyToOne
     @JoinColumn(name = "repairer_name")
     private Repairer repairer;
-//    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.REMOVE)
-//    private List<Repairer> repairers;
 
     public Occurrence() {
         documents = new LinkedList<>();
@@ -151,31 +147,6 @@ public class Occurrence implements Serializable {
         return experts.contains(expert);
     }
 
-//
-//    public boolean isRepairerInOccurrence(Repairer repairer) {
-//        return experts.contains(repairer);
-//    }
-
-//    public List<Repairer> getRepairers() {
-//        return repairers;
-//    }
-//
-//    public void addRepairer(Repairer repairer){
-//        if(repairer != null){
-//            repairers.add(repairer);
-//        }
-//    }
-//
-//    public void removeRepairer(Repairer repairer){
-//        if(repairer != null){
-//            repairers.remove(repairer);
-//        }
-//    }
-//
-//    public void setRepairers(List<Repairer> repairers) {
-//        this.repairers = repairers;
-//    }
-
     public Repairer getRepairer() {
         return repairer;
     }
@@ -209,4 +180,12 @@ public class Occurrence implements Serializable {
     public void setObject(String object) {
         this.object = object;
     }
+
+//    public Policy getPolicy() {
+//        return policy;
+//    }
+//
+//    public void setPolicy(Policy policy) {
+//        this.policy = policy;
+//    }
 }

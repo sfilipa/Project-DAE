@@ -98,7 +98,7 @@ public class ExpertBean {
     public void delete(String username) {
         Expert expert = find(username);
         if (expert == null){
-
+            throw new IllegalArgumentException("Expert not found");
         }
 
         InsuranceCompany company = expert.getCompany();

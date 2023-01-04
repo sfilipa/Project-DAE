@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Date;
 import java.util.List;
 
 @Stateless
@@ -55,12 +54,16 @@ public class OccurrenceBean {
 
         Client client = em.find(Client.class, usernameClient);
         InsuredAssetType insuredAssetType = null;
-        InsuranceCompany insuranceCompany = new InsuranceCompany(insuranceNameAPI);
+        InsuranceCompany insuranceCompany = em.find(InsuranceCompany.class, insuranceNameAPI);
+        if (insuranceCompany == null){
+            throw new IllegalArgumentException("Insurance Company not found");
+        }
+
         Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
 
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e){
             throw new MyEntityNotFoundException("Insurance type not found");
         }
 
@@ -98,8 +101,10 @@ public class OccurrenceBean {
 
         Client client = em.find(Client.class, usernameClient);
         InsuredAssetType insuredAssetType = null;
-        InsuranceCompany insuranceCompany = new InsuranceCompany(insuranceNameAPI);
-        Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
+        InsuranceCompany insuranceCompany = em.find(InsuranceCompany.class, insuranceNameAPI);
+        if (insuranceCompany == null){
+            throw new IllegalArgumentException("Insurance Company not found");
+        }        Insurance insurance = new Insurance(insuranceCode, insuranceCompany, insuranceNameAPI);
 
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
@@ -127,8 +132,11 @@ public class OccurrenceBean {
             return -2;
         }
         //TODO: Verificar se o expert logged está na lista de experts da occurrence
+//        if(!occurrence.isExpertInOccurrence(expertLoggedIn)){
+//            return -3;
+//        }
 
-        occurrence.setState(State.FAILED);
+        occurrence.setState(State.DISAPPROVED);
         return 0;
     }
 
@@ -145,7 +153,7 @@ public class OccurrenceBean {
 //            return -3;
 //        }
 
-        occurrence.setState(State.ACTIVE);
+        occurrence.setState(State.APPROVED);
         return 0;
     }
 
@@ -197,7 +205,7 @@ public class OccurrenceBean {
         if (occurrence == null) {
             return -1; //devolver exception
         }
-        if(occurrence.getState() != State.ACTIVE){
+        if(occurrence.getState() != State.APPROVED){
             return -2; //devolver exception
         }
         Repairer repairer = em.find(Repairer.class, username);
@@ -205,6 +213,7 @@ public class OccurrenceBean {
             return -3; //devolver exception
         }
 
+        occurrence.setState(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
         occurrence.setRepairer(repairer);
         repairer.addOccurrence(occurrence);
         return 0;
@@ -221,8 +230,52 @@ public class OccurrenceBean {
             return -2; //devolver exception
         }
 
+        if(occurrence.getState() != State.REPAIRER_WAITING_LIST && occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){
+            return -3; //devolver exception (pois se estiver no .ACTIVE, não posso fazer unassign de um repairer que já está mesmo a reparar)
+        }
+
+        occurrence.setState(State.APPROVED); //volta para o estado anterior
         occurrence.setRepairer(null);
         repairer.removeOccurrence(occurrence);
+        return 0;
+    }
+
+    public int rejectRepairer(long id) {
+        Occurrence occurrence = em.find(Occurrence.class, id);
+        if (occurrence == null) {
+            return -1; //devolver exception
+        }
+
+        if(occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){
+            return -2; //devolver exception
+        }
+
+        Repairer repairer = occurrence.getRepairer();
+        if (repairer == null) {
+            return -3; //devolver exception
+        }
+
+        occurrence.setState(State.APPROVED); //goes back 1 state (now the client needs to choose another repairer)
+        //TODO: meter na description da ocorrencia o pq de o perito nao aceitar o repairer
+        return 0;
+    }
+
+    public int acceptRepairer(long id) {
+        Occurrence occurrence = em.find(Occurrence.class, id);
+        if (occurrence == null) {
+            return -1; //devolver exception
+        }
+
+        if(occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){ //é melhor fazer esta verificação 1º pois assim de certeza que o repairer está a null e sai logo
+            return -2; //devolver exception
+        }
+
+        Repairer repairer = occurrence.getRepairer();
+        if (repairer == null) {
+            return -3; //devolver exception
+        }
+
+        occurrence.setState(State.REPAIRER_WAITING_LIST);
         return 0;
     }
 
@@ -256,6 +309,5 @@ public class OccurrenceBean {
         }
         return jsonObject;
     }
-
 
 }
