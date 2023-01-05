@@ -27,7 +27,7 @@ public class AdministratorService {
 
     @GET
     @Path("{username}")
-    public Response get(@PathParam("username") String username) {
+    public Response get(@PathParam("username") String username) throws Exception {
         return Response.ok(AdministratorDTO.from(administratorBean.findOrFail(username))).build();
     }
 }

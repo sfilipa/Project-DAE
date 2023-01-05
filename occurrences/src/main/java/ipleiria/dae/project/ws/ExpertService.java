@@ -202,7 +202,7 @@ public class ExpertService {
                 throw new ForbiddenException(username + ", You are not allowed to access this resource");
             }
 
-            Expert expert = expertBean.find(username);
+            Expert expert = expertBean.findOrFail(username);
 
             return Response.ok(ExpertDTO.from(expert)).build();
         } catch (MyEntityNotFoundException e) {
@@ -281,7 +281,7 @@ public class ExpertService {
                 throw new ForbiddenException(username + ", You are not allowed to access this resource");
             }
 
-            Expert expert = expertBean.find(username);
+            Expert expert = expertBean.findOrFail(username);
 
             emailBean.send(expert.getEmail(), email.getSubject(), email.getMessage());
             return Response.noContent().build();

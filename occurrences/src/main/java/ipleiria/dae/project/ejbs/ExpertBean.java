@@ -75,6 +75,10 @@ public class ExpertBean {
     }
 
     public Expert find(String username) throws MyEntityNotFoundException {
+        return em.find(Expert.class, username);
+    }
+
+    public Expert findOrFail(String username) throws MyEntityNotFoundException {
         try {
             Expert expert = em.find(Expert.class, username);
             if (expert == null) {

@@ -32,10 +32,9 @@ public class UserBean {
         return user != null && user.getPassword().equals(hasher.hash(password));
     }
 
-    public boolean canAdminLogin(String username, String password) {
+    public Administrator canAdminLogin(String username) {
         try {
-            Administrator administrator = MockAPIBean.getAdministrator(username);
-            return administrator.getPassword().equals(password);
+            return MockAPIBean.getAdministrator(username);
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }

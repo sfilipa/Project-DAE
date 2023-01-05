@@ -2,8 +2,12 @@ package ipleiria.dae.project.ws;
 
 import ipleiria.dae.project.dtos.Auth;
 import ipleiria.dae.project.dtos.UserDTO;
+import ipleiria.dae.project.ejbs.AdministratorBean;
 import ipleiria.dae.project.ejbs.UserBean;
+import ipleiria.dae.project.entities.Administrator;
 import ipleiria.dae.project.entities.User;
+import ipleiria.dae.project.exceptions.MyEntityExistsException;
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Authenticated;
 import ipleiria.dae.project.security.TokenIssuer;
 
@@ -24,6 +28,9 @@ public class AuthService {
     private TokenIssuer issuer;
     @EJB
     private UserBean userBean;
+
+    @EJB
+    private AdministratorBean administratorBean;
 
     @Context
     private SecurityContext securityContext;
@@ -49,11 +56,19 @@ public class AuthService {
 
     @POST
     @Path("/login/admin")
-    public Response authenticateAdmin(@Valid Auth auth) {
-        if (userBean.canAdminLogin(auth.getUsername(), auth.getPassword())) {
-            String token = issuer.issue(auth.getUsername());
-            return Response.ok(token).build();
+    public Response authenticateAdmin(@Valid Auth auth) throws MyEntityNotFoundException, MyEntityExistsException {
+        try {
+            Administrator administrator = userBean.canAdminLogin(auth.getUsername());
+            if (administrator.getPassword().equals(auth.getPassword())) {
+                administratorBean.create(administrator);
+                String token = issuer.issue(auth.getUsername());
+                return Response.ok(token).build();
+            }
+            return Response.status(Response.Status.UNAUTHORIZED).build();
+        } catch (MyEntityExistsException e) {
+            throw new MyEntityExistsException(e.getMessage());
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
         }
-        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
 }

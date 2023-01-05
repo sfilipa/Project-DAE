@@ -53,12 +53,12 @@ public class MockAPIBean {
         return jsonArray;
     }
 
-    public static Administrator getAdministrator(String username) {
+    public static Administrator getAdministrator(String username) throws MyEntityNotFoundException {
         try {
             // Receive Insurance Company in a JSONArray format
             JSONArray jsonArray = get("administrators", "username", username);
             if (jsonArray.length() == 0) {
-                throw new IllegalArgumentException("Administrator " + username + " not found");
+                throw new MyEntityNotFoundException("Administrator " + username + " not found");
             }
 
             // Get the first element of the JSONArray
@@ -71,8 +71,10 @@ public class MockAPIBean {
                     jsonObject.getString("name"),
                     jsonObject.getString("email")
             );
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
         } catch (Exception e) {
-            throw new IllegalArgumentException("Insurance Company not found");
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 

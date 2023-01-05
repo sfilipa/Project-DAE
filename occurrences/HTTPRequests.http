@@ -94,6 +94,7 @@ Content-Type: application/json
 
 ### Create Expert
 POST http://localhost:8080/occurrences/api/experts
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEiLCJpYXQiOjE2NzI5MzI4NjAsImV4cCI6MTY3MjkzNjQ2MH0.JJ0dY59TH0yug6muh2DfZseYr-oW0PE2MFJF7gRjT4o
 Content-Type: application/json
 
 {
