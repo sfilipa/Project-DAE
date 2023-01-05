@@ -47,7 +47,7 @@ export default {
         description: this.descriptionApprovePending
       })
       this.description = "";
-      this.updateOccurrences()
+      this.$emit('updateOccurrences')
     },
     disapprove(occurence_id)
     {
