@@ -155,9 +155,9 @@ public class ExpertBean {
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
 
-          /*  if(!Objects.equals(expert.getInsuranceCompany(), occurrence.getInsurance().getCompany())){
+            if(!expert.getInsuranceCompany().equals(occurrence.getInsurance().getInsuranceCompany())){
                 throw new IllegalArgumentException("Expert and Occurrence are not from the same company");
-            }*/
+            }
 
             validateOccurrence(expert, occurrence);
 
