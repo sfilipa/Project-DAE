@@ -1,8 +1,10 @@
-package ipleiria.dae.project.dtos;
+package ipleiria.dae.project.dtos.create;
+
+import ipleiria.dae.project.dtos.ExpertDTO;
 
 import javax.validation.constraints.NotNull;
 
-public class ExpertCreateDTO extends ExpertDTO{
+public class ExpertCreateDTO extends ExpertDTO {
     @NotNull
     private String password;
 

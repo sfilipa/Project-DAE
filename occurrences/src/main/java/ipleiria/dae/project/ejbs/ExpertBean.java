@@ -5,6 +5,7 @@ import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.entities.*;
 import ipleiria.dae.project.enumerators.State;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Hasher;
 import org.hibernate.Hibernate;
 
@@ -79,7 +80,7 @@ public class ExpertBean {
         return company;
     }
 
-    public void delete(String username) {
+    public void delete(String username) throws MyEntityNotFoundException {
         try {
             // Find Expert
             Expert expert = find(username);
@@ -87,12 +88,14 @@ public class ExpertBean {
 
             // Delete Expert
             em.remove(expert);
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    public void disapproveOccurrence(String username, long occurrenceCode, String description) {
+    public void disapproveOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException{
         try {
             // Find Expert
             Expert expert = find(username);
@@ -116,10 +119,12 @@ public class ExpertBean {
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
+        } catch (MyEntityNotFoundException e){
+            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    public void approveOccurrence(String username, long occurrenceCode, String description) {
+    public void approveOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException {
         try {
             // Find Expert
             Expert expert = find(username);
@@ -143,10 +148,12 @@ public class ExpertBean {
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
+        } catch (MyEntityNotFoundException e){
+            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    public void addOccurrence(String username, long occurrenceCode) {
+    public void addOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException{
         try{
             // Find Expert
             Expert expert = find(username);
@@ -165,10 +172,12 @@ public class ExpertBean {
             occurrence.addExpert(expert);
         }catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
+        }catch (MyEntityNotFoundException e){
+            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    public void removeOccurrence(String username, long occurrenceCode) {
+    public void removeOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException {
         try{
             // Find Expert
             Expert expert = find(username);
@@ -182,10 +191,12 @@ public class ExpertBean {
             occurrence.removeExpert(expert);
         }catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
+        }catch (MyEntityNotFoundException e){
+            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    public List<Occurrence> occurrences(String username) {
+    public List<Occurrence> occurrences(String username) throws MyEntityNotFoundException {
         try {
             // Find Expert
             Expert expert = find(username);
@@ -196,10 +207,12 @@ public class ExpertBean {
             return expert.getOccurrences();
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
+        } catch (MyEntityNotFoundException e){
+            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    public void acceptRepairer(String username, long occurrenceCode){
+    public void acceptRepairer(String username, long occurrenceCode) throws MyEntityNotFoundException{
         try{
             // Find Expert
             Expert expert = find(username);
@@ -216,10 +229,12 @@ public class ExpertBean {
             occurrence.setState(State.REPAIRER_WAITING_LIST);
         }catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
+        }catch (MyEntityNotFoundException e){
+            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    public void rejectRepairer(String username, long occurrenceCode, String description){
+    public void rejectRepairer(String username, long occurrenceCode, String description) throws MyEntityNotFoundException {
         try{
             // Find Expert
             Expert expert = find(username);
@@ -246,12 +261,14 @@ public class ExpertBean {
             occurrence.setDescription(newOccurrenceDescription);
         }catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
+        }catch (MyEntityNotFoundException e){
+            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    private void validateExpertExists(Expert expert) {
+    private void validateExpertExists(Expert expert) throws MyEntityNotFoundException{
         if (expert == null){
-            throw new IllegalArgumentException("Expert not found");
+            throw new MyEntityNotFoundException("Expert not found");
         }
     }
 

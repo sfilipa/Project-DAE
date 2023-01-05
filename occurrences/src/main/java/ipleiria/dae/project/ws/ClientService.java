@@ -1,6 +1,6 @@
 package ipleiria.dae.project.ws;
 
-import ipleiria.dae.project.dtos.ClientCreateDTO;
+import ipleiria.dae.project.dtos.create.ClientCreateDTO;
 import ipleiria.dae.project.dtos.ClientDTO;
 import ipleiria.dae.project.dtos.EmailDTO;
 import ipleiria.dae.project.dtos.InsuranceDTO;
@@ -8,7 +8,6 @@ import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.ejbs.ClientBean;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.entities.Client;
-import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Authenticated;
