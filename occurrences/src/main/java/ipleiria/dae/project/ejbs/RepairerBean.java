@@ -6,12 +6,13 @@ import ipleiria.dae.project.enumerators.State;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Hasher;
+import org.json.JSONArray;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,9 @@ public class RepairerBean {
 
     @Inject // import javax.inject.Inject;
     private Hasher hasher;
+
+    @EJB
+    private MockAPIBean mockAPIBean;
 
     public List<Repairer> getAllRepairers() {
         return (List<Repairer>) em.createNamedQuery("getAllRepairers").getResultList();
@@ -74,7 +78,13 @@ public class RepairerBean {
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
             validateOccurrence(occurrence, State.APPROVED);
 
-            occurrence.setState(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
+            //Check if repairer is in insurance companies' experts. If so, then we don't need experts' approval
+            if(checkIfRepairerIsInInsuranceCompanyRepairers(repairer.getUsername(), occurrence.getInsurance().getInsuranceCompany())){
+                occurrence.setState(State.REPAIRER_WAITING_LIST);
+            }else{
+                occurrence.setState(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
+            }
+
             occurrence.setRepairer(repairer);
             repairer.addOccurrence(occurrence);
 
@@ -217,5 +227,17 @@ public class RepairerBean {
         if(occurrence.getState() != state) {
             throw new IllegalArgumentException("Occurrence is not in the correct state");
         }
+    }
+
+    private boolean checkIfRepairerIsInInsuranceCompanyRepairers(String repairerUsername, String insuranceCompanyName) throws MyEntityNotFoundException {
+        JSONArray repairersFromInsuranceOfOccurrence = mockAPIBean.
+                getAttributeFromSpecificInsuranceCompany("insuranceCompanies", "name", insuranceCompanyName, "repairers");
+        for (int i = 0; i < repairersFromInsuranceOfOccurrence.length(); i++) {
+            String string = repairersFromInsuranceOfOccurrence.getString(i);
+            if (repairerUsername.equals(string)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

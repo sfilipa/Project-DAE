@@ -23,21 +23,13 @@ public class OccurrenceDTO implements Serializable {
     private String usernameClient;
     private String usernameRepairer;
     private CoverageType coverageType;
+
+    private String insuranceCompanyName;
+
     public OccurrenceDTO() {
     }
 
-    public OccurrenceDTO(long id, String entryDate, String objectInsured, String description, String insuranceCode, CoverageType coverageType, State state, String usernameClient) {
-        this.id = id;
-        this.entryDate = entryDate;
-        this.objectInsured = objectInsured;
-        this.description = description;
-        this.insuranceCode = insuranceCode;
-        this.coverageType = coverageType;
-        this.state = state;
-        this.usernameClient = usernameClient;
-    }
-
-    public OccurrenceDTO(long id, String entryDate, String finalDate, String objectInsured, String description, String insuranceCode, CoverageType coverageType, State state, String usernameClient, String usernameRepairer) {
+    public OccurrenceDTO(long id, String entryDate, String finalDate, String objectInsured, String description, String insuranceCode, CoverageType coverageType, State state, String usernameClient, String usernameRepairer, String insuranceCompanyName) {
         this.id = id;
         this.entryDate = entryDate;
         this.finalDate = finalDate;
@@ -48,6 +40,15 @@ public class OccurrenceDTO implements Serializable {
         this.state = state;
         this.usernameClient = usernameClient;
         this.usernameRepairer = usernameRepairer;
+        this.insuranceCompanyName = insuranceCompanyName;
+    }
+
+    public String getInsuranceCompanyName() {
+        return insuranceCompanyName;
+    }
+
+    public void setInsuranceCompanyName(String insuranceCompanyName) {
+        this.insuranceCompanyName = insuranceCompanyName;
     }
 
     public long getId() {
@@ -141,7 +142,8 @@ public class OccurrenceDTO implements Serializable {
                 occurrence.getCoverageType(),
                 occurrence.getState(),
                 occurrence.getClient().getUsername(),
-                occurrence.getRepairer() != null ? occurrence.getRepairer().getUsername() : null
+                occurrence.getRepairer() != null ? occurrence.getRepairer().getUsername() : null,
+                occurrence.getInsurance().getInsuranceCompany()
         );
     }
 
