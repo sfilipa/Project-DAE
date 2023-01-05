@@ -9,7 +9,7 @@ Accept: application/json
   "password": "exp"
 }
 
-##### Occurrences
+##### Get Occurrences
 GET http://localhost:8080/occurrences/api/occurrences
 Accept: application/json
 
@@ -120,33 +120,13 @@ Content-Type: application/json
 GET http://localhost:8080/occurrences/api/experts
 Accept: application/json
 
-### INSURANCE COMPANY ADDS EXPERT TO OCCURRENCE
-PATCH http://localhost:8080/occurrences/api/occurrences/1/expert/expert1/add
+### Assign expert to occurrence
+PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/1/assign
 Content-Type: application/json
 
-#### OCCURRENCE DISAPPROVE BY AN EXPERT
-#PATCH http://localhost:8080/occurrences/api/occurrences/1/expert/expert1/remove
-#Content-Type: application/json
-#
-#### OCCURRENCE APPROVED BY AN EXPERT
-#PATCH http://localhost:8080/occurrences/api/occurrences/1/approve
-#Content-Type: application/json
-#
-#### CLIENT ASSIGNS A REPAIRER TO AN OCCURRENCE
-#PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/repairer1/assign
-#Content-Type: application/json
-#
-#### CLIENT UNASSIGNS A REPAIRER TO AN OCCURRENCE
-#PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/unassign
-#Content-Type: application/json
-#
-#### OCCURRENCE REPAIRER APPROVED BY AN EXPERT
-#PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/accept
-#Content-Type: application/json
-#
-#### OCCURRENCE REPAIRER DISAPPROVED BY AN EXPERT
-#PATCH http://localhost:8080/occurrences/api/occurrences/1/repairer/reject
-#Content-Type: application/json
+### Unassign expert from occurrence
+PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/1/unassign
+Content-Type: application/json
 
 ### Expert Disapprove Occurrence
 PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/disapprove

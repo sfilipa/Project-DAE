@@ -78,7 +78,7 @@ public class ExpertService {
 
     @PATCH
     @Path("/{username}/occurrences/{code}/assign")
-    public Response assignOccurrence(@PathParam("username") String username, @PathParam("code") String code) {
+    public Response assignOccurrence(@PathParam("username") String username, @PathParam("code") long code) {
         try{
             expertBean.addOccurrence(username, code);
             return Response.status(Response.Status.OK).build();
@@ -91,7 +91,7 @@ public class ExpertService {
 
     @PATCH
     @Path("/{username}/occurrences/{code}/unassign")
-    public Response unassignOccurrence(@PathParam("username") String username, @PathParam("code") String code) {
+    public Response unassignOccurrence(@PathParam("username") String username, @PathParam("code") long code) {
         try{
             expertBean.removeOccurrence(username, code);
             return Response.status(Response.Status.OK).build();

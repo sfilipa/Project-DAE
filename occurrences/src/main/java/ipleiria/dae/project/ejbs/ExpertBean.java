@@ -146,7 +146,7 @@ public class ExpertBean {
         }
     }
 
-    public void addOccurrence(String username, String occurrenceCode) {
+    public void addOccurrence(String username, long occurrenceCode) {
         try{
             // Find Expert
             Expert expert = find(username);
@@ -168,7 +168,7 @@ public class ExpertBean {
         }
     }
 
-    public void removeOccurrence(String username, String occurrenceCode) {
+    public void removeOccurrence(String username, long occurrenceCode) {
         try{
             // Find Expert
             Expert expert = find(username);
