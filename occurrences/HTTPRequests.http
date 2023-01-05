@@ -137,7 +137,7 @@ Content-Type: application/json
 }
 
 ### Expert Approve Occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/2/approve
+PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/1/approve
 Content-Type: application/json
 
 {
@@ -149,7 +149,7 @@ GET http://localhost:8080/occurrences/api/repairers
 Content-Type: application/json
 
 ### Repairer Starts Occurrence
-PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/3/start
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/1/start
 Content-Type: application/json
 
 ### Repairer Fails Occurrence
@@ -161,7 +161,7 @@ Content-Type: application/json
 }
 
 ### Repairer Finishes Occurrence
-PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/3/finish
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/1/finish
 Content-Type: application/json
 
 {
