@@ -7,7 +7,9 @@ import ipleiria.dae.project.ejbs.RepairerBean;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.entities.Repairer;
+import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
+import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Authenticated;
 
 import javax.annotation.security.RolesAllowed;
@@ -54,7 +56,7 @@ public class OccurrenceService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("/")
-    public Response create(OccurrenceDTO occurrenceDTO) throws MyEntityNotFoundException {
+    public Response create(OccurrenceDTO occurrenceDTO) throws MyEntityNotFoundException, APIBadResponseException, NotAuthorizedException {
         if (!securityContext.getUserPrincipal().getName().equals(occurrenceDTO.getUsernameClient())) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
@@ -79,7 +81,7 @@ public class OccurrenceService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("/{id}")
-    public Response updateOccurrence(@PathParam("id") long id, OccurrenceDTO occurrenceDTO) throws MyEntityNotFoundException {
+    public Response updateOccurrence(@PathParam("id") long id, OccurrenceDTO occurrenceDTO) throws MyEntityNotFoundException, APIBadResponseException, NotAuthorizedException {
         if (!securityContext.getUserPrincipal().getName().equals(occurrenceDTO.getUsernameClient())) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }

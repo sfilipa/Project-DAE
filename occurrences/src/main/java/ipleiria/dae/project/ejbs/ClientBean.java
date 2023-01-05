@@ -5,6 +5,7 @@ import ipleiria.dae.project.entities.Insurance;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
+import ipleiria.dae.project.exceptions.NifNotValidException;
 import ipleiria.dae.project.security.Hasher;
 import org.hibernate.Hibernate;
 
@@ -24,17 +25,17 @@ public class ClientBean {
     @Inject
     private Hasher hasher;
 
-    public Client create(String username, String password, String name, String email, String address, long phoneNumber, long nif_nipc) throws MyEntityExistsException {
+    public Client create(String username, String password, String name, String email, String address, long phoneNumber, long nif_nipc) throws MyEntityExistsException, NifNotValidException {
         Client client = find(username);
         if (client != null) {
             throw new MyEntityExistsException("Client with username: " + username + " already exists");
         }
         //see if nif_nipc is valid
         if (!validateNif(nif_nipc)) {
-            throw new MyEntityExistsException("Client with nif_nipc: " + nif_nipc + " is not valid");//TODO: MUDAR ESTAS EXCEÇOES
+            throw new NifNotValidException("Invalid NIF format");
         }
         if (nif_nipcAlreadyUsed(nif_nipc)) {
-            throw new MyEntityExistsException("Client with nif_nipc: " + nif_nipc + " already exists");//TODO: MUDAR ESTAS EXCEÇOES
+            throw new MyEntityExistsException("Client with NIF - " + nif_nipc + " already exists");
         }
         client = new Client(username, hasher.hash(password), name, email, address, phoneNumber, nif_nipc);
         em.persist(client);
@@ -47,24 +48,23 @@ public class ClientBean {
                 .getResultList().size() > 0;
     }
 
-    public Client update(String username, String password, String name, String email, String address, long phoneNumber, long nif_nipc) throws MyEntityNotFoundException {
+    public Client update(String username, String name, String email, String address, long phoneNumber, long nif_nipc) throws MyEntityNotFoundException, NifNotValidException {
         Client client = find(username);
         if (client == null) {
             throw new MyEntityNotFoundException("Client not found");
         }
-        //see if nif_nipc is valid
-        if (!validateNif(nif_nipc)) {
-            throw new MyEntityNotFoundException("Client with nif_nipc: " + nif_nipc + " is not valid");//TODO: MUDAR ESTAS EXCEÇOES
-        }
         //see if the nif_nipc has already been used
         if (nif_nipc != client.getNif_nipc()) {
+            //see if nif_nipc is valid
+            if (!validateNif(nif_nipc)) {
+                throw new NifNotValidException("Invalid NIF format");
+            }
             if (nif_nipcAlreadyUsed(nif_nipc)) {
-                throw new MyEntityNotFoundException("Client with nif_nipc: " + nif_nipc + " already exists");//TODO: MUDAR ESTAS EXCEÇOES
+                throw new MyEntityNotFoundException("Client with NIF - " + nif_nipc + " already exists");
             }
             client.setNif_nipc(nif_nipc);
         }
         em.lock(client, LockModeType.OPTIMISTIC);
-        client.setPassword(password);
         client.setName(name);
         client.setEmail(email);
         client.setAddress(address);
@@ -105,7 +105,7 @@ public class ClientBean {
             throw new MyEntityNotFoundException("Client not found");
         }
         Hibernate.initialize(client);
-//        var occurrences = findOrFail(username).getOccurrences();
+
         var occurrences = client.getOccurrences();
         Hibernate.initialize(occurrences);
 
@@ -125,5 +125,15 @@ public class ClientBean {
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+
+    public Client updatePassword(String username, String password) throws MyEntityNotFoundException {
+        Client client = find(username);
+        if (client == null) {
+            throw new MyEntityNotFoundException("Client not found");
+        }
+        em.lock(client, LockModeType.OPTIMISTIC);
+        client.setPassword(hasher.hash(password));
+        return client;
     }
 }

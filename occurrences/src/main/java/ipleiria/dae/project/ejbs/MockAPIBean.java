@@ -5,6 +5,7 @@ import ipleiria.dae.project.entities.Insurance;
 import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
+import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,7 +25,7 @@ public class MockAPIBean {
     @EJB
     private RepairerBean repairerBean;
 
-    public JSONArray getDataAPI(String resource, String attribute, String attributeToGet) throws MyEntityNotFoundException {
+    public JSONArray getDataAPI(String resource, String attribute, String attributeToGet) throws APIBadResponseException {
         JSONArray jsonArray = new JSONArray();
         try {
             URL url = null;
@@ -39,7 +40,7 @@ public class MockAPIBean {
             conn.connect();
 
             if (conn.getResponseCode() < 200 || conn.getResponseCode() > 299) {
-                throw new MyEntityNotFoundException("Couldn't get data from API");//TODO: MUDAR ESTAS EXCEÇOES
+                throw new APIBadResponseException("Couldn't get data from API");
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
@@ -58,7 +59,7 @@ public class MockAPIBean {
         return jsonArray;
     }
 
-    public JSONArray getAttributeFromSpecificInsuranceCompany(String resource, String attribute, String attributeToGet, String attributeToGet2) throws MyEntityNotFoundException {
+    public JSONArray getAttributeFromSpecificInsuranceCompany(String resource, String attribute, String attributeToGet, String attributeToGet2) throws MyEntityNotFoundException, APIBadResponseException {
         JSONArray jsonArray = getDataAPI(resource, attribute, attributeToGet);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
