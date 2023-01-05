@@ -105,7 +105,7 @@ public class ClientService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("{username}/occurrences")
-    public Response getClientOccurrences(@PathParam("username") String username) {
+    public Response getClientOccurrences(@PathParam("username") String username) throws MyEntityNotFoundException{
         return Response.ok(OccurrenceDTO.from(clientBean.clientOccurrences(username))).build();
     }
 

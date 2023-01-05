@@ -272,6 +272,10 @@ Accept: application/json
 GET http://localhost:8080/occurrences/api/mock/insuranceCompanies/name/Fidelidade
 Accept: application/json
 
+###Get All repairers from a specific insurance company
+GET http://localhost:8080/occurrences/api/mock/insuranceCompanies/name/Fidelidade/repairers
+Accept: application/json
+
 ###Client Send Email
 POST http://localhost:8080/occurrences/api/clients/client2/email/send
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE1NDM2LCJleHAiOjE2NzI5MTkwMzZ9.pF3kxBuD_lZSVuGYNOlxGLAjVMjVWlifTcMSNTbnK94

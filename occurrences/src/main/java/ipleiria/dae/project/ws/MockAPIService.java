@@ -24,11 +24,16 @@ public class MockAPIService {
 
     @GET
     @Path("/{resource}/{attribute}/{attributeToGet}")
-    public Response getMockDataByCode(@PathParam("resource") String resource, @PathParam("attribute") String attribute, @PathParam("attributeToGet") String attributeToGet) throws MyEntityNotFoundException {
+    public Response getMockDataByAttribute(@PathParam("resource") String resource, @PathParam("attribute") String attribute, @PathParam("attributeToGet") String attributeToGet) throws MyEntityNotFoundException {
         JSONArray jsonArray = mockAPIBean.getDataAPI(resource, attribute , attributeToGet);
         return Response.ok(jsonArray.toString()).build();
     }
 
-
+    @GET
+    @Path("/{resource}/{attribute}/{attributeToGet}/{attributeToGet2}")
+    public Response getMockDataRepairers(@PathParam("resource") String resource, @PathParam("attribute") String attribute, @PathParam("attributeToGet") String attributeToGet, @PathParam("attributeToGet2") String attributeToGet2) throws MyEntityNotFoundException {
+        JSONArray jsonArray = mockAPIBean.getAttributeFromSpecificInsuranceCompany(resource, attribute, attributeToGet, attributeToGet2.toLowerCase());
+        return Response.ok(jsonArray.toString()).build();
+    }
 
 }

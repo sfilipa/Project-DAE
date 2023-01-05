@@ -2,12 +2,14 @@ package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Administrator;
 import ipleiria.dae.project.entities.Insurance;
+import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -18,6 +20,9 @@ import java.util.List;
 
 @Stateless
 public class MockAPIBean {
+
+    @EJB
+    private RepairerBean repairerBean;
 
     public JSONArray getDataAPI(String resource, String attribute, String attributeToGet) throws MyEntityNotFoundException {
         JSONArray jsonArray = new JSONArray();
@@ -49,6 +54,35 @@ public class MockAPIBean {
             return jsonArray;
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        return jsonArray;
+    }
+
+    public JSONArray getAttributeFromSpecificInsuranceCompany(String resource, String attribute, String attributeToGet, String attributeToGet2) throws MyEntityNotFoundException {
+        JSONArray jsonArray = getDataAPI(resource, attribute, attributeToGet);
+
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
+        if (jsonObject == null) {
+            throw new MyEntityNotFoundException("Insurance not found");
+        }
+
+        JSONArray jsonArrayAttribute2 = jsonObject.getJSONArray(attributeToGet2);
+        return parseAPIObjectsToMatchDatabaseObjects(attributeToGet2, jsonArrayAttribute2);
+    }
+
+    private JSONArray parseAPIObjectsToMatchDatabaseObjects(String attributeToGet2, JSONArray jsonArrayAttribute2) {
+        JSONArray jsonArray = new JSONArray();
+        if(attributeToGet2.equals("repairers")){
+            //Check if repairer from insurance company exists in database
+            List<Repairer> repairersInDB = repairerBean.getAllRepairers();
+            for (int i = 0; i < jsonArrayAttribute2.length(); i++) {
+                String string = jsonArrayAttribute2.getString(i);
+                for (Repairer repairer : repairersInDB) {
+                    if (repairer.getUsername().equals(string)) {
+                        jsonArray.put(string);
+                    }
+                }
+            }
         }
         return jsonArray;
     }
