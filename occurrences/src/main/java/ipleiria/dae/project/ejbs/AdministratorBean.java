@@ -7,17 +7,21 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Stateless
 public class AdministratorBean {
     @PersistenceContext
     EntityManager em;
 
-    @Inject // import javax.inject.Inject;
+    @Inject
     private Hasher hasher;
 
-    public void create(String username, String password, String name, String email) {
-        Administrator administrator = new Administrator(username, password, name, email);
-        em.persist(administrator);
+    public Administrator findOrFail(String username) {
+        try {
+            return MockAPIBean.getAdministrator(username);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 }

@@ -1,5 +1,6 @@
 package ipleiria.dae.project.ejbs;
 
+import ipleiria.dae.project.entities.Administrator;
 import ipleiria.dae.project.entities.Insurance;
 import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
@@ -51,6 +52,29 @@ public class MockAPIBean {
             e.printStackTrace();
         }
         return jsonArray;
+    }
+
+    public static Administrator getAdministrator(String username) {
+        try {
+            // Receive Insurance Company in a JSONArray format
+            JSONArray jsonArray = get("administrators", "username", username);
+            if (jsonArray.length() == 0) {
+                throw new IllegalArgumentException("Administrator " + username + " not found");
+            }
+
+            // Get the first element of the JSONArray
+            JSONObject jsonObject = jsonArray.getJSONObject(0);
+
+            // Create an Administrator Entity
+            return new Administrator(
+                    jsonObject.getString("username"),
+                    jsonObject.getString("password"),
+                    jsonObject.getString("name"),
+                    jsonObject.getString("email")
+            );
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Insurance Company not found");
+        }
     }
 
     public static String getInsuranceCompany(String companyUsername) {
