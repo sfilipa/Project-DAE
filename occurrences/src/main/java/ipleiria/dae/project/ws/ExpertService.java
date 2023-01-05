@@ -35,10 +35,10 @@ public class ExpertService {
      */
 
     @PATCH
-    @Path("/{username}/occurrences/{occurrence_code}/acceptRepairer")
-    public Response acceptRepairer(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code){
+    @Path("/{username}/occurrences/{occurrence_id}/acceptRepairer")
+    public Response acceptRepairer(@PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id){
         try{
-            expertBean.acceptRepairer(username, occurrence_code);
+            expertBean.acceptRepairer(username, occurrence_id);
             return Response.status(Response.Status.OK).build();
         }catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -48,8 +48,8 @@ public class ExpertService {
     }
 
     @PATCH
-    @Path("/{username}/occurrences/{occurrence_code}/rejectRepairer")
-    public Response rejectRepairer(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code){
+    @Path("/{username}/occurrences/{occurrence_id}/rejectRepairer")
+    public Response rejectRepairer(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id){
         try{
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
@@ -61,7 +61,7 @@ public class ExpertService {
             // Extract the values from the JSON object
             String description = rootNode.get("description").asText();
 
-            expertBean.rejectRepairer(username, occurrence_code, description);
+            expertBean.rejectRepairer(username, occurrence_id, description);
             return Response.status(Response.Status.OK).build();
         }catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -77,10 +77,10 @@ public class ExpertService {
      */
 
     @PATCH
-    @Path("/{username}/occurrences/{code}/assign")
-    public Response assignOccurrence(@PathParam("username") String username, @PathParam("code") long code) {
+    @Path("/{username}/occurrences/{occurrence_id}/assign")
+    public Response assignOccurrence(@PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
         try{
-            expertBean.addOccurrence(username, code);
+            expertBean.addOccurrence(username, occurrence_id);
             return Response.status(Response.Status.OK).build();
         }catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -90,10 +90,10 @@ public class ExpertService {
     }
 
     @PATCH
-    @Path("/{username}/occurrences/{code}/unassign")
-    public Response unassignOccurrence(@PathParam("username") String username, @PathParam("code") long code) {
+    @Path("/{username}/occurrences/{occurrence_id}/unassign")
+    public Response unassignOccurrence(@PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
         try{
-            expertBean.removeOccurrence(username, code);
+            expertBean.removeOccurrence(username, occurrence_id);
             return Response.status(Response.Status.OK).build();
         }catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -109,8 +109,8 @@ public class ExpertService {
     }
 
     @PATCH
-    @Path("/{username}/occurrences/{occurrence_code}/disapprove")
-    public Response disapproveOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+    @Path("/{username}/occurrences/{occurrence_id}/disapprove")
+    public Response disapproveOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
         try {
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
@@ -122,7 +122,7 @@ public class ExpertService {
             // Extract the values from the JSON object
             String description = rootNode.get("description").asText();
 
-            expertBean.disapproveOccurrence(username, occurrence_code, description);
+            expertBean.disapproveOccurrence(username, occurrence_id, description);
             return Response.ok().build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -130,8 +130,8 @@ public class ExpertService {
     }
 
     @PATCH
-    @Path("/{username}/occurrences/{occurrence_code}/approve")
-    public Response approveOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+    @Path("/{username}/occurrences/{occurrence_id}/approve")
+    public Response approveOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
         try {
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
@@ -143,7 +143,7 @@ public class ExpertService {
             // Extract the values from the JSON object
             String description = rootNode.get("description").asText();
 
-            expertBean.approveOccurrence(username, occurrence_code, description);
+            expertBean.approveOccurrence(username, occurrence_id, description);
             return Response.ok().build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
