@@ -1,5 +1,6 @@
 package ipleiria.dae.project.ejbs;
 
+import ipleiria.dae.project.entities.Administrator;
 import ipleiria.dae.project.entities.User;
 import ipleiria.dae.project.security.Hasher;
 import org.hibernate.Hibernate;
@@ -29,5 +30,14 @@ public class UserBean {
     public boolean canLogin(String username, String password) {
         User user = find(username);
         return user != null && user.getPassword().equals(hasher.hash(password));
+    }
+
+    public boolean canAdminLogin(String username, String password) {
+        try {
+            Administrator administrator = MockAPIBean.getAdministrator(username);
+            return administrator.getPassword().equals(password);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 }

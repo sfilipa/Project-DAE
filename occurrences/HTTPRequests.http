@@ -210,8 +210,19 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "client3",
-  "password": "client"
+  "username": "admin1",
+  "password": "123"
+}
+
+####LOGIN ADMIN
+### REQUEST JWT TOKEN
+POST http://localhost:8080/occurrences/api/auth/login/admin
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "admin1",
+  "password": "123"
 }
 
 ### Get Client Details
@@ -244,6 +255,10 @@ Accept: application/json
 
 ### Get Expert Occurrences
 GET http://localhost:8080/occurrences/api/experts/expert2/occurrences/assigned
+Accept: application/json
+
+### Get Administrator
+GET http://localhost:8080/occurrences/api/administrators/admin1
 Accept: application/json
 
 ###MOCKAPI
