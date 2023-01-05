@@ -74,8 +74,18 @@ public class ExpertBean {
         }
     }
 
-    public Expert find(String username) {
-        return em.find(Expert.class, username);
+    public Expert find(String username) throws MyEntityNotFoundException {
+        try {
+            Expert expert = em.find(Expert.class, username);
+            if (expert == null) {
+                throw new MyEntityNotFoundException("Expert not found");
+            }
+            return expert;
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
+        } catch (Exception e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 
     public String findInsuranceCompany(String insuranceCompany) throws MyEntityNotFoundException {
