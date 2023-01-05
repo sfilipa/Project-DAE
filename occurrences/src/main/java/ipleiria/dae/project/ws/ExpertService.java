@@ -27,7 +27,6 @@ import java.util.List;
 @Path("experts") // relative url web path for this service
 @Produces({MediaType.APPLICATION_JSON}) // injects header “Content-Type: application/json”
 @Consumes({MediaType.APPLICATION_JSON})
-@RolesAllowed({"Administrator", "Expert"})
 public class ExpertService {
     @EJB
     private ExpertBean expertBean;
