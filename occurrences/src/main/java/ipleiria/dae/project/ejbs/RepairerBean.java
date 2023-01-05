@@ -105,7 +105,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(occurrence, State.APPROVED);
+            validateOccurrence(repairer,occurrence, State.APPROVED);
 
             occurrence.setState(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
             occurrence.setRepairer(repairer);
@@ -128,7 +128,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(occurrence, null);
+            validateOccurrence(repairer,occurrence, null);
 //            if(occurrence.getState() != State.REPAIRER_WAITING_LIST && occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){
 //                return -3; //devolver exception (pois se estiver no .ACTIVE, não posso fazer unassign de um repairer que já está mesmo a reparar)
 //            }
@@ -152,7 +152,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(occurrence, State.REPAIRER_WAITING_LIST);
+            validateOccurrence(repairer,occurrence, State.REPAIRER_WAITING_LIST);
 
             // Start Occurrence
             occurrence.setState(State.ACTIVE);
@@ -169,7 +169,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(occurrence, State.ACTIVE);
+            validateOccurrence(repairer,occurrence, State.ACTIVE);
 
             // Fail Occurrence
             occurrence.setState(State.FAILED);
@@ -194,7 +194,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(occurrence, State.ACTIVE);
+            validateOccurrence(repairer,occurrence, State.ACTIVE);
 
             // Approve Occurrence
             occurrence.setState(State.RESOLVED);
@@ -230,12 +230,10 @@ public class RepairerBean {
         }
     }
 
-    private void validateOccurrence(Occurrence occurrence, State state) throws MyEntityNotFoundException, NotAuthorizedException {
+    private void validateOccurrence(Repairer repairer,Occurrence occurrence, State state) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             validateOccurrenceExists(occurrence);
-            if(state == null){
-                throw new MyEntityNotFoundException("Occurrence not found");
-            }
+            validateRepairerIsAssignedToOccurrence(repairer, occurrence);
             validateOccurrenceState(occurrence, state);
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
@@ -245,11 +243,6 @@ public class RepairerBean {
     }
 
     private void validateRepairerIsAssignedToOccurrence(Repairer repairer, Occurrence occurrence) throws NotAuthorizedException, MyEntityNotFoundException {
-        // Received Repairer is null
-        if (repairer == null){
-            throw new MyEntityNotFoundException("Repairer not found");
-        }
-
         // Check if Repairer is assigned to Occurrence
         if(!occurrence.getRepairer().getUsername().equals(repairer.getUsername())) {
             throw new NotAuthorizedException("Repairer " + repairer.getUsername() + " is not assigned to this occurrence " + occurrence.getId());
