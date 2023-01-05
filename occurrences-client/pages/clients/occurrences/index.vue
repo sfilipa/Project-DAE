@@ -19,28 +19,17 @@
       <span>No Occurrences Registered</span>
     </div>
 
-    <div v-else v-for="occurrence in occurrences" class="ongoing-occurrences-item">
-      <div class="ongoing-occurrences-item-row" style="width: 30%;">
-        <p style="font-size: 20px"><b>{{occurrence.objectInsured}} - <span>{{occurrence.insuranceCode}}</span></b></p>
-        <p>Occurrence {{ occurrence.id }}</p>
-        <p>Repairer: {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</p>
-      </div>
-
-      <div class="ongoing-occurrences-item-row" style="align-self: flex-end;">
-        <p>Entry Date: {{occurrence.entryDate}} &nbsp; Final Date: {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</p>
-        <p>Description: {{ occurrence.description }}</p>
-<!--        <p>Documents: <span v-for="document in occurrence.documents"> {{ document.filename }};</span></p>-->
-      </div>
-
-      <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
-        <p class="text-uppercase">{{ occurrence.state }}</p>
-        <button v-if="occurrence.state == 'Approved'" class="btn btn-associate-repairers">Associate Repairer</button>
-      </div>
+    <div v-else v-for="occurrence in occurrences" >
+      <Occurrence :occurrence="occurrence"></Occurrence>
     </div>
   </div>
 </template>
 <script>
+import Occurrence from "~/pages/clients/components/Occurrence.vue";
 export default {
+  components: {
+    Occurrence
+  },
   data () {
     return {
       fields: ['name', 'actions'], //nomes do DTOs

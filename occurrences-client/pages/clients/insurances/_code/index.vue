@@ -11,11 +11,13 @@
       </div>
     </nuxt-link>
 
+    <!--    Header-->
     <div class="header-info">
       <span><b>{{this.$route.params.insurance.insuranceCompany}} ({{ this.$route.params.code }})</b></span>
       <span class="policy-number-span">Policy number {{this.$route.params.insurance.policyNumber}}</span>
     </div>
 
+    <!--    Navbar Buttons-->
     <div class="insurance-details-navbar">
       <a class="btn insurance-details-navbar-item"
          :class="{'insurance-details-navbar-item-active': OverallDataBtn}"
@@ -57,11 +59,6 @@
         <span class="overall-data-label">Insurance Period</span>
         <span class="overall-data-detail">From {{this.$route.params.insurance.initialDate}} To {{this.$route.params.insurance.validUntil}}</span>
       </div>
-<!--      <hr>-->
-<!--      <div class="overall-data-row">-->
-<!--        <span class="overall-data-label">Payment Type</span>-->
-<!--        <span class="overall-data-detail">Bank Charge</span>-->
-<!--      </div>-->
     </div>
 
     <!--    Occurrences-->
@@ -128,50 +125,21 @@
 
       <!--      Ongoing Occurrences-->
       <div v-if="ongoingOccurrences" class="ongoing-occurrences">
-        <div v-if="ongoingOccurrencesArray.length==0">
+        <div v-if="getOnGoingOccurrences().length==0">
           No occurrences ongoing
         </div>
-        <div v-else v-for="occurrence in ongoingOccurrencesArray" class="ongoing-occurrences-item">
-          <div class="ongoing-occurrences-item-row" style="width: 30%;">
-            <p style="font-size: 20px"><b>{{occurrence.affectedObject}} - {{occurrence.insuredAssetType}}</b></p>
-            <p>Occurrence {{ occurrence.code }}</p>
-            <p>Insurance: {{occurrence.insurance}}</p>
-            <p>Expert Associated: {{occurrence.expert}}</p>
-          </div>
-
-          <div class="ongoing-occurrences-item-row" style="align-self: flex-end;">
-            <p>Date: {{occurrence.date}}</p>
-            <p>Description: {{ occurrence.description }}</p>
-          </div>
-
-          <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
-            <p class="text-uppercase">{{ occurrence.state }}</p>
-            <button v-if="occurrence.state == 'Approved'" class="btn btn-associate-repairers" @click.prevent="associateRepairer">Associate Repairer Service</button>
-          </div>
+        <div v-else v-for="occurrence in getOnGoingOccurrences()" >
+          <Occurrence :occurrence="occurrence"></Occurrence>
         </div>
       </div>
 
       <!--      Completed Occurrences-->
       <div v-if="completedOccurrences" class="completed-occurrences">
-        <div v-if="completedOccurrencesArray.length==0">
+        <div v-if="getCompletedOccurrences().length==0">
           No occurrences completed
         </div>
-        <div v-else v-for="occurrence in completedOccurrencesArray" class="ongoing-occurrences-item">
-          <div class="ongoing-occurrences-item-row" style="width: 30%;">
-            <p style="font-size: 20px"><b>{{occurrence.affectedObject}} - {{occurrence.insuredAssetType}}</b></p>
-            <p>Occurrence {{ occurrence.code }}</p>
-            <p>Insurance: {{occurrence.insurance}}</p>
-            <p>Expert Associated: {{occurrence.expert}}</p>
-          </div>
-
-          <div class="ongoing-occurrences-item-row" style="align-self: flex-end;">
-            <p>Date: {{occurrence.date}}</p>
-            <p>Description: {{ occurrence.description }}</p>
-          </div>
-
-          <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
-            <p class="text-uppercase">{{ occurrence.state }}</p>
-          </div>
+        <div v-else v-for="occurrence in getCompletedOccurrences()">
+          <Occurrence :occurrence="occurrence"></Occurrence>
         </div>
       </div>
     </div>
@@ -187,7 +155,11 @@
 </template>
 
 <script>
+import Occurrence from "~/pages/clients/components/Occurrence.vue";
 export default {
+  components: {
+    Occurrence
+  },
   name: "index.vue",
   data() {
     return {
@@ -210,68 +182,31 @@ export default {
         "name": "Verde"
       }
     ]},
-    ongoingOccurrencesArray(){
-      return [
-        {
-          "code": "01",
-          "insuredAssetType": "Car",
-          "affectedObject": "Car Laguna",
-          "date": "27/12/2022",
-          "client": "Ana Martins",
-          "state": "Pending",
-          "expert": "José Areia",
-          "description": "Car crash in rua nº10 xxedjoejojde",
-          "insurance": this.$route.params.name
-        },
-        {
-          "code": "02",
-          "insuredAssetType": "Car",
-          "affectedObject": "Car Laguna",
-          "date": "20/12/2022",
-          "client": "Ana Martins",
-          "state": "Approved",
-          "expert": "José Areia",
-          "description": "Car crash in rua nº11 aqnisnqion",
-          "insurance": this.$route.params.name
-        }
-      ]
-    },
-    completedOccurrencesArray(){
-      return [
-        {
-          "code": "00",
-          "insuredAssetType": "Car",
-          "affectedObject": "Car Laguna",
-          "date": "15/12/2022",
-          "client": "Ana Martins",
-          "state": "Completed",
-          "expert": "José Areia",
-          "description": "Car crash in rua nº10 xxedjidwjdjdojde",
-          "insurance": this.$route.params.name
-        }
-      ]
-    }
   },
   created () {
-    // this.$axios.$get('/api/occurrences')
-    //   .then((occurrences) => {
-    //     this.occurrences = occurrences
-    //   })
-    // this.$axios.$get('http://localhost:8080/occurrences/api/students')
+    this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences`)
+      .then((occurrences) => {
+        this.occurrences = occurrences
+      })
   },
   methods: {
+    getOnGoingOccurrences(){
+      return this.occurrences.filter(function(oc){return oc.state != 'RESOLVED' && oc.state != 'DISAPPROVED' && oc.state != 'FAILED' })
+    },
+    getCompletedOccurrences(){
+      return this.occurrences.filter(function(oc){return oc.state == 'RESOLVED' || oc.state == 'DISAPPROVED' || oc.state == 'FAILED' })
+    },
     register() {
       this.$axios.$post('/api/occurrences', {
-        client: "auth client - not done",
-        date: this.date,
-        insuredAssetType: this.selectedCoverageType,
-        state: 'Pending',
+        usernameClient: this.$auth.user.username,
+        entryDate: this.date,
+        insuranceCode: this.$route.params.code,
+        state: 'PENDING',
         description: this.description,
-        insurance: this.$route.params.name,
-        expert: this.expertName,
       })
         .then(() => {
-          this.$router.push('/insurances')
+          this.$router.push('/clients/occurrences')
+          this.$toast.success('Your occurrence has been registered!').goAway(3000)
         })
         .catch((error) => {
           this.errorMsg = error.response.data
@@ -285,23 +220,6 @@ export default {
 </script>
 
 <style scoped>
-.ongoing-occurrences-item-last{
-  text-align: end;
-  align-self: flex-end;
-  margin-bottom: 1.5%;
-}
-
-.btn-associate-repairers:hover{
-  background-color: red !important;
-  color: white !important;
-}
-
-.btn-associate-repairers{
-  border: 1px solid black;
-  width: fit-content;
-  height: 3rem;
-  align-self: self-end;
-}
 
 .register-occurrence-btn:hover{
   background-color: red !important;
@@ -389,21 +307,6 @@ export default {
 .completed-occurrences{
   height: fit-content;
   margin: 20px;
-}
-
-.ongoing-occurrences-item-row{
-  display: flex;
-  flex-direction: column;
-}
-
-.ongoing-occurrences-item{
-  background-color: white;
-  height: fit-content;
-  padding: 20px;
-  margin: 30px 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
 }
 
 .ongoing-occurrences{
