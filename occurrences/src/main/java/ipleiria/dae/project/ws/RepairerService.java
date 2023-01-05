@@ -9,6 +9,7 @@ import ipleiria.dae.project.ejbs.RepairerBean;
 import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
+import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Authenticated;
 
 import javax.annotation.security.RolesAllowed;
@@ -18,6 +19,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -32,82 +34,31 @@ public class RepairerService {
     @EJB
     private EmailBean emailBean;
 
-    @GET
-    @Authenticated
-    @RolesAllowed({"Administrator"})
-    @Path("/")
-    public List<RepairerDTO> getAllRepairers() {
-        return RepairerDTO.from(repairerBean.getAllRepairers());
-    }
+    @Context
+    private SecurityContext securityContext;
 
-    @GET
-    @Authenticated
-    @RolesAllowed({"Administrator", "Repairer"})
-    @Path("/{username}")
-    public Response getRepairer(@PathParam("username") String username) throws MyEntityNotFoundException {
-        Repairer repairer = repairerBean.find(username);
-        if(repairer == null){
-            throw new MyEntityNotFoundException("Repairer not found");
-        }
-        return Response.ok(RepairerDTO.from(repairer)).build();
-    }
-
-    @POST
-    @Authenticated
-    @RolesAllowed({"Administrator"})
-    @Path("/")
-    public Response create(RepairerCreateDTO repairerDTO) throws MyEntityExistsException {
-
-        Repairer repairer = repairerBean.create(
-                repairerDTO.getUsername(),
-                repairerDTO.getPassword(),
-                repairerDTO.getName(),
-                repairerDTO.getEmail(),
-                repairerDTO.getAddress()
-        );
-
-        return Response.status(Response.Status.CREATED)
-                .entity(RepairerDTO.from(repairer))
-                .build();
-    }
-
-    @PUT
-    @Authenticated
-    @RolesAllowed({"Administrator", "Repairer"})
-    @Path("/{username}")
-    public Response update(RepairerCreateDTO repairerDTO) throws MyEntityNotFoundException{
-        Repairer repairer = repairerBean.update(
-                repairerDTO.getUsername(),
-                repairerDTO.getPassword(),
-                repairerDTO.getName(),
-                repairerDTO.getEmail(),
-                repairerDTO.getAddress()
-        );
-
-        return Response.status(Response.Status.OK)
-                .entity(RepairerDTO.from(repairer))
-                .build();
-    }
-
-    @DELETE
-    @Authenticated
-    @RolesAllowed({"Administrator"})
-    @Path("/{username}")
-    public Response delete(@PathParam("username") String username) throws MyEntityNotFoundException {
-        repairerBean.delete(username);
-        return Response.status(Response.Status.ACCEPTED).build();
-    }
+    /**
+     * Repairer
+     * Accept Occurrence
+     */
 
     @PATCH
     @Authenticated
     @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/assign")
-    public Response assignOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
-    throws MyEntityNotFoundException{
+    public Response assignOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             repairerBean.assignOccurrence(username, occurrence_code);
             return Response.ok().build();
-        } catch (IllegalArgumentException e) {
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (NotAuthorizedException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
@@ -119,27 +70,48 @@ public class RepairerService {
     @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/unassign")
     public Response unassignOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
-    throws MyEntityNotFoundException{
+            throws MyEntityNotFoundException {
         try {
             repairerBean.unassignOccurrence(username, occurrence_code);
             return Response.ok().build();
-        } catch (IllegalArgumentException e) {
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (NotAuthorizedException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
         }
     }
 
+    /**
+     * Repairer
+     * With Occurrence Started
+     */
+
     @PATCH
     @Authenticated
     @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/start")
     public Response startOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
-    throws MyEntityNotFoundException{
+            throws MyEntityNotFoundException {
         try {
             repairerBean.startOccurrence(username, occurrence_code);
             return Response.ok().build();
-        } catch (IllegalArgumentException e) {
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (NotAuthorizedException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
@@ -151,7 +123,7 @@ public class RepairerService {
     @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/fail")
     public Response failOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
-        throws MyEntityNotFoundException{
+            throws MyEntityNotFoundException {
         try {
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
@@ -165,7 +137,15 @@ public class RepairerService {
 
             repairerBean.failOccurrence(username, occurrence_code, description);
             return Response.ok().build();
-        } catch (IOException e) {
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (NotAuthorizedException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
@@ -177,7 +157,7 @@ public class RepairerService {
     @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/finish")
     public Response finishOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
-        throws MyEntityNotFoundException{
+            throws MyEntityNotFoundException {
         try {
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
@@ -191,10 +171,116 @@ public class RepairerService {
 
             repairerBean.finishOccurrence(username, occurrence_code, description);
             return Response.ok().build();
-        } catch (IOException e) {
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (NotAuthorizedException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
         }
+    }
+
+    /**
+     * Repairer
+     * CRUD
+     */
+
+    @GET
+    @Authenticated
+    @RolesAllowed({"Administrator"})
+    @Path("/")
+    public List<RepairerDTO> getAllRepairers() {
+        return RepairerDTO.from(repairerBean.getAllRepairers());
+    }
+
+    @GET
+    @Authenticated
+    @RolesAllowed({"Administrator", "Repairer"})
+    @Path("/{username}")
+    public Response getRepairer(@PathParam("username") String username) throws MyEntityNotFoundException {
+        try {
+            if (!securityContext.getUserPrincipal().getName().equals(username)) {
+                throw new ForbiddenException(username + ", You are not allowed to access this resource");
+            }
+
+            Repairer repairer = repairerBean.findOrFail(username);
+
+            return Response.ok(RepairerDTO.from(repairer)).build();
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ForbiddenException e) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+    @POST
+    @Authenticated
+    @RolesAllowed({"Administrator"})
+    @Path("/")
+    public Response create(RepairerCreateDTO repairerDTO) throws MyEntityExistsException {
+        try {
+            Repairer repairer = repairerBean.create(
+                    repairerDTO.getUsername(),
+                    repairerDTO.getPassword(),
+                    repairerDTO.getName(),
+                    repairerDTO.getEmail(),
+                    repairerDTO.getAddress()
+            );
+
+            return Response.status(Response.Status.CREATED)
+                    .entity(RepairerDTO.from(repairer))
+                    .build();
+        } catch (MyEntityExistsException e) {
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+    @PUT
+    @Authenticated
+    @RolesAllowed({"Administrator", "Repairer"})
+    @Path("/{username}")
+    public Response update(@PathParam("username") String username, RepairerCreateDTO repairerDTO) throws MyEntityNotFoundException {
+        try {
+            if (!securityContext.getUserPrincipal().getName().equals(username)) {
+                throw new ForbiddenException(username + ", You are not allowed to access this resource");
+            }
+
+        Repairer repairer = repairerBean.update(
+                repairerDTO.getUsername(),
+                repairerDTO.getPassword(),
+                repairerDTO.getName(),
+                repairerDTO.getEmail(),
+                repairerDTO.getAddress()
+        );
+
+        return Response.status(Response.Status.OK)
+                .entity(RepairerDTO.from(repairer))
+                .build();
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ForbiddenException e) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+    }
+
+    @DELETE
+    @Authenticated
+    @RolesAllowed({"Administrator"})
+    @Path("/{username}")
+    public Response delete(@PathParam("username") String username) throws MyEntityNotFoundException {
+        repairerBean.delete(username);
+        return Response.status(Response.Status.ACCEPTED).build();
     }
 }

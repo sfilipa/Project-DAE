@@ -11,6 +11,7 @@ import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
+import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Authenticated;
 
 import javax.annotation.security.RolesAllowed;
@@ -46,10 +47,18 @@ public class ExpertService {
     @Authenticated
     @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/{occurrence_id}/acceptRepairer")
-    public Response acceptRepairer(@PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
+    public Response acceptRepairer(@PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             expertBean.acceptRepairer(username, occurrence_id);
             return Response.status(Response.Status.OK).build();
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (NotAuthorizedException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e.getMessage())
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
@@ -61,7 +70,7 @@ public class ExpertService {
     @Authenticated
     @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/{occurrence_id}/rejectRepairer")
-    public Response rejectRepairer(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
+    public Response rejectRepairer(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
@@ -75,6 +84,14 @@ public class ExpertService {
 
             expertBean.rejectRepairer(username, occurrence_id, description);
             return Response.status(Response.Status.OK).build();
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (NotAuthorizedException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e.getMessage())
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
@@ -243,6 +260,10 @@ public class ExpertService {
     @Path("/{username}")
     public Response update(@PathParam("username") String username, ExpertCreateDTO expertDTO) throws MyEntityNotFoundException {
         try {
+            if (!securityContext.getUserPrincipal().getName().equals(username)) {
+                throw new ForbiddenException(username + ", You are not allowed to access this resource");
+            }
+
             Expert expert = expertBean.update(
                     username,
                     expertDTO.getPassword(),
@@ -256,6 +277,8 @@ public class ExpertService {
                     .build();
         } catch (MyEntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ForbiddenException e) {
+            return Response.status(Response.Status.FORBIDDEN).build();
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
