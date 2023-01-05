@@ -10,16 +10,15 @@ public class ExpertDTO {
     @Id
     String username;
 
-    String password, name, email;
+    String name, email;
 
     String company_username;
 
     public ExpertDTO() {
     }
 
-    public ExpertDTO(String username, String password, String name, String email, String company_username) {
+    public ExpertDTO(String username, String name, String email, String company_username) {
         this.username = username;
-        this.password = password;
         this.name = name;
         this.email = email;
         this.company_username = company_username;
@@ -31,14 +30,6 @@ public class ExpertDTO {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getName() {
@@ -68,7 +59,6 @@ public class ExpertDTO {
     public static ExpertDTO from(Expert expert){
         return new ExpertDTO(
                 expert.getUsername(),
-                expert.getPassword(),
                 expert.getName(),
                 expert.getEmail(),
                 expert.getInsuranceCompany()

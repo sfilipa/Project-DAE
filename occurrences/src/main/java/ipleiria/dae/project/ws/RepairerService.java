@@ -3,11 +3,14 @@ package ipleiria.dae.project.ws;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ipleiria.dae.project.dtos.ExpertDTO;
+import ipleiria.dae.project.dtos.RepairerCreateDTO;
 import ipleiria.dae.project.dtos.RepairerDTO;
 import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.ejbs.RepairerBean;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Repairer;
+import ipleiria.dae.project.exceptions.MyEntityExistsException;
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +48,7 @@ public class RepairerService {
 
     @POST
     @Path("/")
-    public Response create(RepairerDTO repairerDTO) {
+    public Response create(RepairerCreateDTO repairerDTO) throws MyEntityExistsException {
 
         Repairer repairer = repairerBean.create(
                 repairerDTO.getUsername(),
@@ -56,6 +59,22 @@ public class RepairerService {
         );
 
         return Response.status(Response.Status.CREATED)
+                .entity(RepairerDTO.from(repairer))
+                .build();
+    }
+
+    @PUT
+    @Path("/{username}")
+    public Response update(RepairerCreateDTO repairerDTO) throws MyEntityNotFoundException{
+        Repairer repairer = repairerBean.update(
+                repairerDTO.getUsername(),
+                repairerDTO.getPassword(),
+                repairerDTO.getName(),
+                repairerDTO.getEmail(),
+                repairerDTO.getAddress()
+        );
+
+        return Response.status(Response.Status.OK)
                 .entity(RepairerDTO.from(repairer))
                 .build();
     }

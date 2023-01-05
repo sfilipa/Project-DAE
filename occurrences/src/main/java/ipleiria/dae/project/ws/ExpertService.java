@@ -2,12 +2,14 @@ package ipleiria.dae.project.ws;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ipleiria.dae.project.dtos.ExpertCreateDTO;
 import ipleiria.dae.project.dtos.ExpertDTO;
 import ipleiria.dae.project.dtos.InsuranceDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletRequest;
@@ -176,7 +178,7 @@ public class ExpertService {
 
     @POST
     @Path("/")
-    public Response create(ExpertDTO expertDTO) throws MyEntityExistsException {
+    public Response create(ExpertCreateDTO expertDTO) throws MyEntityExistsException {
         Expert expert = expertBean.create(
                 expertDTO.getUsername(),
                 expertDTO.getPassword(),
@@ -190,6 +192,26 @@ public class ExpertService {
         }
 
         return Response.status(Response.Status.CREATED)
+                .entity(ExpertDTO.from(expert))
+                .build();
+    }
+
+    @PUT
+    @Path("/{username}")
+    public Response update(@PathParam("username") String username, ExpertCreateDTO expertDTO) throws MyEntityNotFoundException {
+        Expert expert = expertBean.update(
+                username,
+                expertDTO.getPassword(),
+                expertDTO.getName(),
+                expertDTO.getEmail(),
+                expertDTO.getCompany_username()
+        );
+
+        if(expert == null){
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        return Response.status(Response.Status.OK)
                 .entity(ExpertDTO.from(expert))
                 .build();
     }

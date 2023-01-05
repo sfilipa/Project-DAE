@@ -10,16 +10,15 @@ import java.util.stream.Collectors;
 public class RepairerDTO implements Serializable {
     String username;
 
-    String password, name, email;
+    String name, email;
 
     String address;
 
     public RepairerDTO() {
     }
 
-    public RepairerDTO(String username, String password, String name, String email, String address) {
+    public RepairerDTO(String username, String name, String email, String address) {
         this.username = username;
-        this.password = password;
         this.name = name;
         this.email = email;
         this.address = address;
@@ -31,14 +30,6 @@ public class RepairerDTO implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getName() {
@@ -68,7 +59,6 @@ public class RepairerDTO implements Serializable {
     public static RepairerDTO from(Repairer repairer) {
         return new RepairerDTO(
                 repairer.getUsername(),
-                repairer.getPassword(),
                 repairer.getName(),
                 repairer.getEmail(),
                 repairer.getAddress());

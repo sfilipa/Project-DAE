@@ -9,12 +9,11 @@ import java.util.stream.Collectors;
 public class AdministratorDTO {
     @Id
     private String username;
-    private String password, name, email;
+    private String name, email;
 
     public static AdministratorDTO from(Administrator administrator) {
         return new AdministratorDTO(
                 administrator.getUsername(),
-                administrator.getPassword(),
                 administrator.getName(),
                 administrator.getEmail()
         );
@@ -27,9 +26,8 @@ public class AdministratorDTO {
     public AdministratorDTO() {
     }
 
-    public AdministratorDTO(String username, String password, String name, String email) {
+    public AdministratorDTO(String username, String name, String email) {
         this.username = username;
-        this.password = password;
         this.name = name;
         this.email = email;
     }
@@ -40,14 +38,6 @@ public class AdministratorDTO {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getName() {

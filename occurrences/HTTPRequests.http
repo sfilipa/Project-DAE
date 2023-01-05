@@ -14,7 +14,7 @@ GET http://localhost:8080/occurrences/api/occurrences
 Accept: application/json
 
 ##### Get Occurrence Details
-GET http://localhost:8080/occurrences/api/occurrences/2
+GET http://localhost:8080/occurrences/api/occurrences/1
 Accept: application/json
 
 ### Create Ocurrence

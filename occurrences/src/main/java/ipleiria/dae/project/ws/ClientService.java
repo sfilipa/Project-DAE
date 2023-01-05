@@ -1,5 +1,6 @@
 package ipleiria.dae.project.ws;
 
+import ipleiria.dae.project.dtos.ClientCreateDTO;
 import ipleiria.dae.project.dtos.ClientDTO;
 import ipleiria.dae.project.dtos.InsuranceDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
@@ -42,9 +43,8 @@ public class ClientService {
 
     @POST
     @Path("/")
-    public Response create(Client clientDTO) throws MyEntityExistsException {
-        Client client = null;
-        client = clientBean.create(
+    public Response create(ClientCreateDTO clientDTO) throws MyEntityExistsException {
+        Client client = clientBean.create(
                 clientDTO.getUsername(),
                 clientDTO.getPassword(),
                 clientDTO.getName(),
@@ -66,12 +66,8 @@ public class ClientService {
    /* @Authenticated
     @RolesAllowed({"Client"})*/
     @Path("/{username}")
-    public Response updateClient(@PathParam("username") String username, ClientDTO clientDTO) throws MyEntityNotFoundException {
-       /* if(!securityContext.getUserPrincipal().getName().equals(username)) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }*/
-        Client client = null;
-        client = clientBean.update(
+    public Response updateClient(@PathParam("username") String username, ClientCreateDTO clientDTO) throws MyEntityNotFoundException {
+        Client client = clientBean.update(
                 username,
                 clientDTO.getPassword(),
                 clientDTO.getName(),
@@ -80,7 +76,6 @@ public class ClientService {
                 clientDTO.getPhoneNumber(),
                 clientDTO.getNif_nipc()
         );
-
 
         if (client == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
