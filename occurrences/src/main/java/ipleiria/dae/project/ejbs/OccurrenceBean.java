@@ -38,7 +38,7 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, String description) throws MyEntityNotFoundException {
+    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws MyEntityNotFoundException {
         JSONArray jsonArray = mockAPIBean.getDataAPI("insurances", "code", insuranceCode);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
@@ -82,8 +82,12 @@ public class OccurrenceBean {
         List<CoverageType> covers = CoverageType.getCoverageTypeList(insuranceCoversAPI);
         insurance.setCovers(covers);
 
+        if (!covers.contains(coverageType)) {
+            throw new MyEntityNotFoundException("The insurance does not cover this type of coverage");
+        }
+
         description = "[" + usernameClient + "]: " + description;
-        Occurrence occurrence = new Occurrence(entryDate, insuranceObjectAPI, description, insurance, state, client);
+        Occurrence occurrence = new Occurrence(entryDate, insuranceObjectAPI, description, insurance, coverageType, state, client);
         client.addOccurrence(occurrence);
         em.persist(occurrence);
         return occurrence;
@@ -98,7 +102,7 @@ public class OccurrenceBean {
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, String description) throws MyEntityNotFoundException {//TODO : Exceptions
+    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws MyEntityNotFoundException {//TODO : Exceptions
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
             throw new MyEntityNotFoundException("Occurrence not found");
@@ -138,6 +142,10 @@ public class OccurrenceBean {
         List<CoverageType> covers = CoverageType.getCoverageTypeList(insuranceCoversAPI);
         insurance.setCovers(covers);
 
+        if (!covers.contains(coverageType)) {
+            throw new MyEntityNotFoundException("The insurance does not cover this type of coverage");
+        }
+
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
         } catch (IllegalArgumentException e) {
@@ -148,6 +156,7 @@ public class OccurrenceBean {
         occurrence.setInsurance(insurance);
         occurrence.setDescription(description);
         occurrence.setObjectInsured(insuranceObjectAPI);
+        occurrence.setCoverageType(coverageType);
 
         return occurrence;
     }

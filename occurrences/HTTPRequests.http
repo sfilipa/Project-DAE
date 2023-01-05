@@ -19,7 +19,7 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE5ODQ0LCJleHAiOjE2NzI5MjM0NDR9.gM59HTRpfwRboS8N-Dmc3CwFmXRQqd-gbxXmYBOYTfM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTMzNDQ1LCJleHAiOjE2NzI5MzcwNDV9.nhKcDTIvRqZsAsFIlTjWuSr70ZLc8yc31YG8AUP3fPU
 Content-Type: application/json
 
 {
@@ -27,6 +27,7 @@ Content-Type: application/json
   "entryDate": "10/1/2023",
   "state": "PENDING",
   "insuranceCode": "ALL-1298389",
+  "coverageType": "WATER_DAMAGE",
   "description": "ola"
 }
 

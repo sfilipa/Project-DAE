@@ -63,6 +63,7 @@ public class OccurrenceService {
                 occurrenceDTO.getEntryDate(),
                 occurrenceDTO.getState(),
                 occurrenceDTO.getInsuranceCode(),
+                occurrenceDTO.getCoverageType(),
                 occurrenceDTO.getDescription()
         );
 
@@ -89,6 +90,7 @@ public class OccurrenceService {
                 occurrenceDTO.getEntryDate(),
                 occurrenceDTO.getState(),
                 occurrenceDTO.getInsuranceCode(),
+                occurrenceDTO.getCoverageType(),
                 occurrenceDTO.getDescription()
         );
 

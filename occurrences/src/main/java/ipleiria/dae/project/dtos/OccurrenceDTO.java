@@ -22,31 +22,32 @@ public class OccurrenceDTO implements Serializable {
     private State state;
     private String usernameClient;
     private String usernameRepairer;
-    private List<CoverageType> covers;
+    private CoverageType coverageType;
     public OccurrenceDTO() {
     }
 
-    public OccurrenceDTO(long id, String entryDate, String objectInsured, String description, String insuranceCode, State state, String usernameClient) {
+    public OccurrenceDTO(long id, String entryDate, String objectInsured, String description, String insuranceCode, CoverageType coverageType, State state, String usernameClient) {
         this.id = id;
         this.entryDate = entryDate;
         this.objectInsured = objectInsured;
         this.description = description;
         this.insuranceCode = insuranceCode;
+        this.coverageType = coverageType;
         this.state = state;
         this.usernameClient = usernameClient;
     }
 
-    public OccurrenceDTO(long id, String entryDate, String finalDate, String objectInsured, String description, String insuranceCode, State state, String usernameClient, String usernameRepairer, List<CoverageType> covers) {
+    public OccurrenceDTO(long id, String entryDate, String finalDate, String objectInsured, String description, String insuranceCode, CoverageType coverageType, State state, String usernameClient, String usernameRepairer) {
         this.id = id;
         this.entryDate = entryDate;
         this.finalDate = finalDate;
         this.objectInsured = objectInsured;
         this.description = description;
         this.insuranceCode = insuranceCode;
+        this.coverageType = coverageType;
         this.state = state;
         this.usernameClient = usernameClient;
         this.usernameRepairer = usernameRepairer;
-        this.covers = covers;
     }
 
     public long getId() {
@@ -121,11 +122,12 @@ public class OccurrenceDTO implements Serializable {
         this.usernameRepairer = usernameRepairer;
     }
 
-    public List<CoverageType> getCovers() {
-        return covers;
+    public CoverageType getCoverageType() {
+        return coverageType;
     }
-    public void setCovers(List<CoverageType> covers) {
-        this.covers = covers;
+
+    public void setCoverageType(CoverageType coverageType) {
+        this.coverageType = coverageType;
     }
 
     public static OccurrenceDTO from(Occurrence occurrence) {
@@ -136,10 +138,10 @@ public class OccurrenceDTO implements Serializable {
                 occurrence.getObjectInsured(),
                 occurrence.getDescription(),
                 occurrence.getInsurance().getCode(),
+                occurrence.getCoverageType(),
                 occurrence.getState(),
                 occurrence.getClient().getUsername(),
-                occurrence.getRepairer() != null ? occurrence.getRepairer().getUsername() : null,
-                occurrence.getInsurance().getCovers()
+                occurrence.getRepairer() != null ? occurrence.getRepairer().getUsername() : null
         );
     }
 

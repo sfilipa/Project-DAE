@@ -1,5 +1,6 @@
 package ipleiria.dae.project.entities;
 
+import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
 
@@ -32,6 +33,8 @@ public class Occurrence implements Serializable {
     @NotNull
     private String description;
     @NotNull
+    private CoverageType coverageType;
+    @NotNull
     private Insurance insurance;
     @NotNull
     private State state;
@@ -54,11 +57,12 @@ public class Occurrence implements Serializable {
     //de inicio, todas as occurrences devem ser criadas com o State.PENDING
 
 
-    public Occurrence(String entryDate, String objectInsured, String description, Insurance insurance, State state, Client client) {
+    public Occurrence(String entryDate, String objectInsured, String description, Insurance insurance, CoverageType coverageType, State state, Client client) {
         this.entryDate = entryDate;
         this.objectInsured = objectInsured;
         this.description = description;
         this.insurance = insurance;
+        this.coverageType = coverageType;
         this.state = state;
         this.client = client;
         documents = new LinkedList<>();
@@ -119,6 +123,14 @@ public class Occurrence implements Serializable {
 
     public void setObjectInsured(String objectInsured) {
         this.objectInsured = objectInsured;
+    }
+
+    public CoverageType getCoverageType() {
+        return coverageType;
+    }
+
+    public void setCoverageType(CoverageType coverageType) {
+        this.coverageType = coverageType;
     }
 
     public List<Document> getDocuments() {
