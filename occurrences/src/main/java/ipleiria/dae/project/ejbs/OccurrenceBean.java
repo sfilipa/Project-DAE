@@ -39,12 +39,13 @@ public class OccurrenceBean {
     }
 
     public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, String description) throws MyEntityNotFoundException {
-        JSONArray jsonArray = mockAPIBean.getDataAPI("insurances","code",insuranceCode);
+        JSONArray jsonArray = mockAPIBean.getDataAPI("insurances", "code", insuranceCode);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
-        if(jsonObject == null){
+        if (jsonObject == null) {
             throw new MyEntityNotFoundException("Insurance not found");
         }
+
         long policyNumberAPI = jsonObject.getLong("policyNumber");
         String insuranceCompanyAPI = jsonObject.getString("insuranceCompany");
         long clientNifAPI = jsonObject.getLong("clientNif");
@@ -57,7 +58,7 @@ public class OccurrenceBean {
 
         Client client = em.find(Client.class, usernameClient);
 
-        if (clientNifAPI != client.getNif_nipc()){
+        if (clientNifAPI != client.getNif_nipc()) {
             throw new MyEntityNotFoundException("Client is not the owner of the insurance");
         }
 
@@ -65,52 +66,50 @@ public class OccurrenceBean {
         Date validUntil_formatDate = new Date(validUntilAPI);
         Date entryDate_formatDate = new Date(entryDate);
 
-        System.out.println("initialDate_formatDate: " + initialDate_formatDate + " validUntil_formatDate: " + validUntil_formatDate + " entryDate_formatDate: " + entryDate_formatDate);
-
-        if ((entryDate_formatDate.before(initialDate_formatDate) || entryDate_formatDate.after(validUntil_formatDate))){
-            throw new MyEntityNotFoundException("Entry date is not between the initial date and the valid until date --------- "+ entryDate_formatDate + " " + initialDate_formatDate + " " + validUntil_formatDate);
+        if ((entryDate_formatDate.before(initialDate_formatDate) || entryDate_formatDate.after(validUntil_formatDate))) {
+            throw new MyEntityNotFoundException("Entry date is not between the initial date and the valid until date");
         }
 
         InsuredAssetType insuredAssetType = null;
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new MyEntityNotFoundException("Insurance type not found");
         }
 
         Insurance insurance = new Insurance(insuranceCode, policyNumberAPI, insuranceCompanyAPI, clientNifAPI, clientNameAPI, initialDateAPI, validUntilAPI, insuranceObjectAPI, insuredAssetType, description);
 
         List<CoverageType> covers = CoverageType.getCoverageTypeList(insuranceCoversAPI);
-
         insurance.setCovers(covers);
 
         Occurrence occurrence = new Occurrence(entryDate, insuranceObjectAPI, description, insurance, state, client);
+        client.addOccurrence(occurrence);
         em.persist(occurrence);
         return occurrence;
     }
 
     public void delete(long id) throws MyEntityNotFoundException {
         Occurrence occurrence = find(id);
-        if(occurrence == null){
+        if (occurrence == null) {
             throw new MyEntityNotFoundException("Occurrence not found");
         }
+        occurrence.getClient().removeOccurrence(occurrence);
         em.remove(occurrence);
     }
 
     public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, String description) throws MyEntityNotFoundException {//TODO : Exceptions
         Occurrence occurrence = em.find(Occurrence.class, id);
-        if(occurrence == null){
+        if (occurrence == null) {
             throw new MyEntityNotFoundException("Occurrence not found");
         }
 
-        JSONArray jsonArray = mockAPIBean.getDataAPI("insurances","code",insuranceCode);
-
+        JSONArray jsonArray = mockAPIBean.getDataAPI("insurances", "code", insuranceCode);
         JSONObject jsonObject = jsonArray.getJSONObject(0);
-        if(jsonObject == null){
+
+        if (jsonObject == null) {
             throw new MyEntityNotFoundException("Insurance not found");
         }
 
-        String insuranceCodeAPI = jsonObject.getString("code");
         long policyNumberAPI = jsonObject.getLong("policyNumber");
         String insuranceCompanyAPI = jsonObject.getString("insuranceCompany");
         long clientNifAPI = jsonObject.getLong("clientNif");
@@ -121,23 +120,28 @@ public class OccurrenceBean {
         String insuranceObjectAPI = jsonObject.getString("object");
         JSONArray insuranceCoversAPI = jsonObject.getJSONArray("covers");
 
+        if (clientNifAPI != occurrence.getClient().getNif_nipc()) {
+            occurrence.getClient().removeOccurrence(occurrence);
+            Client client = em.find(Client.class, usernameClient);
 
-        Client client = em.find(Client.class, usernameClient);
+            if (clientNifAPI != client.getNif_nipc()) {
+                throw new MyEntityNotFoundException("Client is not the owner of the insurance");
+            }
 
-        if (clientNifAPI != client.getNif_nipc()){
-            throw new MyEntityNotFoundException("Client is not the owner of the insurance");
+            occurrence.setClient(client);
+            client.addOccurrence(occurrence);
         }
         InsuredAssetType insuredAssetType = null;
         Insurance insurance = new Insurance(insuranceCode, policyNumberAPI, insuranceCompanyAPI, clientNifAPI, clientNameAPI, initialDateAPI, validUntilAPI, insuranceObjectAPI, insuredAssetType, description);
 
+        List<CoverageType> covers = CoverageType.getCoverageTypeList(insuranceCoversAPI);
+        insurance.setCovers(covers);
 
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
-        }catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new MyEntityNotFoundException("Insurance type not found");
         }
-
-        occurrence.setClient(client);
         occurrence.setEntryDate(entryDate);
         occurrence.setState(state);
         occurrence.setInsurance(insurance);
@@ -195,7 +199,7 @@ public class OccurrenceBean {
         if (occurrence == null) {
             return -1; //devolver exception
         }
-        if(occurrence.getState() != State.APPROVED){
+        if (occurrence.getState() != State.APPROVED) {
             return -2; //devolver exception
         }
         Repairer repairer = em.find(Repairer.class, username);
@@ -209,7 +213,7 @@ public class OccurrenceBean {
         return 0;
     }
 
-    public int unassignRepairer(long id){
+    public int unassignRepairer(long id) {
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
             return -1; //devolver exception
@@ -220,7 +224,7 @@ public class OccurrenceBean {
             return -2; //devolver exception
         }
 
-        if(occurrence.getState() != State.REPAIRER_WAITING_LIST && occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){
+        if (occurrence.getState() != State.REPAIRER_WAITING_LIST && occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT) {
             return -3; //devolver exception (pois se estiver no .ACTIVE, não posso fazer unassign de um repairer que já está mesmo a reparar)
         }
 
