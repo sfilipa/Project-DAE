@@ -19,12 +19,12 @@ import java.util.List;
 @Stateless
 public class MockAPIBean {
 
-    public JSONArray getDataAPI(String resource, String code) throws MyEntityNotFoundException {
+    public JSONArray getDataAPI(String resource, String attribute, String attributeToGet) throws MyEntityNotFoundException {
         JSONArray jsonArray = new JSONArray();
         try {
             URL url = null;
-            if (!code.trim().isEmpty()) {
-                url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource + "?code=" + code);
+            if (!attributeToGet.trim().isEmpty() && !attribute.trim().isEmpty()) {
+                url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource + "?" + attribute + "=" + attributeToGet);
             } else {
                 url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource);
             }
@@ -34,7 +34,7 @@ public class MockAPIBean {
             conn.connect();
 
             if (conn.getResponseCode() < 200 || conn.getResponseCode() > 299) {
-                throw new MyEntityNotFoundException("Erro da API");//TODO: MUDAR ESTAS EXCEÇOES
+                throw new MyEntityNotFoundException("Couldn't get data from API");//TODO: MUDAR ESTAS EXCEÇOES
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
