@@ -99,8 +99,14 @@ public class ClientBean {
         return true;
     }
 
-    public List<Occurrence> clientOccurrences(String username) {
-        var occurrences = findOrFail(username).getOccurrences();
+    public List<Occurrence> clientOccurrences(String username) throws MyEntityNotFoundException {
+        Client client = find(username);
+        if(client == null){
+            throw new MyEntityNotFoundException("Client not found");
+        }
+        Hibernate.initialize(client);
+//        var occurrences = findOrFail(username).getOccurrences();
+        var occurrences = client.getOccurrences();
         Hibernate.initialize(occurrences);
 
         return occurrences;
