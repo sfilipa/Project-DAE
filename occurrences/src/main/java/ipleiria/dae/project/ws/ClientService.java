@@ -1,16 +1,21 @@
 package ipleiria.dae.project.ws;
 
+import ipleiria.dae.project.dtos.ClientCreateDTO;
 import ipleiria.dae.project.dtos.ClientDTO;
+import ipleiria.dae.project.dtos.EmailDTO;
 import ipleiria.dae.project.dtos.InsuranceDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.ejbs.ClientBean;
+import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.entities.Client;
+import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Authenticated;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.mail.MessagingException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -24,6 +29,9 @@ import javax.ws.rs.core.SecurityContext;
 public class ClientService {
     @EJB
     private ClientBean clientBean;
+
+    @EJB
+    private EmailBean emailBean;
 
     @Context
     private SecurityContext securityContext;
@@ -42,9 +50,8 @@ public class ClientService {
 
     @POST
     @Path("/")
-    public Response create(Client clientDTO) throws MyEntityExistsException {
-        Client client = null;
-        client = clientBean.create(
+    public Response create(ClientCreateDTO clientDTO) throws MyEntityExistsException {
+        Client client = clientBean.create(
                 clientDTO.getUsername(),
                 clientDTO.getPassword(),
                 clientDTO.getName(),
@@ -66,12 +73,8 @@ public class ClientService {
    /* @Authenticated
     @RolesAllowed({"Client"})*/
     @Path("/{username}")
-    public Response updateClient(@PathParam("username") String username, ClientDTO clientDTO) throws MyEntityNotFoundException {
-       /* if(!securityContext.getUserPrincipal().getName().equals(username)) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }*/
-        Client client = null;
-        client = clientBean.update(
+    public Response updateClient(@PathParam("username") String username, ClientCreateDTO clientDTO) throws MyEntityNotFoundException {
+        Client client = clientBean.update(
                 username,
                 clientDTO.getPassword(),
                 clientDTO.getName(),
@@ -80,7 +83,6 @@ public class ClientService {
                 clientDTO.getPhoneNumber(),
                 clientDTO.getNif_nipc()
         );
-
 
         if (client == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -115,6 +117,20 @@ public class ClientService {
     @Path("{username}/insurances")
     public Response getClientInsurances(@PathParam("username") String username) {
         return Response.ok(InsuranceDTO.from(clientBean.insurances(username))).build();
+    }
+
+    @POST
+    @Authenticated
+    @Path("/{username}/email/send")
+    public Response sendEmail(@PathParam("username") String username, EmailDTO email) throws MessagingException {
+        Client client = clientBean.find(username);
+
+        if(client == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        emailBean.send(client.getEmail(), email.getSubject(), email.getMessage());
+        return Response.noContent().build();
     }
 
 }

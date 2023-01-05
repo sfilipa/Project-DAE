@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class ClientDTO implements Serializable {
     @Id
     String username;
-    String password, name, email,address;
+    String name, email,address;
     Long phoneNumber;
     long nif_nipc;
    // List<String> insurances;
@@ -20,9 +20,8 @@ public class ClientDTO implements Serializable {
        // insurances = new LinkedList<>();
     }
 
-    public ClientDTO(String username, String password, String name, String email, String address, Long phoneNumber, long nif_nipc) {
+    public ClientDTO(String username, String name, String email, String address, Long phoneNumber, long nif_nipc) {
         this.username = username;
-        this.password = password;
         this.name = name;
         this.email = email;
         this.address = address;
@@ -31,40 +30,12 @@ public class ClientDTO implements Serializable {
        // insurances = new LinkedList<>();
     }
 
-    public ClientDTO(String password, String name, String email, String address, Long phoneNumber, long nif_nipc) {
-        this.password = password;
-        this.name = name;
-        this.email = email;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-        this.nif_nipc = nif_nipc;
-        // insurances = new LinkedList<>();
-    }
-
-    public ClientDTO(String username, String password, String name, String email, String address, Long phoneNumber, List<String> insurances) {
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.email = email;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-       // this.insurances = insurances;
-    }
-
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getName() {
@@ -110,7 +81,6 @@ public class ClientDTO implements Serializable {
     public static ClientDTO from(Client client) {
         return new ClientDTO(
                 client.getUsername(),
-                client.getPassword(),
                 client.getName(),
                 client.getEmail(),
                 client.getAddress(),

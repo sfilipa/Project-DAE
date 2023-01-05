@@ -3,6 +3,8 @@ package ipleiria.dae.project.ejbs;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.enumerators.State;
+import ipleiria.dae.project.exceptions.MyEntityExistsException;
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Hasher;
 
 import javax.ejb.Stateless;
@@ -23,20 +25,20 @@ public class RepairerBean {
         return (List<Repairer>) em.createNamedQuery("getAllRepairers").getResultList();
     }
 
-    public Repairer create(String username, String password, String name, String email, String address) {
+    public Repairer create(String username, String password, String name, String email, String address) throws MyEntityExistsException{
         Repairer repairer = find(username);
         if (repairer != null){
-            return null;
+            throw new MyEntityExistsException("Repairer already exists");
         }
         repairer = new Repairer(username, hasher.hash(password), name, email, address);
         em.persist(repairer);
         return find(username);
     }
 
-    public Repairer update(String username, String password, String name, String email, String address) {
+    public Repairer update(String username, String password, String name, String email, String address) throws MyEntityNotFoundException {
         Repairer repairer = find(username);
         if (repairer == null){
-            return null;
+            throw new MyEntityNotFoundException("Repairer not found");
         }
         repairer.setPassword(password);
         repairer.setName(name);

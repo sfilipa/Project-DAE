@@ -14,7 +14,7 @@ GET http://localhost:8080/occurrences/api/occurrences
 Accept: application/json
 
 ##### Get Occurrence Details
-GET http://localhost:8080/occurrences/api/occurrences/2
+GET http://localhost:8080/occurrences/api/occurrences/1
 Accept: application/json
 
 ### Create Ocurrence
@@ -26,7 +26,7 @@ Content-Type: application/json
   "usernameClient": "client2",
   "entryDate": "10/1/2023",
   "state": "PENDING",
-  "insuranceCode": "ALL-1298389",
+  "insuranceCode": "ALL-1298666",
   "description": "ola"
 }
 
@@ -50,7 +50,7 @@ Content-Type: application/json
 ###DOCUMENTS
 ### Add Documents to occurrency
 POST http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNjY4NTQ0LCJleHAiOjE2NzI2NzIxNDR9.twJ6VmBx_BXRDNqdv-Jedc0zJOGwa9IFEwffiSFFe9M
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyOTEzNjE3LCJleHAiOjE2NzI5MTcyMTd9.um4469JI7SxLC_cdeIjUIemytQFz7dLnhkvj6z4uYFY
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -60,7 +60,7 @@ Content-Disposition: form-data; name="file"; filename="<C:\popo\statistics.txt"
 
 ### Gets documents of occurrency with id = 2
 GET http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNjY4NTQ0LCJleHAiOjE2NzI2NzIxNDR9.twJ6VmBx_BXRDNqdv-Jedc0zJOGwa9IFEwffiSFFe9M
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyOTEzNjE3LCJleHAiOjE2NzI5MTcyMTd9.um4469JI7SxLC_cdeIjUIemytQFz7dLnhkvj6z4uYFY
 Content-Type: application/x-www-form-urlencoded
 
 ###Download documents with id=1
@@ -70,7 +70,7 @@ Content-Type: application/x-www-form-urlencoded
 
 ###See if occurrency with id = 2 has documents
 GET http://localhost:8080/occurrences/api/documents/2/exists HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNjcwNDY1LCJleHAiOjE2NzI2NzQwNjV9.grKU_mYiooNmTNcs6pfNG3-kFVGP6aSbGZyU43d-nlE
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyOTEzNjE3LCJleHAiOjE2NzI5MTcyMTd9.um4469JI7SxLC_cdeIjUIemytQFz7dLnhkvj6z4uYFY
 Content-Type: application/x-www-form-urlencoded
 
 ##### CLIENT Occurrences
@@ -257,3 +257,53 @@ Accept: application/json
 ###
 GET http://localhost:8080/occurrences/api/mock/insurances/FIDEL-1298302
 Accept: application/json
+
+###Client Send Email
+POST http://localhost:8080/occurrences/api/clients/client2/email/send
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE1NDM2LCJleHAiOjE2NzI5MTkwMzZ9.pF3kxBuD_lZSVuGYNOlxGLAjVMjVWlifTcMSNTbnK94
+Content-Type: application/json
+
+{
+  "subject": "Bom dia",
+  "message": "Bom dia. Compra Laranjas"
+}
+
+####LOGIN
+POST http://localhost:8080/occurrences/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "expert2",
+  "password": "exp"
+}
+
+###Expert Send Email
+POST http://localhost:8080/occurrences/api/experts/expert2/email/send
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQyIiwiaWF0IjoxNjcyOTE2Nzg5LCJleHAiOjE2NzI5MjAzODl9.lgJUbMbo8SaExuwMokv6vDwJRGtbqA63t0qQT_En0DM
+Content-Type: application/json
+
+{
+  "subject": "Bom dia",
+  "message": "Bom dia. Compra melões"
+}
+
+####LOGIN
+POST http://localhost:8080/occurrences/api/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "repairer1",
+  "password": "repairer"
+}
+
+###Repairer Send Email
+POST http://localhost:8080/occurrences/api/repairers/repairer1/email/send
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzI5MTYxODAsImV4cCI6MTY3MjkxOTc4MH0.775skjEK_5of5ot-RXswgIND0XVNf0YtbFEirkhxHqA
+Content-Type: application/json
+
+{
+  "subject": "Bom dia",
+  "message": "Bom dia. Compra papaias"
+}

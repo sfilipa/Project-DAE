@@ -25,13 +25,6 @@ public class Client extends User implements Serializable {
     @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Occurrence> occurrences;
 
-    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @Transient
-    private List<Policy> policies;
-
-   /* @NotNull
-    List<String> insurances;*/
-
     public Client() {
         //insurances = new LinkedList<>();
         occurrences = new LinkedList<>();
@@ -43,7 +36,6 @@ public class Client extends User implements Serializable {
         this.phoneNumber = phoneNumber;
         this.nif_nipc = nif_nipc;
         occurrences = new LinkedList<>();
-        //insurances = new LinkedList<>();
     }
 
     public String getAddress() {
@@ -78,19 +70,10 @@ public class Client extends User implements Serializable {
         this.nif_nipc = nif_nipc;
     }
 
-    public void add(Policy policy) {
-        if (policy == null || policies.contains(policy)) {
-            // Throw exception
-            throw new IllegalArgumentException("Policy is null or already exists");
-        }
-        policies.add(policy);
+    public void addOccurrence(Occurrence occurrence) {
+        occurrences.add(occurrence);
     }
-
-    public void remove(Policy policy) {
-        if (policy == null || !policies.contains(policy)) {
-            // Throw exception
-            throw new IllegalArgumentException("Policy is null or doesn't exist");
-        }
-        policies.remove(policy);
+    public void removeOccurrence(Occurrence occurrence) {
+        occurrences.remove(occurrence);
     }
 }
