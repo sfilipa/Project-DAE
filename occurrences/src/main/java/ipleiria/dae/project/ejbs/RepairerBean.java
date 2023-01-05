@@ -47,14 +47,20 @@ public class RepairerBean {
         return repairer;
     }
 
+
+
     public Repairer find(String username) {
         return em.find(Repairer.class, username);
     }
 
     //findOrFail
 
-    public void delete(String username) {
-        em.remove(find(username));
+    public void delete(String username) throws MyEntityNotFoundException {
+        Repairer repairer = find(username);
+        if (repairer == null) {
+            throw new MyEntityNotFoundException("Repairer not found");
+        }
+        em.remove(repairer);
     }
 
     public void assignOccurrence(String username, long occurrenceCode) {

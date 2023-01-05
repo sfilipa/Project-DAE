@@ -2,10 +2,9 @@ package ipleiria.dae.project.ws;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ipleiria.dae.project.dtos.ExpertCreateDTO;
+import ipleiria.dae.project.dtos.create.ExpertCreateDTO;
 import ipleiria.dae.project.dtos.EmailDTO;
 import ipleiria.dae.project.dtos.ExpertDTO;
-import ipleiria.dae.project.dtos.InsuranceDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.ejbs.ExpertBean;
@@ -21,11 +20,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("experts") // relative url web path for this service
 @Produces({MediaType.APPLICATION_JSON}) // injects header “Content-Type: application/json”
@@ -112,13 +108,15 @@ public class ExpertService {
 
     @GET
     @Path("/{username}/occurrences/assigned")
-    public Response getAssignedOccurrences(@PathParam("username") String username) {
+    public Response getAssignedOccurrences(@PathParam("username") String username) throws MyEntityNotFoundException {
         return Response.ok(OccurrenceDTO.from(expertBean.occurrences(username))).build();
     }
 
     @PATCH
     @Path("/{username}/occurrences/{occurrence_id}/disapprove")
-    public Response disapproveOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
+    public Response disapproveOccurrence(@Context HttpServletRequest request,
+                                         @PathParam("username") String username,
+                                         @PathParam("occurrence_id") long occurrence_id) {
         try {
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
@@ -133,7 +131,9 @@ public class ExpertService {
             expertBean.disapproveOccurrence(username, occurrence_id, description);
             return Response.ok().build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
 
@@ -173,10 +173,10 @@ public class ExpertService {
 
     @GET
     @Path("/{username}")
-    public Response getExpert(@PathParam("username") String username) {
+    public Response getExpert(@PathParam("username") String username) throws MyEntityNotFoundException{
         Expert expert = expertBean.find(username);
         if(expert == null){
-            return Response.status(Response.Status.NOT_FOUND).build();
+            throw new MyEntityNotFoundException("Expert with username " + username + " does not exist.");
         }
 
         return Response.ok(ExpertDTO.from(expert)).build();
@@ -224,17 +224,15 @@ public class ExpertService {
 
     @DELETE
     @Path("/{username}")
-    public Response delete(@PathParam("username") String username) {
-
+    public Response delete(@PathParam("username") String username) throws MyEntityNotFoundException {
         expertBean.delete(username);
-
         return Response.status(Response.Status.ACCEPTED).build();
     }
 
     @POST
     @Authenticated
     @Path("/{username}/email/send")
-    public Response sendEmail(@PathParam("username") String username, EmailDTO email) throws MessagingException {
+    public Response sendEmail(@PathParam("username") String username, EmailDTO email) {
         Expert expert = expertBean.find(username);
 
         if(expert == null){

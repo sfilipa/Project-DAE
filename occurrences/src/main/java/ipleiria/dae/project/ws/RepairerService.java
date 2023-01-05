@@ -2,22 +2,15 @@ package ipleiria.dae.project.ws;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ipleiria.dae.project.dtos.EmailDTO;
-import ipleiria.dae.project.dtos.ExpertDTO;
-import ipleiria.dae.project.dtos.RepairerCreateDTO;
+import ipleiria.dae.project.dtos.create.RepairerCreateDTO;
 import ipleiria.dae.project.dtos.RepairerDTO;
 import ipleiria.dae.project.ejbs.EmailBean;
-import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.ejbs.RepairerBean;
-import ipleiria.dae.project.entities.Client;
-import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
-import ipleiria.dae.project.security.Authenticated;
 
 import javax.ejb.EJB;
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -25,7 +18,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("repairers") // relative url web path for this service
 @Produces({MediaType.APPLICATION_JSON}) // injects header “Content-Type: application/json”
@@ -45,12 +37,11 @@ public class RepairerService {
 
     @GET
     @Path("/{username}")
-    public Response getRepairer(@PathParam("username") String username) {
+    public Response getRepairer(@PathParam("username") String username) throws MyEntityNotFoundException {
         Repairer repairer = repairerBean.find(username);
         if(repairer == null){
-            return Response.status(Response.Status.NOT_FOUND).build();
+            throw new MyEntityNotFoundException("Repairer not found");
         }
-
         return Response.ok(RepairerDTO.from(repairer)).build();
     }
 
@@ -89,10 +80,8 @@ public class RepairerService {
 
     @DELETE
     @Path("/{username}")
-    public Response delete(@PathParam("username") String username) {
-
+    public Response delete(@PathParam("username") String username) throws MyEntityNotFoundException {
         repairerBean.delete(username);
-
         return Response.status(Response.Status.ACCEPTED).build();
     }
 
@@ -170,19 +159,5 @@ public class RepairerService {
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-    }
-
-    @POST
-    @Authenticated
-    @Path("/{username}/email/send")
-    public Response sendEmail(@PathParam("username") String username, EmailDTO email) throws MessagingException {
-        Repairer repairer = repairerBean.find(username);
-
-        if(repairer == null){
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-
-        emailBean.send(repairer.getEmail(), email.getSubject(), email.getMessage());
-        return Response.noContent().build();
     }
 }

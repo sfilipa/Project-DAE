@@ -1,8 +1,10 @@
-package ipleiria.dae.project.dtos;
+package ipleiria.dae.project.dtos.create;
+
+import ipleiria.dae.project.dtos.RepairerDTO;
 
 import javax.validation.constraints.NotNull;
 
-public class RepairerCreateDTO extends RepairerDTO{
+public class RepairerCreateDTO extends RepairerDTO {
     @NotNull
     private String password;
 

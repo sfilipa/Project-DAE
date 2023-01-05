@@ -1,8 +1,10 @@
-package ipleiria.dae.project.dtos;
+package ipleiria.dae.project.dtos.create;
+
+import ipleiria.dae.project.dtos.ClientDTO;
 
 import javax.validation.constraints.NotNull;
 
-public class ClientCreateDTO extends ClientDTO{
+public class ClientCreateDTO extends ClientDTO {
     @NotNull
     private String password;
 
