@@ -5,8 +5,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "expert2",
-  "password": "exp"
+  "username": "client2",
+  "password": "client"
 }
 
 ##### Get Occurrences
@@ -19,11 +19,11 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyODU1OTA0LCJleHAiOjE2NzI4NTk1MDR9.D1gCSQstEQ1JroH0p2CkdNx7PCTYWfiTN5LkBgSFJ1U
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE4MDc5LCJleHAiOjE2NzI5MjE2Nzl9.Kih4mk0hGH9CoUKUz945n52w7x67jQ0XnW8Dpcneu5s
 Content-Type: application/json
 
 {
-  "usernameClient": "client3",
+  "usernameClient": "client2",
   "entryDate": "10/1/2023",
   "state": "PENDING",
   "insuranceCode": "ALL-1298389",
@@ -137,7 +137,7 @@ Content-Type: application/json
 }
 
 ### Expert Approve Occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/4/approve
+PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/2/approve
 Content-Type: application/json
 
 {

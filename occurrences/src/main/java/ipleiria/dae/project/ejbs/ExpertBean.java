@@ -2,7 +2,6 @@ package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
-import ipleiria.dae.project.entities.*;
 import ipleiria.dae.project.enumerators.State;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.security.Hasher;
@@ -13,7 +12,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Objects;
 
 @Stateless
 public class ExpertBean {
@@ -111,7 +109,7 @@ public class ExpertBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n- " + expert.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
         } catch (IllegalArgumentException e) {
@@ -138,7 +136,7 @@ public class ExpertBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n- " + expert.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
         } catch (IllegalArgumentException e) {
@@ -242,7 +240,7 @@ public class ExpertBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n- " + expert.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
         }catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
