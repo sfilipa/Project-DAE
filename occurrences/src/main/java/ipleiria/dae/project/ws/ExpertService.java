@@ -2,10 +2,10 @@ package ipleiria.dae.project.ws;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ipleiria.dae.project.dtos.create.ExpertCreateDTO;
 import ipleiria.dae.project.dtos.EmailDTO;
 import ipleiria.dae.project.dtos.ExpertDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
+import ipleiria.dae.project.dtos.create.ExpertCreateDTO;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.entities.Expert;
@@ -13,19 +13,21 @@ import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Authenticated;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.util.List;
 
 @Path("experts") // relative url web path for this service
 @Produces({MediaType.APPLICATION_JSON}) // injects header “Content-Type: application/json”
 @Consumes({MediaType.APPLICATION_JSON})
+@RolesAllowed({"Administrator", "Expert"})
 public class ExpertService {
     @EJB
     private ExpertBean expertBean;
@@ -33,18 +35,23 @@ public class ExpertService {
     @EJB
     private EmailBean emailBean;
 
+    @Context
+    private SecurityContext securityContext;
+
     /**
      * Expert
-     *  Repairers
+     * Repairers
      */
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/{occurrence_id}/acceptRepairer")
-    public Response acceptRepairer(@PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id){
-        try{
+    public Response acceptRepairer(@PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
+        try {
             expertBean.acceptRepairer(username, occurrence_id);
             return Response.status(Response.Status.OK).build();
-        }catch (Exception e) {
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
@@ -52,9 +59,11 @@ public class ExpertService {
     }
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/{occurrence_id}/rejectRepairer")
-    public Response rejectRepairer(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id){
-        try{
+    public Response rejectRepairer(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
+        try {
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
 
@@ -67,7 +76,7 @@ public class ExpertService {
 
             expertBean.rejectRepairer(username, occurrence_id, description);
             return Response.status(Response.Status.OK).build();
-        }catch (Exception e) {
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
@@ -77,16 +86,18 @@ public class ExpertService {
 
     /**
      * Expert
-     *  Occurrences
+     * Occurrences
      */
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/{occurrence_id}/assign")
     public Response assignOccurrence(@PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
-        try{
+        try {
             expertBean.addOccurrence(username, occurrence_id);
             return Response.status(Response.Status.OK).build();
-        }catch (Exception e) {
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
@@ -94,12 +105,14 @@ public class ExpertService {
     }
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/{occurrence_id}/unassign")
     public Response unassignOccurrence(@PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
-        try{
+        try {
             expertBean.removeOccurrence(username, occurrence_id);
             return Response.status(Response.Status.OK).build();
-        }catch (Exception e) {
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage())
                     .build();
@@ -107,12 +120,16 @@ public class ExpertService {
     }
 
     @GET
+    @Authenticated
+    @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/assigned")
     public Response getAssignedOccurrences(@PathParam("username") String username) throws MyEntityNotFoundException {
         return Response.ok(OccurrenceDTO.from(expertBean.occurrences(username))).build();
     }
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/{occurrence_id}/disapprove")
     public Response disapproveOccurrence(@Context HttpServletRequest request,
                                          @PathParam("username") String username,
@@ -138,6 +155,8 @@ public class ExpertService {
     }
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/{occurrence_id}/approve")
     public Response approveOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) {
         try {
@@ -162,67 +181,90 @@ public class ExpertService {
 
     /**
      * Expert
-     *  CRUD
+     * CRUD
      */
 
-    @GET // means: to call this endpoint, we need to use the HTTP GET method
-    @Path("/") // means: the relative url path is “/api/students/”
+    @GET
+    @Authenticated
+    @RolesAllowed({"Administrator"})
+    @Path("/")
     public List<ExpertDTO> getAllExperts() {
         return ExpertDTO.from(expertBean.getAllExperts());
     }
 
     @GET
+    @Authenticated
+    @RolesAllowed({"Administrator", "Expert"})
     @Path("/{username}")
-    public Response getExpert(@PathParam("username") String username) throws MyEntityNotFoundException{
-        Expert expert = expertBean.find(username);
-        if(expert == null){
-            throw new MyEntityNotFoundException("Expert with username " + username + " does not exist.");
-        }
+    public Response getExpert(@PathParam("username") String username) throws MyEntityNotFoundException {
+        try {
+            if (!securityContext.getUserPrincipal().getName().equals(username)) {
+                throw new ForbiddenException(username + ", You are not allowed to access this resource");
+            }
 
-        return Response.ok(ExpertDTO.from(expert)).build();
+            Expert expert = expertBean.find(username);
+
+            return Response.ok(ExpertDTO.from(expert)).build();
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ForbiddenException e) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
     }
 
     @POST
+    @Authenticated
+    @RolesAllowed({"Administrator"})
     @Path("/")
     public Response create(ExpertCreateDTO expertDTO) throws MyEntityExistsException {
-        Expert expert = expertBean.create(
-                expertDTO.getUsername(),
-                expertDTO.getPassword(),
-                expertDTO.getName(),
-                expertDTO.getEmail(),
-                expertDTO.getCompany_username()
-        );
+        try {
+            Expert expert = expertBean.create(
+                    expertDTO.getUsername(),
+                    expertDTO.getPassword(),
+                    expertDTO.getName(),
+                    expertDTO.getEmail(),
+                    expertDTO.getCompany_username()
+            );
 
-        if(expert == null){
+            return Response.status(Response.Status.CREATED)
+                    .entity(ExpertDTO.from(expert))
+                    .build();
+        } catch (MyEntityExistsException e) {
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-
-        return Response.status(Response.Status.CREATED)
-                .entity(ExpertDTO.from(expert))
-                .build();
     }
 
     @PUT
+    @Authenticated
+    @RolesAllowed({"Administrator", "Expert"})
     @Path("/{username}")
     public Response update(@PathParam("username") String username, ExpertCreateDTO expertDTO) throws MyEntityNotFoundException {
-        Expert expert = expertBean.update(
-                username,
-                expertDTO.getPassword(),
-                expertDTO.getName(),
-                expertDTO.getEmail(),
-                expertDTO.getCompany_username()
-        );
+        try {
+            Expert expert = expertBean.update(
+                    username,
+                    expertDTO.getPassword(),
+                    expertDTO.getName(),
+                    expertDTO.getEmail(),
+                    expertDTO.getCompany_username()
+            );
 
-        if(expert == null){
+            return Response.status(Response.Status.OK)
+                    .entity(ExpertDTO.from(expert))
+                    .build();
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-
-        return Response.status(Response.Status.OK)
-                .entity(ExpertDTO.from(expert))
-                .build();
     }
 
     @DELETE
+    @Authenticated
+    @RolesAllowed({"Administrator"})
     @Path("/{username}")
     public Response delete(@PathParam("username") String username) throws MyEntityNotFoundException {
         expertBean.delete(username);
@@ -231,15 +273,24 @@ public class ExpertService {
 
     @POST
     @Authenticated
+    @RolesAllowed({"Expert"})
     @Path("/{username}/email/send")
-    public Response sendEmail(@PathParam("username") String username, EmailDTO email) {
-        Expert expert = expertBean.find(username);
+    public Response sendEmail(@PathParam("username") String username, EmailDTO email) throws MyEntityNotFoundException {
+        try {
+            if (!securityContext.getUserPrincipal().getName().equals(username)) {
+                throw new ForbiddenException(username + ", You are not allowed to access this resource");
+            }
 
-        if(expert == null){
+            Expert expert = expertBean.find(username);
+
+            emailBean.send(expert.getEmail(), email.getSubject(), email.getMessage());
+            return Response.noContent().build();
+        } catch (MyEntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (ForbiddenException e) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
-
-        emailBean.send(expert.getEmail(), email.getSubject(), email.getMessage());
-        return Response.noContent().build();
     }
 }
