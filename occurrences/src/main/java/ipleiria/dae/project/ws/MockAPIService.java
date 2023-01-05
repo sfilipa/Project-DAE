@@ -18,16 +18,17 @@ public class MockAPIService {
     @GET
     @Path("/{resource}")
     public Response getMockData(@PathParam("resource") String resource) throws MyEntityNotFoundException {
-        JSONArray jsonArray = mockAPIBean.getDataAPI(resource, "");
+        JSONArray jsonArray = mockAPIBean.getDataAPI(resource, "","");
         return Response.ok(jsonArray.toString()).build();
     }
 
     @GET
-    @Path("/{resource}/{code}")
-    public Response getMockDataByCode(@PathParam("code") String code, @PathParam("resource") String resource) throws MyEntityNotFoundException {
-        JSONArray jsonArray = mockAPIBean.getDataAPI(resource, code);
+    @Path("/{resource}/{attribute}/{attributeToGet}")
+    public Response getMockDataByCode(@PathParam("resource") String resource, @PathParam("attribute") String attribute, @PathParam("attributeToGet") String attributeToGet) throws MyEntityNotFoundException {
+        JSONArray jsonArray = mockAPIBean.getDataAPI(resource, attribute , attributeToGet);
         return Response.ok(jsonArray.toString()).build();
     }
+
 
 
 }

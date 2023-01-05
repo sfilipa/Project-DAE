@@ -19,11 +19,11 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyOTEzNjE3LCJleHAiOjE2NzI5MTcyMTd9.um4469JI7SxLC_cdeIjUIemytQFz7dLnhkvj6z4uYFY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE4MDc5LCJleHAiOjE2NzI5MjE2Nzl9.Kih4mk0hGH9CoUKUz945n52w7x67jQ0XnW8Dpcneu5s
 Content-Type: application/json
 
 {
-  "usernameClient": "client3",
+  "usernameClient": "client2",
   "entryDate": "10/1/2023",
   "state": "PENDING",
   "insuranceCode": "ALL-1298666",
@@ -137,7 +137,7 @@ Content-Type: application/json
 }
 
 ### Expert Approve Occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/4/approve
+PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/2/approve
 Content-Type: application/json
 
 {
@@ -250,12 +250,20 @@ Accept: application/json
 GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=FIDEL-1298302
 Accept: application/json
 
-###
+###Get All Insurances from MockApi
 GET http://localhost:8080/occurrences/api/mock/insurances
 Accept: application/json
 
-###
-GET http://localhost:8080/occurrences/api/mock/insurances/FIDEL-1298302
+###Get All Insurance Companies from MockApi
+GET http://localhost:8080/occurrences/api/mock/insuranceCompanies
+Accept: application/json
+
+###Get Insurance with specific code from MockApi
+GET http://localhost:8080/occurrences/api/mock/insurances/code/FIDEL-1298302
+Accept: application/json
+
+###Get Insurance Company with specific code from MockApi
+GET http://localhost:8080/occurrences/api/mock/insuranceCompanies/name/Fidelidade
 Accept: application/json
 
 ###Client Send Email

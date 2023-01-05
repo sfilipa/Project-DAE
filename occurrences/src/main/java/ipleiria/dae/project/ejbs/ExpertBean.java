@@ -2,7 +2,6 @@ package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
-import ipleiria.dae.project.entities.*;
 import ipleiria.dae.project.enumerators.State;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
@@ -14,7 +13,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Objects;
 
 @Stateless
 public class ExpertBean {
@@ -114,7 +112,7 @@ public class ExpertBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n- " + expert.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
         } catch (IllegalArgumentException e) {
@@ -143,7 +141,7 @@ public class ExpertBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n- " + expert.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
         } catch (IllegalArgumentException e) {
@@ -166,7 +164,11 @@ public class ExpertBean {
                 throw new IllegalArgumentException("Expert and Occurrence are not from the same company");
             }
 
-            validateOccurrence(expert, occurrence);
+            // Validate Occurrence
+            validateOccurrenceExists(occurrence);
+
+            // Validate if the occurrence is PENDING
+            validateOccurrenceState(occurrence, State.PENDING);
 
             expert.addOccurrence(occurrence);
             occurrence.addExpert(expert);
@@ -257,7 +259,7 @@ public class ExpertBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n- " + expert.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
         }catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
@@ -293,7 +295,7 @@ public class ExpertBean {
     private void validateOccurrence(Expert expert, Occurrence occurrence) {
         try {
             validateOccurrenceExists(occurrence);
-            //validateExpertIsAssignedToOccurrence(expert, occurrence); -> nao se pode fazer esta validação para o removeOccurrence
+            validateExpertIsAssignedToOccurrence(expert, occurrence);
             validateOccurrenceState(occurrence, State.PENDING);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
@@ -302,7 +304,7 @@ public class ExpertBean {
 
     private void validateExpertIsAssignedToOccurrence(Expert expert, Occurrence occurrence) {
         // Check if Expert is assigned to Occurrence
-        if(occurrence.isExpertInOccurrence(expert)) {
+        if(!occurrence.isExpertInOccurrence(expert)) {
             throw new IllegalArgumentException("Expert is not assigned to this occurrence");
         }
     }

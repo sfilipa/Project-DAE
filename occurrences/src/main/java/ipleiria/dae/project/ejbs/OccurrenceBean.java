@@ -39,7 +39,7 @@ public class OccurrenceBean {
     }
 
     public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, String description) throws MyEntityNotFoundException {
-        JSONArray jsonArray = mockAPIBean.getDataAPI("insurances",insuranceCode);
+        JSONArray jsonArray = mockAPIBean.getDataAPI("insurances","code",insuranceCode);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
         if(jsonObject == null){
@@ -103,7 +103,7 @@ public class OccurrenceBean {
             throw new MyEntityNotFoundException("Occurrence not found");
         }
 
-        JSONArray jsonArray = mockAPIBean.getDataAPI("insurances",insuranceCode);
+        JSONArray jsonArray = mockAPIBean.getDataAPI("insurances","code",insuranceCode);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
         if(jsonObject == null){
