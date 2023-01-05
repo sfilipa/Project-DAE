@@ -325,3 +325,12 @@ Content-Type: application/json
   "subject": "Bom dia",
   "message": "Bom dia. Compra papaias"
 }
+
+###Update Password
+PATCH http://localhost:8080/occurrences/api/clients/client2/password
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTQ4MjQ5LCJleHAiOjE2NzI5NTE4NDl9.crqPqtCUB_P1cMzpbq2uut3q_0-L7VMxaEZPmzYKvAg
+Content-Type: application/json
+
+{
+  "password": "BomDiaaaaaa"
+}

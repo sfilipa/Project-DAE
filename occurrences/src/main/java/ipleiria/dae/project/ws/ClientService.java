@@ -10,6 +10,7 @@ import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.entities.Client;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
+import ipleiria.dae.project.exceptions.NifNotValidException;
 import ipleiria.dae.project.security.Authenticated;
 
 import javax.annotation.security.RolesAllowed;
@@ -49,7 +50,7 @@ public class ClientService {
 
     @POST
     @Path("/")
-    public Response create(ClientCreateDTO clientDTO) throws MyEntityExistsException {
+    public Response create(ClientCreateDTO clientDTO) throws MyEntityExistsException, NifNotValidException {
         Client client = clientBean.create(
                 clientDTO.getUsername(),
                 clientDTO.getPassword(),
@@ -72,16 +73,33 @@ public class ClientService {
    /* @Authenticated
     @RolesAllowed({"Client"})*/
     @Path("/{username}")
-    public Response updateClient(@PathParam("username") String username, ClientCreateDTO clientDTO) throws MyEntityNotFoundException {
+    public Response updateClient(@PathParam("username") String username, ClientCreateDTO clientDTO) throws MyEntityNotFoundException, NifNotValidException {
         Client client = clientBean.update(
                 username,
-                clientDTO.getPassword(),
                 clientDTO.getName(),
                 clientDTO.getEmail(),
                 clientDTO.getAddress(),
                 clientDTO.getPhoneNumber(),
                 clientDTO.getNif_nipc()
         );
+
+        if (client == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        return Response.status(Response.Status.OK)
+                .entity(ClientDTO.from(client))
+                .build();
+    }
+
+    @PATCH
+    @Authenticated
+    @RolesAllowed({"Client"})
+    @Path("/{username}/password")
+    public Response updatePassword(@PathParam("username") String username, String password) throws MyEntityNotFoundException {
+        if(!securityContext.getUserPrincipal().getName().equals(username)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        Client client = clientBean.updatePassword(username, password);
 
         if (client == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();

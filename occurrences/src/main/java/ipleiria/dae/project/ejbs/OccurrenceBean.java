@@ -4,7 +4,9 @@ import ipleiria.dae.project.entities.*;
 import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
+import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
+import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import org.hibernate.Hibernate;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,7 +40,7 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws MyEntityNotFoundException {
+    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws MyEntityNotFoundException, APIBadResponseException, NotAuthorizedException {
         JSONArray jsonArray = mockAPIBean.getDataAPI("insurances", "code", insuranceCode);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
@@ -59,7 +61,7 @@ public class OccurrenceBean {
         Client client = em.find(Client.class, usernameClient);
 
         if (clientNifAPI != client.getNif_nipc()) {
-            throw new MyEntityNotFoundException("Client is not the owner of the insurance");
+            throw new NotAuthorizedException("Client is not the owner of the insurance");
         }
 
         Date initialDate_formatDate = new Date(initialDateAPI);
@@ -102,7 +104,7 @@ public class OccurrenceBean {
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws MyEntityNotFoundException {//TODO : Exceptions
+    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws MyEntityNotFoundException, APIBadResponseException, NotAuthorizedException {//TODO : Exceptions
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
             throw new MyEntityNotFoundException("Occurrence not found");
@@ -130,7 +132,7 @@ public class OccurrenceBean {
             Client client = em.find(Client.class, usernameClient);
 
             if (clientNifAPI != client.getNif_nipc()) {
-                throw new MyEntityNotFoundException("Client is not the owner of the insurance");
+                throw new NotAuthorizedException("Client is not the owner of the insurance");
             }
 
             occurrence.setClient(client);
