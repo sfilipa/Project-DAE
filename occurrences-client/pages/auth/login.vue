@@ -48,7 +48,7 @@ export default {
       })
       promise.then(() => {
         this.$toast.success('You are logged in!').goAway(3000)
-        this.$router.push(`/experts/`)
+        this.$router.push(`/clients/`)
         // this.$router.push(`/${this.$auth.user.role.toLowerCase()}s/`)
       })
       promise.catch(() => {

@@ -12,8 +12,8 @@
     </nuxt-link>
 
     <div class="header-info">
-      <span><b>{{ this.$route.params.name }}</b></span>
-      <span class="policy-number-span">Policy number --n</span>
+      <span><b>{{this.$route.params.insurance.insuranceCompany}} ({{ this.$route.params.code }})</b></span>
+      <span class="policy-number-span">Policy number {{this.$route.params.insurance.policyNumber}}</span>
     </div>
 
     <div class="insurance-details-navbar">
@@ -35,33 +35,33 @@
     <div v-if="OverallDataBtn" class="overall-data">
       <div class="overall-data-row">
         <span class="overall-data-label">Insurance Holder</span>
-        <span class="overall-data-detail">Ana Martins</span>
+        <span class="overall-data-detail">{{this.$route.params.insurance.clientName}}</span>
       </div>
       <hr>
       <div class="overall-data-row">
-        <span class="overall-data-label">Address</span>
-        <span class="overall-data-detail">Rua X nº 11 anina swnonw</span>
+        <span class="overall-data-label">NIF/NIPC</span>
+        <span class="overall-data-detail">{{this.$route.params.insurance.clientNif}}</span>
       </div>
       <hr>
       <div class="overall-data-row">
         <span class="overall-data-label">Initial Date</span>
-        <span class="overall-data-detail">27-12-2022</span>
+        <span class="overall-data-detail">{{this.$route.params.insurance.initialDate}}</span>
       </div>
       <hr>
       <div class="overall-data-row">
-        <span class="overall-data-label">Renewal Date</span>
-        <span class="overall-data-detail">10-01-2023</span>
+        <span class="overall-data-label">Valid Until</span>
+        <span class="overall-data-detail">{{this.$route.params.insurance.validUntil}}</span>
       </div>
       <hr>
       <div class="overall-data-row">
         <span class="overall-data-label">Insurance Period</span>
-        <span class="overall-data-detail">From 27-12-2022 To 10-01-2023</span>
+        <span class="overall-data-detail">From {{this.$route.params.insurance.initialDate}} To {{this.$route.params.insurance.validUntil}}</span>
       </div>
-      <hr>
-      <div class="overall-data-row">
-        <span class="overall-data-label">Payment Type</span>
-        <span class="overall-data-detail">Bank Charge</span>
-      </div>
+<!--      <hr>-->
+<!--      <div class="overall-data-row">-->
+<!--        <span class="overall-data-label">Payment Type</span>-->
+<!--        <span class="overall-data-detail">Bank Charge</span>-->
+<!--      </div>-->
     </div>
 
     <!--    Occurrences-->
@@ -83,16 +83,17 @@
 
       <!--      Report an Occurrence-->
       <div v-if="reportOccurrence" class="report-an-occurrence">
-        <p><b>The Affected Object:</b> &nbsp; Car Laguna - Cars</p>
+        <p><b>The Affected Object:</b> &nbsp; {{this.$route.params.insurance.objectInsured}} - {{this.$route.params.insurance.insuredAssetType}}</p>
         <p><b>1. Choose the Coverage Type:</b></p>
         <div class="report-an-occurrence-div">
-          <div v-if="coverageTypes.length==0">
+          <div v-if="this.$route.params.insurance.covers.length==0">
             No Coverages Registered
           </div>
           <div v-else class="items-grid">
-            <div v-for="coverageType in coverageTypes" class="item-grid-div" :class="{'grid-item-selected': selectedCoverageType == coverageType}"
+            <div v-for="coverageType in this.$route.params.insurance.covers" class="item-grid-div" :class="{'grid-item-selected': selectedCoverageType == coverageType}"
                  @click="selectedCoverageType = coverageType">
-              {{ coverageType }}
+              {{ coverageType.charAt(0).toUpperCase() +
+            coverageType.split('_').join(' ').slice(1).toLowerCase() }}
             </div>
           </div>
         </div>
@@ -209,9 +210,6 @@ export default {
         "name": "Verde"
       }
     ]},
-    coverageTypes(){ return [
-      "Accidental damage", "Theft", "Mechanical failure"
-    ]},
     ongoingOccurrencesArray(){
       return [
         {
@@ -255,10 +253,6 @@ export default {
     }
   },
   created () {
-    // this.$axios.$get('/api/coverageTypes')
-    //   .then(coverageTypes => {
-    //     this.coverageTypes = coverageTypes
-    //   })
     // this.$axios.$get('/api/occurrences')
     //   .then((occurrences) => {
     //     this.occurrences = occurrences
