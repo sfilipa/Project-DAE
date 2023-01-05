@@ -4,6 +4,7 @@ import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.enumerators.State;
+import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NotAuthorizedException;
@@ -101,7 +102,7 @@ public class RepairerBean {
         em.remove(repairer);
     }
 
-    public void assignOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException {
+    public void assignOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException, APIBadResponseException {
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -266,7 +267,7 @@ public class RepairerBean {
         }
     }
 
-    private boolean checkIfRepairerIsInInsuranceCompanyRepairers(String repairerUsername, String insuranceCompanyName) throws MyEntityNotFoundException {
+    private boolean checkIfRepairerIsInInsuranceCompanyRepairers(String repairerUsername, String insuranceCompanyName) throws MyEntityNotFoundException, APIBadResponseException {
         JSONArray repairersFromInsuranceOfOccurrence = mockAPIBean.
                 getAttributeFromSpecificInsuranceCompany("insuranceCompanies", "name", insuranceCompanyName, "repairers");
         for (int i = 0; i < repairersFromInsuranceOfOccurrence.length(); i++) {
