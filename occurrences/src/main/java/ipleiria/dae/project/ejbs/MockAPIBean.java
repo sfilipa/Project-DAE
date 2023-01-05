@@ -101,7 +101,7 @@ public class MockAPIBean {
             // Receive Insurance in a JSONArray format
             JSONArray jsonArray = get("insurances", "clientNif", String.valueOf(nifNipc));
             if (jsonArray.length() == 0) {
-                throw new IllegalArgumentException("No insurances found");
+                return insurances;
             }
 
             // For each JSONObject in the JSONArray add to the Insurance List

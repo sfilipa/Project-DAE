@@ -196,8 +196,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "admin1",
-  "password": "123"
+  "username": "pedro",
+  "password": "pedro1234"
 }
 
 ####LOGIN ADMIN
@@ -235,8 +235,8 @@ DELETE http://localhost:8080/occurrences/api/clients/pedro
 Content-Type: application/json
 
 ### Get Client Insurances
-GET http://localhost:8080/occurrences/api/clients/client3/insurances
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyODcwNzg3LCJleHAiOjE2NzI4NzQzODd9.Gv4KufuxtoFWuYWViIP5hERnYaeldRqziqoqX07oHuU
+GET http://localhost:8080/occurrences/api/clients/pedro/insurances
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwZWRybyIsImlhdCI6MTY3MjkzNDgwMSwiZXhwIjoxNjcyOTM4NDAxfQ.rkft7tI_pttC5HQuOElJeHAMWz8sewUYb6miIPgpsN4
 Accept: application/json
 
 ### Get Expert Occurrences
