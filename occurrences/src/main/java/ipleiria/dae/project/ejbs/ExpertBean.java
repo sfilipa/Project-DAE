@@ -146,7 +146,7 @@ public class ExpertBean {
         }
     }
 
-    public void addOccurrence(String username, String occurrenceCode) {
+    public void addOccurrence(String username, long occurrenceCode) {
         try{
             // Find Expert
             Expert expert = find(username);
@@ -155,9 +155,9 @@ public class ExpertBean {
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
 
-          /*  if(!Objects.equals(expert.getInsuranceCompany(), occurrence.getInsurance().getCompany())){
+            if(!expert.getInsuranceCompany().equals(occurrence.getInsurance().getInsuranceCompany())){
                 throw new IllegalArgumentException("Expert and Occurrence are not from the same company");
-            }*/
+            }
 
             validateOccurrence(expert, occurrence);
 
@@ -168,7 +168,7 @@ public class ExpertBean {
         }
     }
 
-    public void removeOccurrence(String username, String occurrenceCode) {
+    public void removeOccurrence(String username, long occurrenceCode) {
         try{
             // Find Expert
             Expert expert = find(username);

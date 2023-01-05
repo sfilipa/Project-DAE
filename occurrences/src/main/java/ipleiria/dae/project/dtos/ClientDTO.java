@@ -31,26 +31,6 @@ public class ClientDTO implements Serializable {
        // insurances = new LinkedList<>();
     }
 
-    public ClientDTO(String password, String name, String email, String address, Long phoneNumber, long nif_nipc) {
-        this.password = password;
-        this.name = name;
-        this.email = email;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-        this.nif_nipc = nif_nipc;
-        // insurances = new LinkedList<>();
-    }
-
-    public ClientDTO(String username, String password, String name, String email, String address, Long phoneNumber, List<String> insurances) {
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.email = email;
-        this.address = address;
-        this.phoneNumber = phoneNumber;
-       // this.insurances = insurances;
-    }
-
     public String getUsername() {
         return username;
     }

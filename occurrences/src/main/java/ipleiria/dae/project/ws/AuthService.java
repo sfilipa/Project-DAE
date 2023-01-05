@@ -46,4 +46,14 @@ public class AuthService {
         }
         return Response.status(Response.Status.UNAUTHORIZED).build();
     }
+
+    @POST
+    @Path("/login/admin")
+    public Response authenticateAdmin(@Valid Auth auth) {
+        if (userBean.canAdminLogin(auth.getUsername(), auth.getPassword())) {
+            String token = issuer.issue(auth.getUsername());
+            return Response.ok(token).build();
+        }
+        return Response.status(Response.Status.UNAUTHORIZED).build();
+    }
 }
