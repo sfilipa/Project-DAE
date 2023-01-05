@@ -15,64 +15,67 @@
       <h4><b>My Occurrences</b></h4>
     </div>
 
-    <div v-if="occurrences.length == 0">
-      <span>No Occurrences Assigned</span>
+    <div v-if="assignedOccurrences == null" class="spinner-div">
+      <div class="spinner-border"></div>
     </div>
 
-    <div v-else v-for="occurrence in occurrences" class="ongoing-occurrences-item">
-      <div class="ongoing-occurrences-item-row" style="width: 30%;">
-        <p style="font-size: 20px"><b>{{occurrence.objectInsured}} - <span>{{occurrence.insuranceCode}}</span></b></p>
-        <p>Occurrence {{ occurrence.id }}</p>
-        <p>Repairer: {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</p>
-      </div>
+    <div v-else-if="assignedOccurrences.length == 0" class="text-center">
+      <span>No occurrences assigned yet</span>
+    </div>
 
-      <div class="ongoing-occurrences-item-row" style="align-self: flex-end;">
-        <p>Entry Date: {{occurrence.entryDate}} &nbsp; Final Date: {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</p>
-        <p>Description: {{ occurrence.description }}</p>
-<!--        <p>Documents: <span v-for="document in occurrence.documents"> {{ document.filename }};</span></p>-->
-      </div>
+    <div v-else v-for="occurrence in assignedOccurrences">
+      <Occurrence :occurrence="occurrence" :isAssigned="true" @updateOccurrences="updateOccurrences"></Occurrence>
+<!--      <div class="ongoing-occurrences-item-row" style="width: 30%;">-->
+<!--        <p style="font-size: 20px"><b>{{occurrence.objectInsured}} - <span>{{occurrence.insuranceCode}}</span></b></p>-->
+<!--        <p>Occurrence {{ occurrence.id }}</p>-->
+<!--        <p>Repairer: {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</p>-->
+<!--      </div>-->
 
-      <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
-        <p class="text-uppercase">{{ occurrence.state }}</p>
-        <div v-if="occurrence.state.toLowerCase() == 'pending'">
-          <button  class="btn btn-associate-repairers" @click.prevent="disapprove">Disapprove</button>
-          <button  class="btn btn-associate-repairers" @click.prevent="approve">Approve</button>
-        </div>
+<!--      <div class="ongoing-occurrences-item-row" style="align-self: flex-end;">-->
+<!--        <p>Entry Date: {{occurrence.entryDate}} &nbsp; Final Date: {{occurrence.finalDate==undefined?"-&#45;&#45;":occurrence.finalDate}}</p>-->
+<!--        <p>Description: {{ occurrence.description }}</p>-->
+<!--&lt;!&ndash;        <p>Documents: <span v-for="document in occurrence.documents"> {{ document.filename }};</span></p>&ndash;&gt;-->
+<!--      </div>-->
 
-      </div>
+<!--      <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">-->
+<!--        <p class="text-uppercase">{{ occurrence.state }}</p>-->
+<!--        <div v-if="occurrence.state.toLowerCase() == 'pending'">-->
+<!--          <button  class="btn btn-associate-repairers" @click.prevent="disapprove">Disapprove</button>-->
+<!--          <button  class="btn btn-associate-repairers" @click.prevent="approve">Approve</button>-->
+<!--        </div>-->
+
+<!--      </div>-->
     </div>
   </div>
 </template>
 <script>
+import Occurrence from "~/pages/experts/components/Occurrence.vue";
 export default {
+  components: {
+    Occurrence
+  },
   data () {
     return {
-      occurrences: []
+      assignedOccurrences: null
     }
   },
   created () {
     this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
-      .then((occurrences) => {
-        this.occurrences = occurrences
+      .then((assignedOccurrences) => {
+        this.assignedOccurrences = assignedOccurrences
       })
+    this.updateOccurrences()
+
   },
   methods: {
-    approve(occurence_code)
-    {
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_code}/approve`)
+    updateOccurrences(){
+      this.waitingRefresh = true
+      this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
+        .then((occurrencesAssigned) => {
+          this.occurrencesAssigned = occurrencesAssigned
+          this.waitingRefresh = false
+        })
     },
-    disapprove(occurence_code)
-    {
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_code}/disapprove`)
-    },
-    assign(occurence_code)
-    {
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_code}/assignOccurrence`)
-    },
-    unassign(occurence_code)
-    {
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_code}/uassignOccurrence`)
-    }
   }
 }
 </script>

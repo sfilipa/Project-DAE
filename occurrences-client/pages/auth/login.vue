@@ -1,6 +1,6 @@
 <template>
   <b-container class="login-page">
-    <h3 class="text-center mb-4">Sign in to the Company</h3>
+    <h3 class="text-center mb-4">Sign in to the <span class="fw-bold">Incidentalists</span></h3>
     <b-form @submit.prevent="onSubmit" @reset="onReset">
       <b-form-group class="mb-3" label="Username:">
         <b-input
@@ -48,7 +48,7 @@ export default {
       })
       promise.then(() => {
         this.$toast.success('You are logged in!').goAway(3000)
-        this.$router.push(`/clients/`)
+        this.$router.push(`/experts/`)
         // this.$router.push(`/${this.$auth.user.role.toLowerCase()}s/`)
       })
       promise.catch(() => {
