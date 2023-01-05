@@ -9,7 +9,9 @@ import ipleiria.dae.project.ejbs.RepairerBean;
 import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
+import ipleiria.dae.project.security.Authenticated;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -30,13 +32,17 @@ public class RepairerService {
     @EJB
     private EmailBean emailBean;
 
-    @GET // means: to call this endpoint, we need to use the HTTP GET method
-    @Path("/") // means: the relative url path is “/api/repairers/”
+    @GET
+    @Authenticated
+    @RolesAllowed({"Administrator"})
+    @Path("/")
     public List<RepairerDTO> getAllRepairers() {
         return RepairerDTO.from(repairerBean.getAllRepairers());
     }
 
     @GET
+    @Authenticated
+    @RolesAllowed({"Administrator", "Repairer"})
     @Path("/{username}")
     public Response getRepairer(@PathParam("username") String username) throws MyEntityNotFoundException {
         Repairer repairer = repairerBean.find(username);
@@ -47,6 +53,8 @@ public class RepairerService {
     }
 
     @POST
+    @Authenticated
+    @RolesAllowed({"Administrator"})
     @Path("/")
     public Response create(RepairerCreateDTO repairerDTO) throws MyEntityExistsException {
 
@@ -64,6 +72,8 @@ public class RepairerService {
     }
 
     @PUT
+    @Authenticated
+    @RolesAllowed({"Administrator", "Repairer"})
     @Path("/{username}")
     public Response update(RepairerCreateDTO repairerDTO) throws MyEntityNotFoundException{
         Repairer repairer = repairerBean.update(
@@ -80,6 +90,8 @@ public class RepairerService {
     }
 
     @DELETE
+    @Authenticated
+    @RolesAllowed({"Administrator"})
     @Path("/{username}")
     public Response delete(@PathParam("username") String username) throws MyEntityNotFoundException {
         repairerBean.delete(username);
@@ -87,6 +99,8 @@ public class RepairerService {
     }
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/assign")
     public Response assignOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
     throws MyEntityNotFoundException{
@@ -101,6 +115,8 @@ public class RepairerService {
     }
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/unassign")
     public Response unassignOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
     throws MyEntityNotFoundException{
@@ -115,6 +131,8 @@ public class RepairerService {
     }
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/start")
     public Response startOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
     throws MyEntityNotFoundException{
@@ -129,6 +147,8 @@ public class RepairerService {
     }
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/fail")
     public Response failOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
         throws MyEntityNotFoundException{
@@ -153,6 +173,8 @@ public class RepairerService {
     }
 
     @PATCH
+    @Authenticated
+    @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/finish")
     public Response finishOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
         throws MyEntityNotFoundException{
