@@ -11,6 +11,9 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Stateless
@@ -159,7 +162,12 @@ public class RepairerBean {
             // Approve Occurrence
             occurrence.setState(State.RESOLVED);
 
-            //TODO: fazer update do final date da occurrence
+            //Update final date occurrence
+            Date finalDate = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            String finalDateStr = formatter.format(finalDate);
+
+            occurrence.setFinalDate(finalDateStr);
 
             // Get Occurrence Description
             String occurrenceDescription = occurrence.getDescription();

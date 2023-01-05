@@ -1,9 +1,9 @@
 <template>
   <div class="nuxt-page">
     <div v-if="this.$auth.user" class="nuxt-sidebar justify-left overflow-y-auto">
-      <h3 class="uppercase font-bold py-1 nuxt-sidebar-name">
-        Company
-      </h3>
+      <h4 class="uppercase font-bold py-1 nuxt-sidebar-name">
+        Incidentalists
+      </h4>
       <div >
         <span>Welcome back,</span>
         <p class="nuxt-sidebar-user-name" style="margin: auto;">{{ this.$auth.user.name }}</p>
@@ -93,6 +93,12 @@ export default {
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+.spinner-div{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .form-control:focus{
   border-color: darkred;

@@ -19,7 +19,7 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE5ODQ0LCJleHAiOjE2NzI5MjM0NDR9.gM59HTRpfwRboS8N-Dmc3CwFmXRQqd-gbxXmYBOYTfM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTMzNDQ1LCJleHAiOjE2NzI5MzcwNDV9.nhKcDTIvRqZsAsFIlTjWuSr70ZLc8yc31YG8AUP3fPU
 Content-Type: application/json
 
 {
@@ -27,6 +27,7 @@ Content-Type: application/json
   "entryDate": "10/1/2023",
   "state": "PENDING",
   "insuranceCode": "ALL-1298389",
+  "coverageType": "WATER_DAMAGE",
   "description": "ola"
 }
 
@@ -142,7 +143,7 @@ Content-Type: application/json
 }
 
 ### Expert Approve Occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/2/approve
+PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/1/approve
 Content-Type: application/json
 
 {
@@ -154,7 +155,7 @@ GET http://localhost:8080/occurrences/api/repairers
 Content-Type: application/json
 
 ### Repairer Starts Occurrence
-PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/3/start
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/1/start
 Content-Type: application/json
 
 ### Repairer Fails Occurrence
@@ -166,7 +167,7 @@ Content-Type: application/json
 }
 
 ### Repairer Finishes Occurrence
-PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/3/finish
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/1/finish
 Content-Type: application/json
 
 {

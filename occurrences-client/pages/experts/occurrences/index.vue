@@ -16,7 +16,7 @@
     </div>
 
     <div v-if="occurrences.length == 0">
-      <span>No Occurrences Registered</span>
+      <span>No Occurrences Assigned</span>
     </div>
 
     <div v-else v-for="occurrence in occurrences" class="ongoing-occurrences-item">
@@ -47,13 +47,11 @@
 export default {
   data () {
     return {
-      fields: ['name', 'actions'], //nomes do DTOs
-      // insurances: [],
       occurrences: []
     }
   },
   created () {
-    this.$axios.$get(`/api/occurrences/`)
+    this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
       .then((occurrences) => {
         this.occurrences = occurrences
       })
@@ -61,11 +59,19 @@ export default {
   methods: {
     approve(occurence_code)
     {
-      this.$axios.$patch(`/api/experts/${this.auth.user.username}/occurrences/${occurence_code}/approve`)
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_code}/approve`)
     },
     disapprove(occurence_code)
     {
-      this.$axios.$patch(`/api/experts/${this.auth.user.username}/occurrences/${occurence_code}/disapprove`)
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_code}/disapprove`)
+    },
+    assign(occurence_code)
+    {
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_code}/assignOccurrence`)
+    },
+    unassign(occurence_code)
+    {
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_code}/uassignOccurrence`)
     }
   }
 }

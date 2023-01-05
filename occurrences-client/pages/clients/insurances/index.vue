@@ -14,11 +14,16 @@
     <div style="padding: 10px; margin-bottom: 20px;">
       <h4><b>My Insurances</b></h4>
     </div>
-    <div v-if="insurances.length == 0">
+
+    <div v-if="insurances == null" class="spinner-div">
+      <div class="spinner-border"></div>
+    </div>
+
+    <div v-else-if="insurances.length == 0">
       <span>No Insurances Registered</span>
     </div>
 
-    <div v-for="insurance in insurances" class="insurance-box">
+    <div v-else v-for="insurance in insurances" class="insurance-box">
       <div class="details-left">
         <span class="text-uppercase pb-3 pr-5"><b>{{ insurance.objectInsured }} - {{ insurance.insuranceCompany }}</b></span>
         <span class="pb-3 pr-5">{{insurance.initialDate}} - {{ insurance.validUntil }}</span>
@@ -55,7 +60,7 @@
 export default {
   data () {
     return {
-      insurances: []
+      insurances: null
     }
   },
   created () {
