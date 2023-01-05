@@ -35,9 +35,16 @@
       <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
         <p class="text-uppercase">{{ occurrence.state }}</p>
         <div v-if="occurrence.state.toLowerCase() == 'pending'">
-          <button  class="btn btn-associate-repairers" @click.prevent="disapprove">Disapprove</button>
-          <button  class="btn btn-associate-repairers" @click.prevent="approve">Approve</button>
+          <button  class="btn btn-associate-repairers" @click.prevent="disapprove(occurrence.id)">Disapprove</button>
+          <button  class="btn btn-associate-repairers" @click.prevent="approve(occurrence.id)">Approve</button>
         </div>
+      </div>
+      <div v-if="occurrencesAssigned.map(object => object.id).indexOf(occurrence.id) === -1">
+        <button  class="btn btn-associate-repairers" @click.prevent="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>
+      </div>
+      <div v-else>
+        <button class="btn btn-associate-repairers" @click.prevent="unassign(occurrence.id)" :disabled="waitingRefresh">Unassign</button>
+      </div>
 
       </div>
     </div>
@@ -47,25 +54,45 @@
 export default {
   data () {
     return {
-      fields: ['name', 'actions'], //nomes do DTOs
-      // insurances: [],
-      occurrences: []
+      occurrences: [],
+      occurrencesAssigned: []
     }
   },
   created () {
-    this.$axios.$get(`/api/occurrences/`)
-      .then((occurrences) => {
-        this.occurrences = occurrences
-      })
+    this.updateOccurrences()
   },
   methods: {
-    approve(occurence_code)
-    {
-      this.$axios.$patch(`/api/experts/${this.auth.user.username}/occurrences/${occurence_code}/approve`)
+    updateOccurrences(){
+      this.waitingRefresh = true
+      this.$axios.$get(`/api/occurrences/`)
+        .then((occurrences) => {
+          this.occurrences = occurrences
+          this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
+            .then((occurrencesAssigned) => {
+              this.occurrencesAssigned = occurrencesAssigned
+              this.waitingRefresh = false
+            })
+        })
     },
-    disapprove(occurence_code)
+    approve(occurence_id)
     {
-      this.$axios.$patch(`/api/experts/${this.auth.user.username}/occurrences/${occurence_code}/disapprove`)
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/approve`)
+      this.updateOccurrences()
+    },
+    disapprove(occurence_id)
+    {
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/disapprove`)
+      this.updateOccurrences()
+    },
+    assign(occurence_id)
+    {
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/assign`)
+      this.updateOccurrences()
+    },
+    unassign(occurence_id)
+    {
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/unassign`)
+      this.updateOccurrences()
     }
   }
 }

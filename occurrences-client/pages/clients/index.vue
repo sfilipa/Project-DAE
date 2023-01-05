@@ -3,6 +3,10 @@
     <h3 class="text-center index-header">Welcome to your occurrence management platform</h3>
     <p>&nbsp; My Insurances</p>
 
+    <div v-if="insurances == null" class="spinner-div">
+      <div class="spinner-border"></div>
+    </div>
+
     <div v-for="insurance in insurances" class="insurance-box">
       <div class="details-left">
         <span class="text-uppercase pb-3 pr-5"><b>{{ insurance.objectInsured }} - {{ insurance.insuranceCompany }}</b></span>
@@ -42,7 +46,7 @@ export default {
   name: "index.vue",
   data () {
     return {
-      insurances: []
+      insurances: null
     }
   },
   created () {
