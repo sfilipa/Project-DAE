@@ -241,6 +241,10 @@ Accept: application/json
 GET http://localhost:8080/occurrences/api/administrators/admin1
 Accept: application/json
 
+### Get Insured Asset Type
+GET http://localhost:8080/occurrences/api/insured-asset-type
+Accept: application/json
+
 ###MOCKAPI
 ###Get All Policies from MockApi
 GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=FIDEL-1298302
