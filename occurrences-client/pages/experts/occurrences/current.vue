@@ -15,46 +15,28 @@
       <h4><b>Current Occurrences</b></h4>
     </div>
 
-    <div v-if="occurrences.length == 0">
-      <span>No Occurrences Registered</span>
+    <div v-if="occurrences == null" class="spinner-div">
+      <div class="spinner-border"></div>
     </div>
 
-    <div v-else v-for="occurrence in occurrences" class="ongoing-occurrences-item">
-      <div class="ongoing-occurrences-item-row" style="width: 30%;">
-        <p style="font-size: 20px"><b>{{occurrence.objectInsured}} - <span>{{occurrence.insuranceCode}}</span></b></p>
-        <p>Occurrence {{ occurrence.id }}</p>
-        <p>Repairer: {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</p>
-      </div>
+    <div v-else-if="occurrences.length == 0" class="text-center">
+      <span>No occurrences registered yet</span>
+    </div>
 
-      <div class="ongoing-occurrences-item-row" style="align-self: flex-end;">
-        <p>Entry Date: {{occurrence.entryDate}} &nbsp; Final Date: {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</p>
-        <p>Description: {{ occurrence.description }}</p>
-        <!--        <p>Documents: <span v-for="document in occurrence.documents"> {{ document.filename }};</span></p>-->
-      </div>
-
-      <div class="ongoing-occurrences-item-row flex-grow-1" :class="{'ongoing-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
-        <p class="text-uppercase">{{ occurrence.state }}</p>
-        <div v-if="occurrence.state.toLowerCase() == 'pending'">
-          <button  class="btn btn-associate-repairers" @click.prevent="disapprove(occurrence.id)">Disapprove</button>
-          <button  class="btn btn-associate-repairers" @click.prevent="approve(occurrence.id)">Approve</button>
-        </div>
-      </div>
-      <div v-if="occurrencesAssigned.map(object => object.id).indexOf(occurrence.id) === -1">
-        <button  class="btn btn-associate-repairers" @click.prevent="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>
-      </div>
-      <div v-else>
-        <button class="btn btn-associate-repairers" @click.prevent="unassign(occurrence.id)" :disabled="waitingRefresh">Unassign</button>
-      </div>
-
-      </div>
+    <div v-else v-for="occurrence in occurrences">
+      <Occurrence :occurrence="occurrence" :isAssigned="isAssigned(occurrence.id)" @updateOccurrences="updateOccurrences"></Occurrence>
     </div>
   </div>
 </template>
 <script>
+import Occurrence from "~/pages/experts/components/Occurrence.vue";
 export default {
+  components: {
+    Occurrence
+  },
   data () {
     return {
-      occurrences: [],
+      occurrences: null,
       occurrencesAssigned: []
     }
   },
@@ -62,6 +44,9 @@ export default {
     this.updateOccurrences()
   },
   methods: {
+    isAssigned(occurrence_id){
+      return this.occurrencesAssigned.map(object => object.id).indexOf(occurrence_id) !== -1
+    },
     updateOccurrences(){
       this.waitingRefresh = true
       this.$axios.$get(`/api/occurrences/`)
@@ -74,62 +59,9 @@ export default {
             })
         })
     },
-    approve(occurence_id)
-    {
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/approve`)
-      this.updateOccurrences()
-    },
-    disapprove(occurence_id)
-    {
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/disapprove`)
-      this.updateOccurrences()
-    },
-    assign(occurence_id)
-    {
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/assign`)
-      this.updateOccurrences()
-    },
-    unassign(occurence_id)
-    {
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/unassign`)
-      this.updateOccurrences()
-    }
   }
 }
 </script>
 <style scoped>
-
-.ongoing-occurrences-item-last{
-  text-align: end;
-  align-self: flex-end;
-  margin-bottom: 1.5%;
-}
-
-.btn-associate-repairers:hover{
-  background-color: red !important;
-  color: white !important;
-}
-
-.btn-associate-repairers{
-  border: 1px solid black;
-  width: fit-content;
-  height: 3rem;
-  align-self: self-end;
-}
-
-.ongoing-occurrences-item-row{
-  display: flex;
-  flex-direction: column;
-}
-
-.ongoing-occurrences-item{
-  background-color: white;
-  height: fit-content;
-  padding: 20px;
-  margin: 30px 0;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
 
 </style>

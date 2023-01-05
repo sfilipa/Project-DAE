@@ -95,19 +95,19 @@
           </div>
         </div>
 
-        <p><b>1. What Happened</b></p>
+        <p><b>2. What Happened</b></p>
         <div class="report-an-occurrence-div">
           <textarea class="form-control report-an-occurrence-text" placeholder="Describe here what happened" v-model="description"></textarea>
         </div>
 
-        <p><b>2. Date of the Occurrence</b></p>
+        <p><b>3. Date of the Occurrence</b></p>
         <div class="report-an-occurrence-div">
           <div class="report-an-occurrence-div">
             <input class="form-control" placeholder="Enter the date" v-model="date">
           </div>
         </div>
 
-        <p><b>3. Documents</b></p>
+        <p><b>4. Documents</b></p>
         <div class="report-an-occurrence-div">
           <div class="report-an-occurrence-div">
             <input type="file" multiple="multiple">
@@ -125,7 +125,7 @@
 
       <!--      Ongoing Occurrences-->
       <div v-if="ongoingOccurrences" class="ongoing-occurrences">
-        <div v-if="getOnGoingOccurrences().length==0">
+        <div v-if="getOnGoingOccurrences().length==0" class="text-center">
           No occurrences ongoing
         </div>
         <div v-else v-for="occurrence in getOnGoingOccurrences()" >
@@ -135,7 +135,7 @@
 
       <!--      Completed Occurrences-->
       <div v-if="completedOccurrences" class="completed-occurrences">
-        <div v-if="getCompletedOccurrences().length==0">
+        <div v-if="getCompletedOccurrences().length==0" class="text-center">
           No occurrences completed
         </div>
         <div v-else v-for="occurrence in getCompletedOccurrences()">
@@ -203,6 +203,7 @@ export default {
         insuranceCode: this.$route.params.code,
         state: 'PENDING',
         description: this.description,
+        coverageType: this.selectedCoverageType
       })
         .then(() => {
           this.$router.push('/clients/occurrences')
@@ -211,9 +212,6 @@ export default {
         .catch((error) => {
           this.errorMsg = error.response.data
         })
-    },
-    associateRepairer(){
-      //Enviar mail ao repairer com o link api/occurrences/{id}
     }
   }
 }

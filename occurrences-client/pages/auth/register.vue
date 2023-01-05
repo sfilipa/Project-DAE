@@ -1,6 +1,6 @@
 <template>
   <b-container class="register-page">
-    <h3 class="text-center mb-4">Sign up in the Company</h3>
+    <h3 class="text-center mb-4">Sign up in the <span class="fw-bold">Incidentalists</span></h3>
     <b-form @submit.prevent="onSubmit" @reset="onReset" :disabled="!isFormValid">
       <div style="display: flex">
         <div class="register-column">
@@ -72,7 +72,7 @@
           </b-form-group>
         </div>
       </div>
-      <p class="text-danger" v-show="errorMsg">{{ errorMsg }}</p>
+      <p class="text-danger text-center" v-show="errorMsg">{{ errorMsg }}</p>
       <div class="register-buttons">
         <div style="margin-left: auto; width: inherit;">
           <button type="reset" class="btn btn-reset">Reset</button>
@@ -246,7 +246,6 @@ export default {
   methods: {
     onSubmit() {
       let promise= this.$axios.post('api/clients', {
-          data: {
             username: this.username,
             password: this.password,
             name: this.name,
@@ -255,12 +254,13 @@ export default {
             phoneNumber: this.phoneNumber,
             nif_nipc: this.nif_nipc,
           }
-        })
+        )
       promise.then(() => {
         this.$toast.success('You are now registered!').goAway(3000)
         this.$router.push('/')
       })
-      promise.catch(() => {
+      promise.catch(({ response: err }) => {
+        this.errorMsg = err.data
         this.$toast.error('Sorry, you cant sign up. Ensure you don\'t have any errors').goAway(3000)
       })
 
