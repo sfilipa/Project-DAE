@@ -82,6 +82,7 @@ public class OccurrenceBean {
         List<CoverageType> covers = CoverageType.getCoverageTypeList(insuranceCoversAPI);
         insurance.setCovers(covers);
 
+        description = "[" + usernameClient + "]: " + description;
         Occurrence occurrence = new Occurrence(entryDate, insuranceObjectAPI, description, insurance, state, client);
         client.addOccurrence(occurrence);
         em.persist(occurrence);
