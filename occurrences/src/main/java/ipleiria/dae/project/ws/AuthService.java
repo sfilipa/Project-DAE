@@ -9,6 +9,7 @@ import ipleiria.dae.project.entities.User;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Authenticated;
+import ipleiria.dae.project.security.Hasher;
 import ipleiria.dae.project.security.TokenIssuer;
 
 import javax.ejb.EJB;
@@ -28,12 +29,12 @@ public class AuthService {
     private TokenIssuer issuer;
     @EJB
     private UserBean userBean;
-
     @EJB
     private AdministratorBean administratorBean;
-
     @Context
     private SecurityContext securityContext;
+    @Inject
+    private Hasher hasher;
 
     @GET
     @Authenticated
@@ -59,7 +60,7 @@ public class AuthService {
     public Response authenticateAdmin(@Valid Auth auth) throws MyEntityNotFoundException, MyEntityExistsException {
         try {
             Administrator administrator = userBean.canAdminLogin(auth.getUsername());
-            if (administrator.getPassword().equals(auth.getPassword())) {
+            if (administrator.getPassword().equals(hasher.hash(auth.getPassword()))) {
                 administratorBean.create(administrator);
                 String token = issuer.issue(auth.getUsername());
                 return Response.ok(token).build();
