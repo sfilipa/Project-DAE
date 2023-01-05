@@ -16,6 +16,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -87,41 +88,50 @@ public class RepairerService {
 
     @PATCH
     @Path("/{username}/occurrences/{occurrence_code}/assign")
-    public Response assignOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+    public Response assignOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
+    throws MyEntityNotFoundException{
         try {
             repairerBean.assignOccurrence(username, occurrence_code);
             return Response.ok().build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
 
     @PATCH
     @Path("/{username}/occurrences/{occurrence_code}/unassign")
-    public Response unassignOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+    public Response unassignOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
+    throws MyEntityNotFoundException{
         try {
             repairerBean.unassignOccurrence(username, occurrence_code);
             return Response.ok().build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
 
-
     @PATCH
     @Path("/{username}/occurrences/{occurrence_code}/start")
-    public Response startOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+    public Response startOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
+    throws MyEntityNotFoundException{
         try {
             repairerBean.startOccurrence(username, occurrence_code);
             return Response.ok().build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
 
     @PATCH
     @Path("/{username}/occurrences/{occurrence_code}/fail")
-    public Response failOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+    public Response failOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
+        throws MyEntityNotFoundException{
         try {
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
@@ -135,14 +145,17 @@ public class RepairerService {
 
             repairerBean.failOccurrence(username, occurrence_code, description);
             return Response.ok().build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (IOException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
 
     @PATCH
     @Path("/{username}/occurrences/{occurrence_code}/finish")
-    public Response finishOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) {
+    public Response finishOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
+        throws MyEntityNotFoundException{
         try {
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
@@ -156,8 +169,10 @@ public class RepairerService {
 
             repairerBean.finishOccurrence(username, occurrence_code, description);
             return Response.ok().build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (IOException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
 }

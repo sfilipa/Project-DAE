@@ -47,8 +47,6 @@ public class RepairerBean {
         return repairer;
     }
 
-
-
     public Repairer find(String username) {
         return em.find(Repairer.class, username);
     }
@@ -63,7 +61,7 @@ public class RepairerBean {
         em.remove(repairer);
     }
 
-    public void assignOccurrence(String username, long occurrenceCode) {
+    public void assignOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException{
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -82,7 +80,7 @@ public class RepairerBean {
         }
     }
 
-    public void unassignOccurrence(String username, long occurrenceCode) {
+    public void unassignOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException{
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -106,7 +104,7 @@ public class RepairerBean {
         }
     }
 
-    public void startOccurrence(String username, long occurrenceCode) {
+    public void startOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException{
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -123,7 +121,7 @@ public class RepairerBean {
         }
     }
 
-    public void failOccurrence(String username, long occurrenceCode, String description) {
+    public void failOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException{
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -148,7 +146,7 @@ public class RepairerBean {
         }
     }
 
-    public void finishOccurrence(String username, long occurrenceCode, String description) {
+    public void finishOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException{
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -175,9 +173,9 @@ public class RepairerBean {
         }
     }
 
-    private void validateRepairer(Repairer repairer) {
+    private void validateRepairer(Repairer repairer) throws MyEntityNotFoundException{
         if (repairer == null){
-            throw new IllegalArgumentException("Repairer not found");
+            throw new MyEntityNotFoundException("Repairer not found");
         }
     }
 
