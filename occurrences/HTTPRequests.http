@@ -180,13 +180,13 @@ POST http://localhost:8080/occurrences/api/clients
 Content-Type: application/json
 
 {
-  "username": "pedro",
+  "username": "pedro2",
   "email": "pedro@gmail.com",
   "name": "Pedro",
-  "password": "pedro1234",
+  "password": "123",
   "address": "Rua da Pedra n18",
   "phoneNumber": 915958652,
-  "nif_nipc": 267503958
+  "nif_nipc": 267503938
 }
 
 ####LOGIN
