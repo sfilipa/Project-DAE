@@ -2,14 +2,18 @@ package ipleiria.dae.project.ws;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ipleiria.dae.project.dtos.EmailDTO;
 import ipleiria.dae.project.dtos.ExpertDTO;
 import ipleiria.dae.project.dtos.InsuranceDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
+import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
+import ipleiria.dae.project.security.Authenticated;
 
 import javax.ejb.EJB;
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -28,6 +32,8 @@ public class ExpertService {
     @EJB
     private ExpertBean expertBean;
 
+    @EJB
+    private EmailBean emailBean;
 
     /**
      * Expert
@@ -201,5 +207,19 @@ public class ExpertService {
         expertBean.delete(username);
 
         return Response.status(Response.Status.ACCEPTED).build();
+    }
+
+    @POST
+    @Authenticated
+    @Path("/{username}/email/send")
+    public Response sendEmail(@PathParam("username") String username, EmailDTO email) throws MessagingException {
+        Expert expert = expertBean.find(username);
+
+        if(expert == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        emailBean.send(expert.getEmail(), email.getSubject(), email.getMessage());
+        return Response.noContent().build();
     }
 }

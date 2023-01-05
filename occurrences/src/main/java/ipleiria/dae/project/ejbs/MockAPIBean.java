@@ -24,7 +24,6 @@ public class MockAPIBean {
             URL url = null;
             if (!code.trim().isEmpty()) {
                 url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource + "?code=" + code);
-                System.out.println("ENTROUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU"+url);
             } else {
                 url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource);
             }
