@@ -5,6 +5,7 @@ import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.enumerators.State;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
+import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Hasher;
 import org.hibernate.Hibernate;
 
@@ -19,11 +20,15 @@ public class ExpertBean {
     @PersistenceContext
     EntityManager em;
 
-    @Inject // import javax.inject.Inject;
+    @Inject
     private Hasher hasher;
 
     public List<Expert> getAllExperts() {
-        return (List<Expert>) em.createNamedQuery("getAllExperts").getResultList();
+        try {
+            return (List<Expert>) em.createNamedQuery("getAllExperts").getResultList();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("No experts found");
+        }
     }
 
     public Expert create(String username, String password, String name, String email, String insuranceCompany) throws MyEntityExistsException {
@@ -39,12 +44,14 @@ public class ExpertBean {
             Expert newExpert = new Expert(username, hasher.hash(password), name, email, company);
             em.persist(newExpert);
             return find(username);
+        } catch (MyEntityExistsException e) {
+            throw new MyEntityExistsException(e.getMessage());
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    public Expert update(String username, String password, String name, String email, String insuranceCompany) {
+    public Expert update(String username, String password, String name, String email, String insuranceCompany) throws MyEntityNotFoundException {
         try {
             // Find company
             String company = MockAPIBean.getInsuranceCompany(insuranceCompany);
@@ -60,6 +67,8 @@ public class ExpertBean {
             expert.setEmail(email);
             expert.setInsuranceCompany(company);
             return expert;
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -69,11 +78,11 @@ public class ExpertBean {
         return em.find(Expert.class, username);
     }
 
-    public String findInsuranceCompany(String insuranceCompany) {
+    public String findInsuranceCompany(String insuranceCompany) throws MyEntityNotFoundException {
         // Find Insurance Company
         String company = MockAPIBean.getInsuranceCompany(insuranceCompany);
-        if(company.equals("")){
-            throw new IllegalArgumentException("Company not found");
+        if (company.equals("")) {
+            throw new MyEntityNotFoundException("Insurance Company " + insuranceCompany + " not found");
         }
         return company;
     }
@@ -86,14 +95,14 @@ public class ExpertBean {
 
             // Delete Expert
             em.remove(expert);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    public void disapproveOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException{
+    public void disapproveOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             // Find Expert
             Expert expert = find(username);
@@ -115,14 +124,16 @@ public class ExpertBean {
             String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
+        } catch (NotAuthorizedException e) {
+            throw new NotAuthorizedException(e.getMessage());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
-        } catch (MyEntityNotFoundException e){
-            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    public void approveOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException {
+    public void approveOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             // Find Expert
             Expert expert = find(username);
@@ -144,15 +155,17 @@ public class ExpertBean {
             String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
+        } catch (NotAuthorizedException e) {
+            throw new NotAuthorizedException(e.getMessage());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
-        } catch (MyEntityNotFoundException e){
-            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    public void addOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException{
-        try{
+    public void addOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException {
+        try {
             // Find Expert
             Expert expert = find(username);
             validateExpertExists(expert);
@@ -160,7 +173,7 @@ public class ExpertBean {
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
 
-            if(!expert.getInsuranceCompany().equals(occurrence.getInsurance().getInsuranceCompany())){
+            if (!expert.getInsuranceCompany().equals(occurrence.getInsurance().getInsuranceCompany())) {
                 throw new IllegalArgumentException("Expert and Occurrence are not from the same company");
             }
 
@@ -172,15 +185,17 @@ public class ExpertBean {
 
             expert.addOccurrence(occurrence);
             occurrence.addExpert(expert);
-        }catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }catch (MyEntityNotFoundException e){
+        } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
+        } catch (NotAuthorizedException e) {
+            throw new NotAuthorizedException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    public void removeOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException {
-        try{
+    public void removeOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException {
+        try {
             // Find Expert
             Expert expert = find(username);
             validateExpertExists(expert);
@@ -191,10 +206,12 @@ public class ExpertBean {
 
             expert.removeOccurrence(occurrence);
             occurrence.removeExpert(expert);
-        }catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }catch (MyEntityNotFoundException e){
+        } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
+        } catch (NotAuthorizedException e) {
+            throw new NotAuthorizedException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
@@ -207,15 +224,15 @@ public class ExpertBean {
             // Get Occurrences
             Hibernate.initialize(expert.getOccurrences());
             return expert.getOccurrences();
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
-        } catch (MyEntityNotFoundException e){
-            throw new MyEntityNotFoundException(e.getMessage());
         }
     }
 
-    public void acceptRepairer(String username, long occurrenceCode) throws MyEntityNotFoundException{
-        try{
+    public void acceptRepairer(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException {
+        try {
             // Find Expert
             Expert expert = find(username);
             validateExpertExists(expert);
@@ -229,15 +246,17 @@ public class ExpertBean {
             validateOccurrenceState(occurrence, State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
 
             occurrence.setState(State.REPAIRER_WAITING_LIST);
-        }catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }catch (MyEntityNotFoundException e){
+        } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
+        } catch (NotAuthorizedException e) {
+            throw new NotAuthorizedException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    public void rejectRepairer(String username, long occurrenceCode, String description) throws MyEntityNotFoundException {
-        try{
+    public void rejectRepairer(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException {
+        try {
             // Find Expert
             Expert expert = find(username);
             validateExpertExists(expert);
@@ -261,58 +280,62 @@ public class ExpertBean {
             // Build Occurrence Description
             String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
-        }catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }catch (MyEntityNotFoundException e){
+        } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
-        }
-    }
-
-    private void validateExpertExists(Expert expert) throws MyEntityNotFoundException{
-        if (expert == null){
-            throw new MyEntityNotFoundException("Expert not found");
-        }
-    }
-
-    private void validateExpertDoesNotExist(Expert expert) {
-        if (expert != null){
-            throw new IllegalArgumentException("Expert already exists");
-        }
-    }
-
-    private void validateOccurrenceExists(Occurrence occurrence) {
-        if(occurrence == null) {
-            throw new IllegalArgumentException("Occurrence not found");
-        }
-    }
-
-    public void validateCompanyExists(String company) {
-        if(company.equals("")){
-            throw new IllegalArgumentException("Company not found");
-        }
-    }
-
-    private void validateOccurrence(Expert expert, Occurrence occurrence) {
-        try {
-            validateOccurrenceExists(occurrence);
-            validateExpertIsAssignedToOccurrence(expert, occurrence);
-            validateOccurrenceState(occurrence, State.PENDING);
+        } catch (NotAuthorizedException e) {
+            throw new NotAuthorizedException(e.getMessage());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    private void validateExpertIsAssignedToOccurrence(Expert expert, Occurrence occurrence) {
-        // Check if Expert is assigned to Occurrence
-        if(!occurrence.isExpertInOccurrence(expert)) {
-            throw new IllegalArgumentException("Expert is not assigned to this occurrence");
+    private void validateExpertExists(Expert expert) throws MyEntityNotFoundException {
+        if (expert == null) {
+            throw new MyEntityNotFoundException("Expert not found");
         }
     }
 
-    private void validateOccurrenceState(Occurrence occurrence, State state) {
+    private void validateExpertDoesNotExist(Expert expert) throws MyEntityExistsException {
+        if (expert != null) {
+            throw new MyEntityExistsException("Expert " + expert.getUsername() + " already exists");
+        }
+    }
+
+    private void validateOccurrenceExists(Occurrence occurrence) throws MyEntityNotFoundException {
+        if (occurrence == null) {
+            throw new MyEntityNotFoundException("Occurrence not found");
+        }
+    }
+
+    public void validateCompanyExists(String company) throws MyEntityNotFoundException {
+        if (company.equals("")) {
+            throw new MyEntityNotFoundException("Company not found");
+        }
+    }
+
+    private void validateOccurrence(Expert expert, Occurrence occurrence) throws MyEntityNotFoundException, NotAuthorizedException {
+        try {
+            validateOccurrenceExists(occurrence);
+            validateExpertIsAssignedToOccurrence(expert, occurrence);
+            validateOccurrenceState(occurrence, State.PENDING);
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
+        } catch (NotAuthorizedException e) {
+            throw new NotAuthorizedException(e.getMessage());
+        }
+    }
+
+    private void validateExpertIsAssignedToOccurrence(Expert expert, Occurrence occurrence) throws NotAuthorizedException {
+        // Check if Expert is assigned to Occurrence
+        if (!occurrence.isExpertInOccurrence(expert)) {
+            throw new NotAuthorizedException("Expert " + expert.getUsername() + " is not assigned to this occurrence " + occurrence.getId());
+        }
+    }
+
+    private void validateOccurrenceState(Occurrence occurrence, State state) throws NotAuthorizedException {
         // Check if Occurrence is in the correct state
-        if(occurrence.getState() != state) {
-            throw new IllegalArgumentException("Occurrence is not in the correct state");
+        if (occurrence.getState() != state) {
+            throw new NotAuthorizedException("Occurrence is not in the correct state, current state is " + occurrence.getState());
         }
     }
 
