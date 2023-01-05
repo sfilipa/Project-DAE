@@ -19,14 +19,14 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE4MDc5LCJleHAiOjE2NzI5MjE2Nzl9.Kih4mk0hGH9CoUKUz945n52w7x67jQ0XnW8Dpcneu5s
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE5ODQ0LCJleHAiOjE2NzI5MjM0NDR9.gM59HTRpfwRboS8N-Dmc3CwFmXRQqd-gbxXmYBOYTfM
 Content-Type: application/json
 
 {
   "usernameClient": "client2",
   "entryDate": "10/1/2023",
   "state": "PENDING",
-  "insuranceCode": "ALL-1298666",
+  "insuranceCode": "ALL-1298389",
   "description": "ola"
 }
 
@@ -75,7 +75,7 @@ Content-Type: application/x-www-form-urlencoded
 
 ##### CLIENT Occurrences
 GET http://localhost:8080/occurrences/api/clients/client2/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyODMzOTQ3LCJleHAiOjE2NzI4Mzc1NDd9.CcNJ95OwhXe09eomLj-K65j5yOTBeQ7N4BUHjXS1xiw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE5ODQ0LCJleHAiOjE2NzI5MjM0NDR9.gM59HTRpfwRboS8N-Dmc3CwFmXRQqd-gbxXmYBOYTfM
 Accept: application/json
 
 ### Create Company
