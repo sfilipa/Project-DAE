@@ -13,7 +13,7 @@
       </div>
 
       <div v-else v-for="occurrence in occurrences" >
-        <Occurrence :occurrence="occurrence" :isAssigned="isAssigned(occurrence.id)" @updateOccurrences="updateOccurrences"></Occurrence>
+        <Occurrence :occurrence="occurrence" :isAssigned="isAssigned(occurrence.id)" :waitingRefresh="waitingRefresh" @updateOccurrences="updateOccurrences"></Occurrence>
       </div>
     </div>
   </b-container>
@@ -25,11 +25,11 @@ export default {
   components: {
     Occurrence
   },
-  name: "index.vue",
   data () {
     return {
       occurrences: null,
       occurrencesAssigned: [],
+      waitingRefresh: false
     }
   },
   created () {

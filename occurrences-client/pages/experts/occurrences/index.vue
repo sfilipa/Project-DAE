@@ -24,7 +24,7 @@
     </div>
 
     <div v-else v-for="occurrence in assignedOccurrences">
-      <Occurrence :occurrence="occurrence" :isAssigned="true" @updateOccurrences="updateOccurrences"></Occurrence>
+      <Occurrence :occurrence="occurrence" :isAssigned="true" :waitingRefresh="waitingRefresh" @updateOccurrences="updateOccurrences"></Occurrence>
 <!--      <div class="ongoing-occurrences-item-row" style="width: 30%;">-->
 <!--        <p style="font-size: 20px"><b>{{occurrence.objectInsured}} - <span>{{occurrence.insuranceCode}}</span></b></p>-->
 <!--        <p>Occurrence {{ occurrence.id }}</p>-->
@@ -56,23 +56,19 @@ export default {
   },
   data () {
     return {
-      assignedOccurrences: null
+      assignedOccurrences: null,
+      waitingRefresh: false
     }
   },
   created () {
-    this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
-      .then((assignedOccurrences) => {
-        this.assignedOccurrences = assignedOccurrences
-      })
     this.updateOccurrences()
-
   },
   methods: {
     updateOccurrences(){
       this.waitingRefresh = true
       this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
-        .then((occurrencesAssigned) => {
-          this.occurrencesAssigned = occurrencesAssigned
+        .then((assignedOccurrences) => {
+          this.assignedOccurrences = assignedOccurrences
           this.waitingRefresh = false
         })
     },
