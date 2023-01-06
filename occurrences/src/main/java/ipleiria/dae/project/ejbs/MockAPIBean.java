@@ -60,7 +60,7 @@ public class MockAPIBean {
     }
 
     public JSONArray getAttributeFromSpecificInsuranceCompany(String resource, String attribute, String attributeToGet, String attributeToGet2) throws MyEntityNotFoundException, APIBadResponseException {
-        JSONArray jsonArray = getDataAPI(resource, attribute, attributeToGet);
+        JSONArray jsonArray = get(resource, attribute, attributeToGet);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
         if (jsonObject == null) {

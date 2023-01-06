@@ -23,7 +23,6 @@ public class OccurrenceDTO implements Serializable {
     private String usernameClient;
     private String usernameRepairer;
     private CoverageType coverageType;
-
     private String insuranceCompanyName;
 
     public OccurrenceDTO() {
