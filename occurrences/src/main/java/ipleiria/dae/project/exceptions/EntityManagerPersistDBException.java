@@ -1,6 +1,8 @@
 package ipleiria.dae.project.exceptions;
 
-public class EntityManagerPersistDBException extends Exception {
+import javax.ejb.EJBException;
+
+public class EntityManagerPersistDBException extends EJBException {
     public EntityManagerPersistDBException(String message) {
         super(message);
     }

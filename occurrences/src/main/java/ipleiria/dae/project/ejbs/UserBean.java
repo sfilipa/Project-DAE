@@ -3,6 +3,7 @@ package ipleiria.dae.project.ejbs;
 import ipleiria.dae.project.entities.Administrator;
 import ipleiria.dae.project.entities.User;
 import ipleiria.dae.project.exceptions.APIBadResponseException;
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Hasher;
 import org.hibernate.Hibernate;
 
@@ -30,16 +31,13 @@ public class UserBean {
 
     public boolean canLogin(String username, String password) {
         User user = find(username);
-        return user != null && user.getPassword().equals(hasher.hash(password));
+        if (user == null) {
+            throw new MyEntityNotFoundException("User not found");
+        }
+        return user.getPassword().equals(hasher.hash(password));
     }
 
-    public Administrator canAdminLogin(String username) throws APIBadResponseException {
-        try {
-            return MockAPIBean.getAdministrator(username);
-        } catch (APIBadResponseException e) {
-            throw new APIBadResponseException(e.getMessage());
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
+    public Administrator canAdminLogin(String username) throws MyEntityNotFoundException, APIBadResponseException {
+        return MockAPIBean.getAdministrator(username);
     }
 }

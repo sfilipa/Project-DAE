@@ -41,7 +41,7 @@ public class AdministratorBean {
             // Find if the administrator already exists
             find(administrator.getUsername());
 
-        } catch (MyEntityNotFoundException e) {
+        } catch (MyEntityNotFoundException e) { // If not, create it
             try {
                 // Create Administrator
                 Administrator newAdministrator = new Administrator(administrator.getUsername(), administrator.getPassword(), administrator.getName(), administrator.getEmail());

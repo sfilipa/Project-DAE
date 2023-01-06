@@ -14,6 +14,7 @@ import ipleiria.dae.project.security.Authenticated;
 import ipleiria.dae.project.security.Hasher;
 import ipleiria.dae.project.security.TokenIssuer;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -41,35 +42,36 @@ public class AuthService {
     @GET
     @Authenticated
     @Path("/user")
-    public Response getAuthenticatedUser() {
+    public Response getAuthenticatedUser() throws MyEntityNotFoundException {
         String username = securityContext.getUserPrincipal().getName();
         User user = userBean.findOrFail(username);
+        if (user == null) {
+            throw new MyEntityNotFoundException("User not found");
+        }
         return Response.ok(UserDTO.from(user)).build();
     }
 
     @POST
+    @RolesAllowed({"Expert", "Repairer", "Client"})
     @Path("/login")
-    public Response authenticate(@Valid Auth auth) {
+    public Response authenticate(@Valid Auth auth) throws MyEntityNotFoundException {
         if (userBean.canLogin(auth.getUsername(), auth.getPassword())) {
             String token = issuer.issue(auth.getUsername());
             return Response.ok(token).build();
         }
-        return Response.status(Response.Status.UNAUTHORIZED).build();
+        return Response.status(Response.Status.UNAUTHORIZED).header("Error-Message", "The password provided was incorrect").build();
     }
 
     @POST
+    @RolesAllowed({"Administrator"})
     @Path("/login/admin")
     public Response authenticateAdmin(@Valid Auth auth) throws MyEntityNotFoundException, APIBadResponseException, EntityManagerPersistDBException {
-        try {
-            Administrator administrator = userBean.canAdminLogin(auth.getUsername());
-            if (administrator.getPassword().equals(hasher.hash(auth.getPassword()))) {
-                administratorBean.create(administrator);
-                String token = issuer.issue(auth.getUsername());
-                return Response.ok(token).build();
-            }
-            return Response.status(Response.Status.UNAUTHORIZED).build();
-        } catch (MyEntityNotFoundException e) {
-            throw new MyEntityNotFoundException(e.getMessage());
+        Administrator administrator = userBean.canAdminLogin(auth.getUsername());
+        if (administrator.getPassword().equals(hasher.hash(auth.getPassword()))) {
+            administratorBean.create(administrator);
+            String token = issuer.issue(auth.getUsername());
+            return Response.ok(token).build();
         }
+        return Response.status(Response.Status.UNAUTHORIZED).header("Error-Message", "The password provided was incorrect").build();
     }
 }
