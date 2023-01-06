@@ -1,6 +1,9 @@
 package ipleiria.dae.project.exceptions;
 
-public class NotAuthorizedException extends Exception {
+import javax.ejb.EJB;
+import javax.ejb.EJBException;
+
+public class NotAuthorizedException extends EJBException {
     public NotAuthorizedException(String message) {
         super(message);
     }

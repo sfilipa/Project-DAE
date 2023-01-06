@@ -1,6 +1,8 @@
 package ipleiria.dae.project.exceptions;
 
-public class MyEntityNotFoundException extends Exception {
+import javax.ejb.EJBException;
+
+public class MyEntityNotFoundException extends EJBException {
     public MyEntityNotFoundException(String message) {
         super(message);
     }

@@ -1,6 +1,8 @@
 package ipleiria.dae.project.exceptions;
 
-public class MyEntityExistsException extends Exception {
+import javax.ejb.EJBException;
+
+public class MyEntityExistsException extends EJBException {
     public MyEntityExistsException(String message) {
         super(message);
     }

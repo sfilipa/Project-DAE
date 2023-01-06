@@ -4,9 +4,7 @@ import ipleiria.dae.project.entities.*;
 import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
-import ipleiria.dae.project.exceptions.APIBadResponseException;
-import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
-import ipleiria.dae.project.exceptions.NotAuthorizedException;
+import ipleiria.dae.project.exceptions.*;
 import org.hibernate.Hibernate;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,7 +38,7 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws MyEntityNotFoundException, APIBadResponseException, NotAuthorizedException {
+    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) {
         JSONArray jsonArray = mockAPIBean.getDataAPI("insurances", "code", insuranceCode);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
@@ -59,7 +57,9 @@ public class OccurrenceBean {
         JSONArray insuranceCoversAPI = jsonObject.getJSONArray("covers");
 
         Client client = em.find(Client.class, usernameClient);
-
+        if (client == null) {
+            throw new MyEntityNotFoundException("Client not found");
+        }
         if (clientNifAPI != client.getNif_nipc()) {
             throw new NotAuthorizedException("Client is not the owner of the insurance");
         }
@@ -69,7 +69,7 @@ public class OccurrenceBean {
         Date entryDate_formatDate = new Date(entryDate);
 
         if ((entryDate_formatDate.before(initialDate_formatDate) || entryDate_formatDate.after(validUntil_formatDate))) {
-            throw new MyEntityNotFoundException("Entry date is not between the initial date and the valid until date");
+            throw new DateOutsideRangeException("Entry date is not between the initial date and the valid until date");
         }
 
         InsuredAssetType insuredAssetType = null;
@@ -85,7 +85,7 @@ public class OccurrenceBean {
         insurance.setCovers(covers);
 
         if (!covers.contains(coverageType)) {
-            throw new MyEntityNotFoundException("The insurance does not cover this type of coverage");
+            throw new MyIllegalArgumentException("The insurance does not cover this type of coverage");
         }
 
         description = "[" + usernameClient + "]: " + description;
@@ -104,7 +104,7 @@ public class OccurrenceBean {
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws MyEntityNotFoundException, APIBadResponseException, NotAuthorizedException {//TODO : Exceptions
+    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) {
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
             throw new MyEntityNotFoundException("Occurrence not found");
@@ -129,8 +129,11 @@ public class OccurrenceBean {
 
         if (clientNifAPI != occurrence.getClient().getNif_nipc()) {
             occurrence.getClient().removeOccurrence(occurrence);
-            Client client = em.find(Client.class, usernameClient);
 
+            Client client = em.find(Client.class, usernameClient);
+            if (client == null) {
+                throw new MyEntityNotFoundException("Client not found");
+            }
             if (clientNifAPI != client.getNif_nipc()) {
                 throw new NotAuthorizedException("Client is not the owner of the insurance");
             }
@@ -145,13 +148,21 @@ public class OccurrenceBean {
         insurance.setCovers(covers);
 
         if (!covers.contains(coverageType)) {
-            throw new MyEntityNotFoundException("The insurance does not cover this type of coverage");
+            throw new MyIllegalArgumentException("The insurance does not cover this type of coverage");
         }
 
         try {
             insuredAssetType = InsuredAssetType.valueOf(insuranceTypeAPI);
         } catch (IllegalArgumentException e) {
             throw new MyEntityNotFoundException("Insurance type not found");
+        }
+
+        Date initialDate_formatDate = new Date(initialDateAPI);
+        Date validUntil_formatDate = new Date(validUntilAPI);
+        Date entryDate_formatDate = new Date(entryDate);
+
+        if ((entryDate_formatDate.before(initialDate_formatDate) || entryDate_formatDate.after(validUntil_formatDate))) {
+            throw new DateOutsideRangeException("Entry date is not between the initial date and the valid until date");
         }
         occurrence.setEntryDate(entryDate);
         occurrence.setState(state);
@@ -161,88 +172,5 @@ public class OccurrenceBean {
         occurrence.setCoverageType(coverageType);
 
         return occurrence;
-    }
-
-//    public int addExpert(long id, String username) {
-//        Occurrence occurrence = em.find(Occurrence.class, id);
-//        if (occurrence == null) {
-//            return -1; //devolver exception
-//        }
-//        if(occurrence.getState() != State.PENDING) {
-//            return -2; //devolver exception
-//        }
-//        Expert expert = em.find(Expert.class, username);
-//        if (expert == null) {
-//            return -3; //devolver exception
-//        }
-//        if(occurrence.isExpertInOccurrence(expert)){
-//            return -4; //devolver exception
-//        }
-//
-//        //verificar que o perito é da mesma seguradora
-//        if(expert.getCompany() != occurrence.getInsurance().getCompany()){
-//            return -5; //devolver exception
-//        }
-//
-//        occurrence.addExpert(expert);
-//        return 0;
-//    }
-//
-//    public int removeExpert(long id, String username){
-//        Occurrence occurrence = em.find(Occurrence.class, id);
-//        if (occurrence == null) {
-//            return -1; //devolver exception
-//        }
-//        Expert expert = em.find(Expert.class, username);
-//        if (expert == null) {
-//            return -2; //devolver exception
-//        }
-//        if(!occurrence.isExpertInOccurrence(expert)){
-//            return -3; //devolver exception
-//        }
-//
-//        occurrence.removeExpert(expert);
-//        expert.removeOccurrence(occurrence);
-//        return 0;
-//    }
-
-    public int assignRepairer(long id, String username) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-        if (occurrence.getState() != State.APPROVED) {
-            return -2; //devolver exception
-        }
-        Repairer repairer = em.find(Repairer.class, username);
-        if (repairer == null) {
-            return -3; //devolver exception
-        }
-
-        occurrence.setState(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
-        occurrence.setRepairer(repairer);
-        repairer.addOccurrence(occurrence);
-        return 0;
-    }
-
-    public int unassignRepairer(long id) {
-        Occurrence occurrence = em.find(Occurrence.class, id);
-        if (occurrence == null) {
-            return -1; //devolver exception
-        }
-
-        Repairer repairer = occurrence.getRepairer();
-        if (repairer == null) {
-            return -2; //devolver exception
-        }
-
-        if (occurrence.getState() != State.REPAIRER_WAITING_LIST && occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT) {
-            return -3; //devolver exception (pois se estiver no .ACTIVE, não posso fazer unassign de um repairer que já está mesmo a reparar)
-        }
-
-        occurrence.setState(State.APPROVED); //volta para o estado anterior
-        occurrence.setRepairer(null);
-        repairer.removeOccurrence(occurrence);
-        return 0;
     }
 }
