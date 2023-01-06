@@ -16,12 +16,15 @@ public class UserDTO implements Serializable {
     private String name;
     @NotNull
     private String email;
+    @NotNull
+    private String role;
 
     public UserDTO() {}
     public UserDTO(String username, String name, String email, String role) {
         this.username = username;
         this.name = name;
         this.email = email;
+        this.role = role;
     }
 
     public static UserDTO from(User user) {
@@ -58,5 +61,13 @@ public class UserDTO implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
