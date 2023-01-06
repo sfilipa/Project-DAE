@@ -85,10 +85,12 @@ public class ClientBean {
         return em.find(Client.class, username);
     }
 
-    public Client findOrFail(String username) {
+    public Client findOrFail(String username) throws MyEntityNotFoundException {
         var client = em.getReference(Client.class, username);
         Hibernate.initialize(client);
-
+        if (client == null) {
+            throw new MyEntityNotFoundException("Client not found");
+        }
         return client;
     }
 
