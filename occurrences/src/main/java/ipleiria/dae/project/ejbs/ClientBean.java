@@ -26,7 +26,7 @@ public class ClientBean {
     @Inject
     private Hasher hasher;
 
-    public Client create(String username, String password, String name, String email, String address, long phoneNumber, long nif_nipc) throws MyEntityExistsException, NifNotValidException {
+    public Client create(String username, String password, String name, String email, String address, long phoneNumber, long nif_nipc) {
         Client client = find(username);
         if (client != null) {
             throw new MyEntityExistsException("Client with username: " + username + " already exists");
@@ -49,7 +49,7 @@ public class ClientBean {
                 .getResultList().size() > 0;
     }
 
-    public Client update(String username, String name, String email, String address, long phoneNumber, long nif_nipc) throws MyEntityNotFoundException, NifNotValidException {
+    public Client update(String username, String name, String email, String address, long phoneNumber, long nif_nipc) {
         Client client = find(username);
         if (client == null) {
             throw new MyEntityNotFoundException("Client not found");
@@ -73,7 +73,7 @@ public class ClientBean {
         return client;
     }
 
-    public void delete(String username) throws MyEntityNotFoundException {
+    public void delete(String username) {
         Client client = find(username);
         if (client == null) {
             throw new MyEntityNotFoundException("Client not found");
@@ -100,7 +100,7 @@ public class ClientBean {
         return true;
     }
 
-    public List<Occurrence> clientOccurrences(String username) throws MyEntityNotFoundException {
+    public List<Occurrence> clientOccurrences(String username) {
         Client client = find(username);
         if(client == null){
             throw new MyEntityNotFoundException("Client not found");
@@ -113,7 +113,7 @@ public class ClientBean {
         return occurrences;
     }
 
-    public List<Insurance> insurances(String username) throws APIBadResponseException {
+    public List<Insurance> insurances(String username) {
         try {
             // Get client
             Client client = findOrFail(username);
@@ -130,7 +130,7 @@ public class ClientBean {
         }
     }
 
-    public Client updatePassword(String username, String password) throws MyEntityNotFoundException {
+    public Client updatePassword(String username, String password) {
         Client client = find(username);
         if (client == null) {
             throw new MyEntityNotFoundException("Client not found");

@@ -51,7 +51,7 @@ public class ClientService {
 
     @POST
     @Path("/")
-    public Response create(ClientCreateDTO clientDTO) throws MyEntityExistsException, NifNotValidException {
+    public Response create(ClientCreateDTO clientDTO) {
         Client client = clientBean.create(
                 clientDTO.getUsername(),
                 clientDTO.getPassword(),
@@ -74,7 +74,7 @@ public class ClientService {
    /* @Authenticated
     @RolesAllowed({"Client"})*/
     @Path("/{username}")
-    public Response updateClient(@PathParam("username") String username, ClientCreateDTO clientDTO) throws MyEntityNotFoundException, NifNotValidException {
+    public Response updateClient(@PathParam("username") String username, ClientCreateDTO clientDTO) {
         Client client = clientBean.update(
                 username,
                 clientDTO.getName(),
@@ -96,7 +96,7 @@ public class ClientService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("/{username}/password")
-    public Response updatePassword(@PathParam("username") String username, String password) throws MyEntityNotFoundException {
+    public Response updatePassword(@PathParam("username") String username, String password) {
         if(!securityContext.getUserPrincipal().getName().equals(username)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
@@ -114,7 +114,7 @@ public class ClientService {
    /* @Authenticated
     @RolesAllowed({"Client"})*/
     @Path("/{username}")
-    public Response deleteOccurrence(@PathParam("username") String username) throws MyEntityNotFoundException {
+    public Response deleteOccurrence(@PathParam("username") String username) {
         clientBean.delete(username);
 
         return Response.noContent().build();
@@ -124,7 +124,7 @@ public class ClientService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("{username}/occurrences")
-    public Response getClientOccurrences(@PathParam("username") String username) throws MyEntityNotFoundException{
+    public Response getClientOccurrences(@PathParam("username") String username){
         return Response.ok(OccurrenceDTO.from(clientBean.clientOccurrences(username))).build();
     }
 
@@ -133,14 +133,14 @@ public class ClientService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("{username}/insurances")
-    public Response getClientInsurances(@PathParam("username") String username) throws APIBadResponseException {
+    public Response getClientInsurances(@PathParam("username") String username) {
         return Response.ok(InsuranceDTO.from(clientBean.insurances(username))).build();
     }
 
     @POST
     @Authenticated
     @Path("/{username}/email/send")
-    public Response sendEmail(@PathParam("username") String username, EmailDTO email) throws MessagingException {
+    public Response sendEmail(@PathParam("username") String username, EmailDTO email) {
         Client client = clientBean.find(username);
 
         if(client == null){

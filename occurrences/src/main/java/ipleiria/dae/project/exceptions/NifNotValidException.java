@@ -1,6 +1,8 @@
 package ipleiria.dae.project.exceptions;
 
-public class NifNotValidException extends Exception {
+import javax.ejb.EJBException;
+
+public class NifNotValidException extends EJBException {
 
     public NifNotValidException(String message) {
         super(message);
