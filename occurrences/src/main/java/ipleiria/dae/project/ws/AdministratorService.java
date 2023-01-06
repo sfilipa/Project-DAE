@@ -1,12 +1,10 @@
 package ipleiria.dae.project.ws;
 
 import ipleiria.dae.project.dtos.AdministratorDTO;
-import ipleiria.dae.project.dtos.ClientDTO;
 import ipleiria.dae.project.ejbs.AdministratorBean;
-import ipleiria.dae.project.ejbs.ClientBean;
-import ipleiria.dae.project.security.Authenticated;
+import ipleiria.dae.project.exceptions.APIBadResponseException;
+import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -27,7 +25,7 @@ public class AdministratorService {
 
     @GET
     @Path("{username}")
-    public Response get(@PathParam("username") String username) throws Exception {
+    public Response get(@PathParam("username") String username) throws MyEntityNotFoundException, APIBadResponseException {
         return Response.ok(AdministratorDTO.from(administratorBean.findOrFail(username))).build();
     }
 }

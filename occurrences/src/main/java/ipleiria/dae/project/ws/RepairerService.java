@@ -203,7 +203,7 @@ public class RepairerService {
     @Authenticated
     @RolesAllowed({"Administrator", "Repairer"})
     @Path("/{username}")
-    public Response getRepairer(@PathParam("username") String username) throws MyEntityNotFoundException {
+    public Response getRepairer(@PathParam("username") String username) {
         try {
             if (!securityContext.getUserPrincipal().getName().equals(username)) {
                 throw new ForbiddenException(username + ", You are not allowed to access this resource");

@@ -73,7 +73,7 @@ public class MockAPIBean {
 
     private JSONArray parseAPIObjectsToMatchDatabaseObjects(String attributeToGet2, JSONArray jsonArrayAttribute2) {
         JSONArray jsonArray = new JSONArray();
-        if(attributeToGet2.equals("repairers")){
+        if (attributeToGet2.equals("repairers")) {
             //Check if repairer from insurance company exists in database
             List<Repairer> repairersInDB = repairerBean.getAllRepairers();
             for (int i = 0; i < jsonArrayAttribute2.length(); i++) {
@@ -89,30 +89,27 @@ public class MockAPIBean {
     }
 
     public static Administrator getAdministrator(String username) throws MyEntityNotFoundException, APIBadResponseException {
-        try {
-            // Receive Insurance Company in a JSONArray format
-            JSONArray jsonArray = get("administrators", "username", username);
-            if (jsonArray.length() == 0) {
-                throw new MyEntityNotFoundException("Administrator " + username + " not found");
-            }
-
-            // Get the first element of the JSONArray
-            JSONObject jsonObject = jsonArray.getJSONObject(0);
-
-            // Create an Administrator Entity
-            return new Administrator(
-                    jsonObject.getString("username"),
-                    jsonObject.getString("password"),
-                    jsonObject.getString("name"),
-                    jsonObject.getString("email")
-            );
-        } catch (MyEntityNotFoundException e) {
-            throw new MyEntityNotFoundException(e.getMessage());
-        } catch (APIBadResponseException e) {
-                throw new APIBadResponseException("Couldn't get Administrator from API");
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+        // Receive Administrator in a JSONArray format
+        JSONArray jsonArray = get("administrators", "username", username);
+        if (jsonArray.length() == 0) {
+            throw new MyEntityNotFoundException("Administrator " + username + " not found");
         }
+
+        // If there is more than one administrator with the same username
+        if (jsonArray.length() != 1) {
+            throw new APIBadResponseException("More than one administrator with the same username");
+        }
+
+        // Get the first element of the JSONArray
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
+
+        // Create an Administrator Entity
+        return new Administrator(
+                jsonObject.getString("username"),
+                jsonObject.getString("password"),
+                jsonObject.getString("name"),
+                jsonObject.getString("email")
+        );
     }
 
     public static String getInsuranceCompany(String companyUsername) {

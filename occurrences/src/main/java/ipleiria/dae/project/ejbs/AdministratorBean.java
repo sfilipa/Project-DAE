@@ -3,6 +3,7 @@ package ipleiria.dae.project.ejbs;
 import ipleiria.dae.project.entities.Administrator;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.exceptions.APIBadResponseException;
+import ipleiria.dae.project.exceptions.EntityManagerPersistDBException;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Hasher;
@@ -23,40 +24,32 @@ public class AdministratorBean {
 
     // Find Administrator in MockAPI
     public Administrator findOrFail(String username) throws MyEntityNotFoundException, APIBadResponseException {
-        try {
-            return MockAPIBean.getAdministrator(username);
-        } catch (MyEntityNotFoundException e) {
-            throw new MyEntityNotFoundException(e.getMessage());
-        }
+        return MockAPIBean.getAdministrator(username);
     }
 
     // Find Administrator in DB
     public Administrator find(String username) throws MyEntityNotFoundException {
-        try {
-            Administrator administrator = em.find(Administrator.class, username);
-            if (administrator == null) {
-                throw new MyEntityNotFoundException("Administrator not found");
-            }
-            return administrator;
-        } catch (MyEntityNotFoundException e) {
-            throw new MyEntityNotFoundException(e.getMessage());
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+        Administrator administrator = em.find(Administrator.class, username);
+        if (administrator == null) {
+            throw new MyEntityNotFoundException("Administrator not found");
         }
+        return administrator;
     }
 
-    public void create(Administrator administrator) throws MyEntityNotFoundException, MyEntityExistsException {
+    public void create(Administrator administrator) throws MyEntityNotFoundException, EntityManagerPersistDBException {
         try {
             // Find if the administrator already exists
             find(administrator.getUsername());
 
         } catch (MyEntityNotFoundException e) {
-            // Create Administrator
-            Administrator newAdministrator = new Administrator(administrator.getUsername(), administrator.getPassword(), administrator.getName(), administrator.getEmail());
-            em.persist(newAdministrator);
-            find(administrator.getUsername());
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+            try {
+                // Create Administrator
+                Administrator newAdministrator = new Administrator(administrator.getUsername(), administrator.getPassword(), administrator.getName(), administrator.getEmail());
+                em.persist(newAdministrator);
+                find(administrator.getUsername());
+            } catch (Exception ex) {
+                throw new EntityManagerPersistDBException("Error creating administrator with username: " + administrator.getUsername());
+            }
         }
     }
 }
