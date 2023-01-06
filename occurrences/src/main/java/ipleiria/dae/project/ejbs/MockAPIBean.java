@@ -88,7 +88,7 @@ public class MockAPIBean {
         return jsonArray;
     }
 
-    public static Administrator getAdministrator(String username) throws MyEntityNotFoundException {
+    public static Administrator getAdministrator(String username) throws MyEntityNotFoundException, APIBadResponseException {
         try {
             // Receive Insurance Company in a JSONArray format
             JSONArray jsonArray = get("administrators", "username", username);
@@ -108,6 +108,8 @@ public class MockAPIBean {
             );
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
+        } catch (APIBadResponseException e) {
+                throw new APIBadResponseException("Couldn't get Administrator from API");
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -128,7 +130,7 @@ public class MockAPIBean {
         }
     }
 
-    public static List<Insurance> getInsurances(long nifNipc) {
+    public static List<Insurance> getInsurances(long nifNipc) throws APIBadResponseException {
         try {
             // Create Insurance List
             List<Insurance> insurances = new LinkedList<>();
@@ -171,12 +173,14 @@ public class MockAPIBean {
 
             // Return the Insurance List
             return insurances;
+        } catch (APIBadResponseException e) {
+            throw new APIBadResponseException("Couldn't get insurances from API");
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    public static JSONArray get(String resource, String attribute, String name) {
+    public static JSONArray get(String resource, String attribute, String name) throws APIBadResponseException {
         try {
             // Set up the API endpoint URL
             URL url = new URL("https://63a9db1a594f75dc1dc27d9b.mockapi.io/" + resource + "?" + attribute + "=" + name);
@@ -209,7 +213,7 @@ public class MockAPIBean {
             return new JSONArray(jsonString);
 
         } catch (Exception e) {
-            throw new IllegalArgumentException("Couldn't get data from API");
+            throw new APIBadResponseException("Couldn't get data from API");
         }
     }
 }

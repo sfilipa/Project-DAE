@@ -8,6 +8,7 @@ import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.ejbs.ClientBean;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.entities.Client;
+import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NifNotValidException;
@@ -132,7 +133,7 @@ public class ClientService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("{username}/insurances")
-    public Response getClientInsurances(@PathParam("username") String username) {
+    public Response getClientInsurances(@PathParam("username") String username) throws APIBadResponseException {
         return Response.ok(InsuranceDTO.from(clientBean.insurances(username))).build();
     }
 

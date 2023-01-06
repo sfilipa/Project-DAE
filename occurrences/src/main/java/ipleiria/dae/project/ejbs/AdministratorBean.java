@@ -2,6 +2,7 @@ package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Administrator;
 import ipleiria.dae.project.entities.Expert;
+import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Hasher;
@@ -21,7 +22,7 @@ public class AdministratorBean {
     private Hasher hasher;
 
     // Find Administrator in MockAPI
-    public Administrator findOrFail(String username) throws MyEntityNotFoundException {
+    public Administrator findOrFail(String username) throws MyEntityNotFoundException, APIBadResponseException {
         try {
             return MockAPIBean.getAdministrator(username);
         } catch (MyEntityNotFoundException e) {

@@ -3,6 +3,7 @@ package ipleiria.dae.project.ejbs;
 import ipleiria.dae.project.entities.Client;
 import ipleiria.dae.project.entities.Insurance;
 import ipleiria.dae.project.entities.Occurrence;
+import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NifNotValidException;
@@ -112,7 +113,7 @@ public class ClientBean {
         return occurrences;
     }
 
-    public List<Insurance> insurances(String username) {
+    public List<Insurance> insurances(String username) throws APIBadResponseException {
         try {
             // Get client
             Client client = findOrFail(username);
@@ -122,6 +123,8 @@ public class ClientBean {
 
             // Get insurances
             return MockAPIBean.getInsurances(client.getNif_nipc());
+        } catch (APIBadResponseException e) {
+            throw new APIBadResponseException(e.getMessage());
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
         }

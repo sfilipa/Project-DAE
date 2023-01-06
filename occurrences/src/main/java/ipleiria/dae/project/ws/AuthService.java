@@ -6,6 +6,7 @@ import ipleiria.dae.project.ejbs.AdministratorBean;
 import ipleiria.dae.project.ejbs.UserBean;
 import ipleiria.dae.project.entities.Administrator;
 import ipleiria.dae.project.entities.User;
+import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.security.Authenticated;
@@ -57,7 +58,7 @@ public class AuthService {
 
     @POST
     @Path("/login/admin")
-    public Response authenticateAdmin(@Valid Auth auth) throws MyEntityNotFoundException, MyEntityExistsException {
+    public Response authenticateAdmin(@Valid Auth auth) throws MyEntityNotFoundException, MyEntityExistsException, APIBadResponseException {
         try {
             Administrator administrator = userBean.canAdminLogin(auth.getUsername());
             if (administrator.getPassword().equals(hasher.hash(auth.getPassword()))) {
