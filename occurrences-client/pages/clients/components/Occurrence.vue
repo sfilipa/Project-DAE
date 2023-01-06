@@ -25,17 +25,19 @@
           <div class="repair-column">
             <p >Select an entrusted Repair Service</p>
             <p style="margin-bottom: 0;">Or solicitate a Repair Service (needs approval)
-              <input :disabled="otherRepairers.length==0" class="checkbox form-check-input" type="checkbox" id="other" name="other" value="Other"></p>
+              <input :disabled="otherRepairers == null || otherRepairers.length==0" v-model="checked" class="checkbox form-check-input" type="checkbox" id="other" name="other" value="other"></p>
           </div>
 
           <div class="repair-column flex-grow-1" style="padding: 0 5%">
-            <span v-if="entrustedRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
+            <span v-if="entrustedRepairers == null" style="margin-left: 2px">---</span>
+            <span v-else-if="entrustedRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
             <select v-else class="form-select mb-2">
               <option v-for="repairerService in entrustedRepairers">{{repairerService}}</option>
             </select>
             <div class="repair-row">
-              <span v-if="otherRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
-              <select class="form-select mb-2" v-else>
+              <span v-if="otherRepairers == null" style="margin-left: 2px" >---</span>
+              <span v-else-if="otherRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
+              <select v-else class="form-select mb-2" >
                 <option v-for="repairerService in otherRepairers">{{repairerService}}</option>
               </select>
             </div>
@@ -55,16 +57,19 @@ export default {
   props: ['occurrence'],
   data(){
     return {
-      entrustedRepairers: [],
-      otherRepairers: []
+      entrustedRepairers: null,
+      otherRepairers: null,
+      checked: false
     }
   },
   created () {
     this.$axios.$get(`api/mock/insuranceCompanies/name/${this.occurrence.insuranceCompanyName}/repairers`)
       .then((entrustedRepairers) => {
+        this.entrustedRepairers = []
         this.entrustedRepairers = entrustedRepairers
         this.$axios.$get(`api/repairers`)
           .then((repairers) => {
+            this.otherRepairers = []
             this.otherRepairers = repairers.filter(function(rep){return !this.entrustedRepairers.includes(rep)})
           })
       })
@@ -72,13 +77,25 @@ export default {
   methods: {
     associateRepairer(){
       //Enviar mail ao repairer com o link api/occurrences/{id}
+      if(!this.checked){
+        //Without need for approval - send mail to repairer
+        this.$axios.$post(`api/clients/${this.$auth.user.username}/email/send`, {
+          subject: `Occurrence ${this.occurrence.id} - ${this.occurrence.state}`,
+          message: `${this.occurrence.description} - http://localhost:3000/repairers/occurrences/${this.occurrence.id}`
+        })
+          .then(()=>{
+
+          })
+      }else{
+        //With need of approval - for expert
+
+      }
     },
   }
 }
 </script>
 
 <style scoped>
-
 
 .checkbox{
   margin-left: 5px;

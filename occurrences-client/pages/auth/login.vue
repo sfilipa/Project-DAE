@@ -50,7 +50,8 @@ export default {
       })
       promise.then(() => {
         this.$toast.success('You are logged in!').goAway(3000)
-        this.$router.push(`/${this.$auth.user.role.toLowerCase()}s/`)
+        // this.$router.push(`/${this.$auth.user.role.toLowerCase()}s/`)
+        this.$router.push('/')
       })
       promise.catch(() => {
         let promiseAdmin = this.$auth.loginWith('admin', {

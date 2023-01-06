@@ -193,7 +193,7 @@ public class RepairerService {
 
     @GET
     @Authenticated
-    @RolesAllowed({"Administrator"})
+    @RolesAllowed({"Administrator", "Client"})
     @Path("/")
     public List<RepairerDTO> getAllRepairers() {
         return RepairerDTO.from(repairerBean.getAllRepairers());
