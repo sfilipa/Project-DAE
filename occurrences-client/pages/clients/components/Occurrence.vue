@@ -43,7 +43,7 @@
             </div>
           </div>
           <div>
-            <button class="btn btn-associate-repairers"  @click.prevent="associateRepairer">Associate Repairer</button>
+            <button class="btn btn-associate-repairers"  @click.prevent="associateRepairer">Assign Repairer</button>
           </div>
 
       </div>
@@ -59,7 +59,9 @@ export default {
     return {
       entrustedRepairers: null,
       otherRepairers: null,
-      checked: false
+      checked: false,
+      insuranceRepairer: null,
+      solicitedRepairer: null
     }
   },
   created () {
@@ -79,16 +81,16 @@ export default {
       //Enviar mail ao repairer com o link api/occurrences/{id}
       if(!this.checked){
         //Without need for approval - send mail to repairer
-        this.$axios.$post(`api/clients/${this.$auth.user.username}/email/send`, {
-          subject: `Occurrence ${this.occurrence.id} - ${this.occurrence.state}`,
-          message: `${this.occurrence.description} - http://localhost:3000/repairers/occurrences/${this.occurrence.id}`
-        })
+        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence}/repairers/${this.insuranceRepairer}/assign`)
           .then(()=>{
-
+            //TODO
           })
       }else{
         //With need of approval - for expert
+        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence}/repairers/${this.solicitedRepairer}/assign`)
+          .then(()=>{
 
+          })
       }
     },
   }

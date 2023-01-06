@@ -26,7 +26,7 @@
         </div>
       </nuxt-link>
 
-      <nuxt-link v-if="this.$auth.user.role.toLowerCase()=='expert'" :to="{name: `${this.$auth.user.role.toLowerCase()}s-occurrences-current`}" class="flex items-center" style="padding: 10px;">
+      <nuxt-link v-if="this.$auth.user.role.toLowerCase()=='expert' || this.$auth.user.role.toLowerCase()=='repairer'" :to="{name: `${this.$auth.user.role.toLowerCase()}s-occurrences-current`}" class="flex items-center" style="padding: 10px;">
         <div class="sidebar-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
             <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
@@ -36,7 +36,7 @@
         </div>
       </nuxt-link>
 
-      <nuxt-link v-if="this.$auth.user.role.toLowerCase()=='client' || this.$auth.user.role.toLowerCase()=='expert'" :to="{name: `${this.$auth.user.role.toLowerCase()}s-occurrences`}" class="flex items-center" style="padding: 10px;">
+      <nuxt-link v-if="this.$auth.user.role.toLowerCase()=='client' || this.$auth.user.role.toLowerCase()=='expert' || this.$auth.user.role.toLowerCase()=='repairer'" :to="{name: `${this.$auth.user.role.toLowerCase()}s-occurrences`}" class="flex items-center" style="padding: 10px;">
         <div class="sidebar-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
             <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
@@ -46,7 +46,7 @@
         </div>
       </nuxt-link>
 
-      <nuxt-link :to="{name: `${this.$auth.user.role.toLowerCase()}s-username`, params: {username:this.$auth.user.name}}" class="flex items-center" style="padding: 10px;">
+      <nuxt-link :to="{name: `${this.$auth.user.role.toLowerCase()}s-username`, params: {username:this.$auth.user.username}}" class="flex items-center" style="padding: 10px;">
         <div class="sidebar-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
             <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>

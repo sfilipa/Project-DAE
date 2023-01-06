@@ -53,7 +53,8 @@ export default {
         // this.$router.push(`/${this.$auth.user.role.toLowerCase()}s/`)
         this.$router.push('/')
       })
-      promise.catch(() => {
+      promise.catch((response) => {
+        console.log(response)
         let promiseAdmin = this.$auth.loginWith('admin', {
           data: {
             username: this.username,
