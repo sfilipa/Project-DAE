@@ -59,7 +59,7 @@ public class MockAPIBean {
         return jsonArray;
     }
 
-    public JSONArray getAttributeFromSpecificInsuranceCompany(String resource, String attribute, String attributeToGet, String attributeToGet2) {
+    public List<String> getAttributeFromSpecificInsuranceCompany(String resource, String attribute, String attributeToGet, String attributeArrayInApiName) {
         JSONArray jsonArray = getDataAPI(resource, attribute, attributeToGet);
         /**
          * Example: we got this object from API (attribute = name; attributeToGet = "Allianz"; attributeArrayInApiName = "repairers"):

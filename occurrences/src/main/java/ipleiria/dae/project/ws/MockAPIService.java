@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import javax.ejb.EJB;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("mock")
 @Consumes({"application/json"})
