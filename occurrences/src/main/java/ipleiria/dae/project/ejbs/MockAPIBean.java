@@ -25,7 +25,7 @@ public class MockAPIBean {
     @EJB
     private RepairerBean repairerBean;
 
-    public JSONArray getDataAPI(String resource, String attribute, String attributeToGet) throws APIBadResponseException {
+    public JSONArray getDataAPI(String resource, String attribute, String attributeToGet) {
         JSONArray jsonArray = new JSONArray();
         try {
             URL url = null;
@@ -59,7 +59,7 @@ public class MockAPIBean {
         return jsonArray;
     }
 
-    public JSONArray getAttributeFromSpecificInsuranceCompany(String resource, String attribute, String attributeToGet, String attributeToGet2) throws MyEntityNotFoundException, APIBadResponseException {
+    public JSONArray getAttributeFromSpecificInsuranceCompany(String resource, String attribute, String attributeToGet, String attributeToGet2) {
         JSONArray jsonArray = getDataAPI(resource, attribute, attributeToGet);
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);

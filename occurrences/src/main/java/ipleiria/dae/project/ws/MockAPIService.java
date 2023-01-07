@@ -18,21 +18,21 @@ public class MockAPIService {
 
     @GET
     @Path("/{resource}")
-    public Response getMockData(@PathParam("resource") String resource) throws APIBadResponseException {
+    public Response getMockData(@PathParam("resource") String resource) {
         JSONArray jsonArray = mockAPIBean.getDataAPI(resource, "","");
         return Response.ok(jsonArray.toString()).build();
     }
 
     @GET
     @Path("/{resource}/{attribute}/{attributeToGet}")
-    public Response getMockDataByAttribute(@PathParam("resource") String resource, @PathParam("attribute") String attribute, @PathParam("attributeToGet") String attributeToGet) throws APIBadResponseException {
+    public Response getMockDataByAttribute(@PathParam("resource") String resource, @PathParam("attribute") String attribute, @PathParam("attributeToGet") String attributeToGet) {
         JSONArray jsonArray = mockAPIBean.getDataAPI(resource, attribute , attributeToGet);
         return Response.ok(jsonArray.toString()).build();
     }
 
     @GET
     @Path("/{resource}/{attribute}/{attributeToGet}/{attributeToGet2}")
-    public Response getMockDataRepairers(@PathParam("resource") String resource, @PathParam("attribute") String attribute, @PathParam("attributeToGet") String attributeToGet, @PathParam("attributeToGet2") String attributeToGet2) throws MyEntityNotFoundException, APIBadResponseException {
+    public Response getMockDataRepairers(@PathParam("resource") String resource, @PathParam("attribute") String attribute, @PathParam("attributeToGet") String attributeToGet, @PathParam("attributeToGet2") String attributeToGet2) {
         JSONArray jsonArray = mockAPIBean.getAttributeFromSpecificInsuranceCompany(resource, attribute, attributeToGet, attributeToGet2.toLowerCase());
         return Response.ok(jsonArray.toString()).build();
     }
