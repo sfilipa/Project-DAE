@@ -35,15 +35,11 @@ public class ConfigBean {
         System.out.println("Hello Java EE!");
 
         try {
-            //expertBean.create("expert1", "exp", "Expert Joca", "expert@mail.pt", "company1");
-            clientBean.create("client2", "client", "Client Isabel", "client2@mail.pt", "Rua dos pinheiros tortos", 912345678, 267503959);
-            clientBean.create("client3", "client", "Client Nando", "client3@mail.pt", "Rua dos pinheiros tortos", 912345678, 236589547);
-            //insuranceBean.create("AL-123", company, "Allianz");
-            expertBean.create("expert2", "exp", "Expert Sofia", "sofia@mail.pt", "Fidelidade");
-            repairerBean.create("repairer1", "repairer", "Repairer João", "joao@mail.pt", "Rua dos olivais");
-            Occurrence o = occurrenceBean.create("client2", "01/01/2023", State.PENDING, "FIDEL-1298302", CoverageType.ACCIDENTAL_DAMAGE, "lalalalla");
-            //occurrenceBean.addExpert(o.getId(),"expert");
-            //repairerBean.create("repairer1", "repairer", "Repairer Bob", "bob_o_construtor@mail.pt", "rua dos calduços");
+            clientBean.create("client1", "123", "Client 1", "client1@mail.pt", "Rua Client 1", 912345678, 267503959);
+            clientBean.create("client2", "123", "Client 2", "client2@mail.pt", "Rua Client 2", 912345678, 236589547);
+            expertBean.create("expert1", "123", "Expert 1", "expert1@mail.pt", "Fidelidade");
+            repairerBean.create("repairer1", "123", "Repairer 1", "repairer@mail.pt", "Rua Repairer 1");
+            occurrenceBean.create("client1", "01/01/2023", State.PENDING, "FIDEL-1298302", CoverageType.ACCIDENTAL_DAMAGE, "Occurrence Description");
         } catch (Exception exception) {
             logger.severe(exception.getMessage());
         }

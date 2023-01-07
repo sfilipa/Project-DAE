@@ -62,6 +62,22 @@ export default {
         // tokenRequired: true, //-> default
         // tokenType: 'bearer' //-> default
       },
+      admin: {
+        _scheme: "~/schemes/AdminScheme",
+        endpoints: {
+          login: {
+            url: '/api/auth/login/admin',
+            method: 'post',
+            propertyName: null
+          },
+          logout: false,
+          user: {
+            url: '/api/auth/user',
+            method: 'get',
+            propertyName: null
+          },
+        },
+      },
     },
   },
   // //

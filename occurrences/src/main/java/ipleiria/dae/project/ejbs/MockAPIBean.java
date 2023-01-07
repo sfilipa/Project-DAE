@@ -61,31 +61,47 @@ public class MockAPIBean {
 
     public JSONArray getAttributeFromSpecificInsuranceCompany(String resource, String attribute, String attributeToGet, String attributeToGet2) {
         JSONArray jsonArray = getDataAPI(resource, attribute, attributeToGet);
+        /**
+         * Example: we got this object from API (attribute = name; attributeToGet = "Allianz"; attributeArrayInApiName = "repairers"):
+         * {
+         *     "name": "Allianz",
+         *     "repairers": [ "repairer1", "repairer2" ]
+         * }
+         */
 
         JSONObject jsonObject = jsonArray.getJSONObject(0);
         if (jsonObject == null) {
             throw new MyEntityNotFoundException("Insurance not found");
         }
 
-        JSONArray jsonArrayAttribute2 = jsonObject.getJSONArray(attributeToGet2);
-        return parseAPIObjectsToMatchDatabaseObjects(attributeToGet2, jsonArrayAttribute2);
+         /**
+         * Now we only want to get "repaired1" and "repairer2" values in a json array
+         */
+
+        JSONArray attributeArrayInApi = jsonObject.getJSONArray(attributeArrayInApiName);
+
+        /**
+         * Now we want to check if "repairer1" and "repairer2" are in our database
+         * */
+
+        return parseAPIObjectsToMatchDatabaseObjects(attributeArrayInApiName, attributeArrayInApi);
     }
 
-    private JSONArray parseAPIObjectsToMatchDatabaseObjects(String attributeToGet2, JSONArray jsonArrayAttribute2) {
-        JSONArray jsonArray = new JSONArray();
-        if (attributeToGet2.equals("repairers")) {
-            //Check if repairer from insurance company exists in database
+    private List<String> parseAPIObjectsToMatchDatabaseObjects(String objectName, JSONArray apiObjects) {
+        List<String> matchedStrings = new LinkedList<>();
+        if (objectName.equals("repairers")) {
+            //Check if repairer from insurance company exists in our database
             List<Repairer> repairersInDB = repairerBean.getAllRepairers();
-            for (int i = 0; i < jsonArrayAttribute2.length(); i++) {
-                String string = jsonArrayAttribute2.getString(i);
+            for (int i = 0; i < apiObjects.length(); i++) {
+                String repairerStringInAPI = apiObjects.getString(i);
                 for (Repairer repairer : repairersInDB) {
-                    if (repairer.getUsername().equals(string)) {
-                        jsonArray.put(string);
+                    if (repairer.getUsername().equals(repairerStringInAPI)) {
+                        matchedStrings.add(repairerStringInAPI);
                     }
                 }
             }
         }
-        return jsonArray;
+        return matchedStrings;
     }
 
     public static Administrator getAdministrator(String username) throws MyEntityNotFoundException, APIBadResponseException {

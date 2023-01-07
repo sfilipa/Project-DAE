@@ -32,12 +32,11 @@
 <script>
 export default {
   name: "Occurrence",
-  props: ['occurrence', 'isAssigned'],
+  props: ['occurrence', 'isAssigned', 'waitingRefresh'],
   emits: ['updateOccurrences'],
   data(){
     return {
       descriptionApprovePending: "",
-      waitingRefresh: false,
     }
   },
   methods: {

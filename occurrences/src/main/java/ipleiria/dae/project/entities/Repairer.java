@@ -21,6 +21,7 @@ public class Repairer extends User implements Serializable {
     private List<Occurrence> occurrences;
 
     public Repairer() {
+        occurrences = new LinkedList<>();
     }
 
     public Repairer(String username, String password, String name, String email, String address) {

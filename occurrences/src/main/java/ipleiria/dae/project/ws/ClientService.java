@@ -7,16 +7,19 @@ import ipleiria.dae.project.dtos.InsuranceDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.ejbs.ClientBean;
 import ipleiria.dae.project.ejbs.EmailBean;
+import ipleiria.dae.project.ejbs.RepairerBean;
 import ipleiria.dae.project.entities.Client;
 import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NifNotValidException;
+import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Authenticated;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -33,6 +36,9 @@ public class ClientService {
 
     @EJB
     private EmailBean emailBean;
+
+    @EJB
+    private RepairerBean repairerBean;
 
     @Context
     private SecurityContext securityContext;
@@ -149,6 +155,65 @@ public class ClientService {
 
         emailBean.send(client.getEmail(), email.getSubject(), email.getMessage());
         return Response.noContent().build();
+    }
+
+    @PATCH
+    @Authenticated
+    @RolesAllowed({"Client"})
+    @Path("/{clientUsername}/occurrences/{occurrence_code}/{repairerUsername}/assign")
+    public Response assignOccurrence(@PathParam("clientUsername") String clientUsername, @PathParam("repairerUsername") String repairerUsername, @PathParam("occurrence_code") long occurrence_code) throws MyEntityNotFoundException, ipleiria.dae.project.exceptions.NotAuthorizedException {
+        try {
+            if(!securityContext.getUserPrincipal().getName().equals(clientUsername)) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+
+            //TODO: verificar se o cliente é o dono da ocorrencia
+
+            repairerBean.assignOccurrence(repairerUsername, occurrence_code);
+            return Response.ok().build();
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (ipleiria.dae.project.exceptions.NotAuthorizedException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
+    @PATCH
+    @Authenticated
+    @RolesAllowed({"Client"})
+    @Path("/{clientUsername}/occurrences/{occurrence_code}/{repairerUsername}/unassign")
+    public Response unassignOccurrence(@Context HttpServletRequest request, @PathParam("clientUsername") String clientUsername, @PathParam("repairerUsername") String repairerUsername, @PathParam("occurrence_code") long occurrence_code)
+            throws MyEntityNotFoundException {
+        try {
+            if(!securityContext.getUserPrincipal().getName().equals(clientUsername)) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+
+            //TODO: verificar se o cliente é o dono da ocorrencia
+
+            repairerBean.unassignOccurrence(repairerUsername, occurrence_code);
+            return Response.ok().build();
+        } catch (MyEntityNotFoundException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (NotAuthorizedException e) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                    .entity(e.getMessage())
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
 }

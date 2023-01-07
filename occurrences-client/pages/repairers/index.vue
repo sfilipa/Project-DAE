@@ -44,7 +44,7 @@ export default {
       this.$axios.$get(`/api/occurrences/`)
         .then((occurrences) => {
           this.occurrences = occurrences
-          this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
+          this.$axios.$get(`/api/repairers/${this.$auth.user.username}/occurrences/assigned`)
             .then((occurrencesAssigned) => {
               this.occurrencesAssigned = occurrencesAssigned
               this.waitingRefresh = false

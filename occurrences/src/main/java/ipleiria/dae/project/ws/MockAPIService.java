@@ -31,10 +31,10 @@ public class MockAPIService {
     }
 
     @GET
-    @Path("/{resource}/{attribute}/{attributeToGet}/{attributeToGet2}")
-    public Response getMockDataRepairers(@PathParam("resource") String resource, @PathParam("attribute") String attribute, @PathParam("attributeToGet") String attributeToGet, @PathParam("attributeToGet2") String attributeToGet2) {
-        JSONArray jsonArray = mockAPIBean.getAttributeFromSpecificInsuranceCompany(resource, attribute, attributeToGet, attributeToGet2.toLowerCase());
-        return Response.ok(jsonArray.toString()).build();
+    @Path("/{resource}/{attribute}/{attributeToGet}/{attributeArrayToFilter}")
+    public Response getMockDataRepairers(@PathParam("resource") String resource, @PathParam("attribute") String attribute, @PathParam("attributeToGet") String attributeToGet, @PathParam("attributeArrayToFilter") String attributeArrayToFilter) throws MyEntityNotFoundException, APIBadResponseException {
+        List<String> availableRepairers = mockAPIBean.getAttributeFromSpecificInsuranceCompany(resource, attribute, attributeToGet, attributeArrayToFilter.toLowerCase());
+        return Response.ok(availableRepairers).build();
     }
 
 }

@@ -9,6 +9,7 @@ import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Hasher;
 import org.hibernate.Hibernate;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -19,7 +20,8 @@ import java.util.List;
 public class ExpertBean {
     @PersistenceContext
     EntityManager em;
-
+    @EJB
+    private EmailBean emailBean;
     @Inject
     private Hasher hasher;
 
@@ -138,6 +140,9 @@ public class ExpertBean {
             String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
+            // Send Email to Client
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " disapproved", "Your occurrence was disapproved by " + expert.getUsername() + ".\n\n" + newOccurrenceDescription);
+
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
         } catch (NotAuthorizedException e) {
@@ -168,6 +173,9 @@ public class ExpertBean {
             // Build Occurrence Description
             String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
+
+            // Send Email to Client
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " approved", "Your occurrence was approved by " + expert.getUsername() + ".\n\n" + newOccurrenceDescription);
 
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());

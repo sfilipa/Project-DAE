@@ -17,6 +17,7 @@
           v-model="password"
           required />
       </b-form-group>
+      <p class="text-danger text-center" v-show="errorMsg">{{ errorMsg }}</p>
       <div class="login-buttons">
         <button type="reset" class="btn btn-reset">Reset</button>
         <button type="submit" class="btn btn-submit">Login</button>
@@ -35,7 +36,8 @@ export default {
   data() {
     return {
       username: null,
-      password: null
+      password: null,
+      errorMsg: null
     }
   },
   methods: {
@@ -48,11 +50,26 @@ export default {
       })
       promise.then(() => {
         this.$toast.success('You are logged in!').goAway(3000)
-        this.$router.push(`/experts/`)
         // this.$router.push(`/${this.$auth.user.role.toLowerCase()}s/`)
+        this.$router.push('/')
       })
-      promise.catch(() => {
-        this.$toast.error('Sorry, you cant login. Ensure your credentials are correct').goAway(3000)
+      promise.catch((response) => {
+        console.log(response)
+        let promiseAdmin = this.$auth.loginWith('admin', {
+          data: {
+            username: this.username,
+            password: this.password
+          }
+        })
+        promiseAdmin.then(() => {
+          this.$toast.success('You are logged in!').goAway(3000)
+          this.$router.push(`/administrators/`)
+        })
+        promiseAdmin.catch(({ response: err }) => {
+          console.log(err)
+          this.errorMsg = err.data
+          this.$toast.error('Sorry, you cant login. Ensure your credentials are correct').goAway(3000)
+        })
       })
     },
     onReset() {

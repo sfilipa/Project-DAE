@@ -16,6 +16,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -110,12 +111,16 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(repairer,occurrence, State.APPROVED);
+
+            validateOccurrenceExists(occurrence);
+            validateOccurrenceState(occurrence, State.APPROVED);
 
             //Check if repairer is in insurance companies' experts. If so, then we don't need experts' approval
             if(checkIfRepairerIsInInsuranceCompanyRepairers(repairer.getUsername(), occurrence.getInsurance().getInsuranceCompany())){
                 occurrence.setState(State.REPAIRER_WAITING_LIST);
+                //send email to the repairer assigned
             }else{
+                //send email to the experts
                 occurrence.setState(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
             }
 
@@ -268,10 +273,9 @@ public class RepairerBean {
     }
 
     private boolean checkIfRepairerIsInInsuranceCompanyRepairers(String repairerUsername, String insuranceCompanyName) throws MyEntityNotFoundException, APIBadResponseException {
-        JSONArray repairersFromInsuranceOfOccurrence = mockAPIBean.
+        List<String> repairersFromInsuranceOfOccurrence = mockAPIBean.
                 getAttributeFromSpecificInsuranceCompany("insuranceCompanies", "name", insuranceCompanyName, "repairers");
-        for (int i = 0; i < repairersFromInsuranceOfOccurrence.length(); i++) {
-            String string = repairersFromInsuranceOfOccurrence.getString(i);
+        for (String string : repairersFromInsuranceOfOccurrence) {
             if (repairerUsername.equals(string)) {
                 return true;
             }
