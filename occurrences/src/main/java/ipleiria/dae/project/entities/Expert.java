@@ -21,7 +21,7 @@ public class Expert extends User implements Serializable {
     @JoinTable(
             name = "experts_occurrences",
             joinColumns = @JoinColumn(name = "expert_username", referencedColumnName = "username"),
-            inverseJoinColumns = @JoinColumn(name = "occurrence_code", referencedColumnName = "id")
+            inverseJoinColumns = @JoinColumn(name = "occurrence_id", referencedColumnName = "id")
     )
     private List<Occurrence> occurrences;
 

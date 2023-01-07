@@ -21,7 +21,10 @@ public class DocumentBean {
     private EntityManager em;
 
     public Document create(String filepath, String filename, long occurenceId) {
-        var occurence = occurrenceBean.findOrFail(occurenceId);
+        var occurence = occurrenceBean.find(occurenceId);
+        if (occurence == null) {
+            throw new MyEntityNotFoundException("Occurrence not found");
+        }
         var document = new Document(filepath, filename, occurence);
 
         em.persist(document);
@@ -40,7 +43,7 @@ public class DocumentBean {
         return document;
     }
 
-    public List<Document> getOccurenceDocuments(long occurenceId){
+    public List<Document> getOccurenceDocuments(long occurenceId) {
         return em.createNamedQuery("getOccurenceDocuments", Document.class).setParameter("id", occurenceId).getResultList();
     }
 }
