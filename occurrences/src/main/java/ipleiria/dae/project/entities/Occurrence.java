@@ -44,9 +44,9 @@ public class Occurrence implements Serializable {
     @ManyToOne
     @JoinColumn(name = "repairer_name")
     private Repairer repairer;
-    @OneToMany(mappedBy = "occurrence", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "occurrence")
     private List<Document> documents;
-    @ManyToMany(mappedBy = "occurrences", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "occurrences", fetch = FetchType.EAGER)
     private List<Expert> experts;
 
     public Occurrence() {
@@ -186,7 +186,6 @@ public class Occurrence implements Serializable {
             this.documents.add(document);
         }
     }
-
     public void removeDocument(Document document) {
         this.documents.remove(document);
     }

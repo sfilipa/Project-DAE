@@ -1,9 +1,7 @@
 package ipleiria.dae.project.dtos;
 
-import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.enumerators.CoverageType;
-import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
 
 import javax.persistence.Id;
@@ -24,11 +22,12 @@ public class OccurrenceDTO implements Serializable {
     private String usernameRepairer;
     private CoverageType coverageType;
     private String insuranceCompanyName;
+    List<ExpertDTO> expertsDTO;
 
     public OccurrenceDTO() {
     }
 
-    public OccurrenceDTO(long id, String entryDate, String finalDate, String objectInsured, String description, String insuranceCode, CoverageType coverageType, State state, String usernameClient, String usernameRepairer, String insuranceCompanyName) {
+    public OccurrenceDTO(long id, String entryDate, String finalDate, String objectInsured, String description, String insuranceCode, CoverageType coverageType, State state, String usernameClient, String usernameRepairer, String insuranceCompanyName, List<ExpertDTO> expertsDTO) {
         this.id = id;
         this.entryDate = entryDate;
         this.finalDate = finalDate;
@@ -40,6 +39,7 @@ public class OccurrenceDTO implements Serializable {
         this.usernameClient = usernameClient;
         this.usernameRepairer = usernameRepairer;
         this.insuranceCompanyName = insuranceCompanyName;
+        this.expertsDTO = expertsDTO;
     }
 
     public String getInsuranceCompanyName() {
@@ -126,6 +126,14 @@ public class OccurrenceDTO implements Serializable {
         return coverageType;
     }
 
+    public List<ExpertDTO> getExpertsDTO() {
+        return expertsDTO;
+    }
+
+    public void setExpertsDTO(List<ExpertDTO> expertsDTO) {
+        this.expertsDTO = expertsDTO;
+    }
+
     public void setCoverageType(CoverageType coverageType) {
         this.coverageType = coverageType;
     }
@@ -142,7 +150,8 @@ public class OccurrenceDTO implements Serializable {
                 occurrence.getState(),
                 occurrence.getClient().getUsername(),
                 occurrence.getRepairer() != null ? occurrence.getRepairer().getUsername() : null,
-                occurrence.getInsurance().getInsuranceCompany()
+                occurrence.getInsurance().getInsuranceCompany(),
+                occurrence.getExperts().stream().map(ExpertDTO::from).collect(Collectors.toList())
         );
     }
 

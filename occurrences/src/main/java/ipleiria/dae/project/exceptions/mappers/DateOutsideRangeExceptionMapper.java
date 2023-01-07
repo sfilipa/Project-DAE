@@ -4,8 +4,10 @@ import ipleiria.dae.project.exceptions.DateOutsideRangeException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 import java.util.logging.Logger;
 
+@Provider
 public class DateOutsideRangeExceptionMapper implements ExceptionMapper<DateOutsideRangeException> {
 
     private static final Logger logger =

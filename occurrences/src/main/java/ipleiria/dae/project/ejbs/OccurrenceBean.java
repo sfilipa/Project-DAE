@@ -5,6 +5,9 @@ import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
 import ipleiria.dae.project.exceptions.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Hibernate;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,8 +16,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Date;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 
 @Stateless
 public class OccurrenceBean {
@@ -38,13 +41,13 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) {
+    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws NotAuthorizedException{
         JSONArray jsonArray = mockAPIBean.getDataAPI("insurances", "code", insuranceCode);
-
-        JSONObject jsonObject = jsonArray.getJSONObject(0);
-        if (jsonObject == null) {
+        if(jsonArray.length() == 0) {
             throw new MyEntityNotFoundException("Insurance not found");
         }
+
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
 
         long policyNumberAPI = jsonObject.getLong("policyNumber");
         String insuranceCompanyAPI = jsonObject.getString("insuranceCompany");
@@ -104,18 +107,17 @@ public class OccurrenceBean {
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) {
+    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws MyEntityNotFoundException, NotAuthorizedException {
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
             throw new MyEntityNotFoundException("Occurrence not found");
         }
 
         JSONArray jsonArray = mockAPIBean.getDataAPI("insurances", "code", insuranceCode);
-        JSONObject jsonObject = jsonArray.getJSONObject(0);
-
-        if (jsonObject == null) {
+        if(jsonArray.length() == 0) {
             throw new MyEntityNotFoundException("Insurance not found");
         }
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
 
         long policyNumberAPI = jsonObject.getLong("policyNumber");
         String insuranceCompanyAPI = jsonObject.getString("insuranceCompany");
