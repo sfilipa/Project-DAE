@@ -11,7 +11,11 @@ import java.util.List;
         @NamedQuery(
                 name = "clientNif",
                 query = "SELECT c FROM Client c WHERE c.nif_nipc=:nif_nipc"
-        )
+        ),
+        @NamedQuery(
+                name = "getAllClients",
+                query = "SELECT c FROM Client c ORDER BY c.name" // JPQL
+        ),
 })
 public class Client extends User implements Serializable {
 

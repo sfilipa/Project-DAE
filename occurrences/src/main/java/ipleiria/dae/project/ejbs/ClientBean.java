@@ -1,6 +1,7 @@
 package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Client;
+import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Insurance;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.exceptions.APIBadResponseException;
@@ -140,5 +141,13 @@ public class ClientBean {
         em.lock(client, LockModeType.OPTIMISTIC);
         client.setPassword(hasher.hash(password));
         return client;
+    }
+
+    public List<Client> getAllClients() {
+        try {
+            return (List<Client>) em.createNamedQuery("getAllClients").getResultList();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("No clients found");
+        }
     }
 }

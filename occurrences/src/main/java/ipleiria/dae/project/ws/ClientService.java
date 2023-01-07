@@ -1,10 +1,7 @@
 package ipleiria.dae.project.ws;
 
+import ipleiria.dae.project.dtos.*;
 import ipleiria.dae.project.dtos.create.ClientCreateDTO;
-import ipleiria.dae.project.dtos.ClientDTO;
-import ipleiria.dae.project.dtos.EmailDTO;
-import ipleiria.dae.project.dtos.InsuranceDTO;
-import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.ejbs.ClientBean;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.ejbs.RepairerBean;
@@ -25,6 +22,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import java.util.List;
 
 @Path("/clients")
 @Produces({MediaType.APPLICATION_JSON})
@@ -42,6 +40,14 @@ public class ClientService {
 
     @Context
     private SecurityContext securityContext;
+
+    @GET
+    @Authenticated
+    @RolesAllowed({"Administrator"})
+    @Path("/")
+    public List<ClientDTO> getAllClients() {
+        return ClientDTO.from(clientBean.getAllClients());
+    }
 
     @GET
     @Authenticated
