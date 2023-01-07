@@ -39,58 +39,6 @@ public class RepairerService {
 
     /**
      * Repairer
-     * Accept Occurrence
-     */
-
-    @PATCH
-    @Authenticated
-    @RolesAllowed({"Repairer"})
-    @Path("/{username}/occurrences/{occurrence_code}/assign")
-    public Response assignOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code) throws MyEntityNotFoundException, NotAuthorizedException {
-        try {
-            repairerBean.assignOccurrence(username, occurrence_code);
-            return Response.ok().build();
-        } catch (MyEntityNotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .build();
-        } catch (NotAuthorizedException e) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(e.getMessage())
-                    .build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
-        }
-    }
-
-    @PATCH
-    @Authenticated
-    @RolesAllowed({"Repairer"})
-    @Path("/{username}/occurrences/{occurrence_code}/unassign")
-    public Response unassignOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
-            throws MyEntityNotFoundException {
-        try {
-            repairerBean.unassignOccurrence(username, occurrence_code);
-            return Response.ok().build();
-        } catch (MyEntityNotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(e.getMessage())
-                    .build();
-        } catch (NotAuthorizedException e) {
-            return Response.status(Response.Status.UNAUTHORIZED)
-                    .entity(e.getMessage())
-                    .build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage())
-                    .build();
-        }
-    }
-
-    /**
-     * Repairer
      * With Occurrence Started
      */
 
