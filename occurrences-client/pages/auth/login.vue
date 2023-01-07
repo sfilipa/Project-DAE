@@ -63,7 +63,7 @@ export default {
         })
         promiseAdmin.then(() => {
           this.$toast.success('You are logged in!').goAway(3000)
-          this.$router.push(`/administrators/`)
+          this.$router.push(`/`)
         })
         promiseAdmin.catch(({ response: err }) => {
           console.log(err)

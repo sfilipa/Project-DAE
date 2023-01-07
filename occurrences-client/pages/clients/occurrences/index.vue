@@ -32,8 +32,6 @@ export default {
   },
   data () {
     return {
-      fields: ['name', 'actions'], //nomes do DTOs
-      // insurances: [],
       occurrences: []
     }
   },

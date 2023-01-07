@@ -49,20 +49,20 @@
                      type="password"
                      required/>
           </b-form-group>
-          <b-form-group class="mb-3" :invalid-feedback="invalidInsuranceCompanyFeedback" :state="isInsuranceCompanyValid">
+          <b-form-group class="mb-3">
             <span class="regist-label">Insurance Company:</span>
-            <b-input class="form-control regist-textbox"
-                     :state="isInsuranceCompanyValid"
-                     v-model.trim="company_username"
-                     required/>
+            <select class="form-select mb-2 regist-textbox" v-model="company_username" @focus="errorMsg = null">
+              <option disabled value="">Select Insurance Company</option>
+              <option v-for="company in insuranceCompanies">{{company}}</option>
+            </select>
           </b-form-group>
         </div>
       </div>
       <p class="text-danger text-center" v-show="errorMsg">{{ errorMsg }}</p>
       <div class="register-buttons">
         <div style="margin-left: auto; width: inherit;">
-          <button type="reset" class="btn btn-reset">Reset</button>
-          <button type="submit" class="btn btn-submit">Register</button>
+          <button type="reset" class="btn btn-reset" :disabled="waitingResponse">Reset</button>
+          <button type="submit" class="btn btn-submit" :disabled="waitingResponse">Register</button>
         </div>
       </div>
     </b-form>
@@ -78,9 +78,10 @@ export default {
       password: null,
       name: null,
       email: null,
-      company_username: null,
+      company_username: "",
       errorMsg: null,
-      isFormValid: false
+      insuranceCompanies: null,
+      waitingResponse: false
     }
   },
   computed: {
@@ -136,7 +137,6 @@ export default {
       if (!this.email) {
         return null
       }
-// asks the component if it’s valid. We don’t need to use a regex for the e-mail. The input field already does the job for us, because it is of type “email” and validates that the user writes an e-mail that belongs to the domain of IPLeiria.
       if(!this.$refs.email.checkValidity()){
         return 'The email should end with "@gmail.com"'
       }
@@ -147,22 +147,6 @@ export default {
         return null
       }
       return this.invalidEmailFeedback === ''
-    },
-    invalidInsuranceCompanyFeedback () {
-      if (!this.company_username) {
-        return null
-      }
-      let company_usernameLen = this.company_username.length
-      if (company_usernameLen < 3 || company_usernameLen > 25) {
-        return 'The Insurance Company must be between [3, 25] characters.'
-      }
-      return ''
-    },
-    isInsuranceCompanyValid () {
-      if (this.invalidInsuranceCompanyFeedback === null) {
-        return null
-      }
-      return this.invalidInsuranceCompanyFeedback === ''
     },
     isFormValid () {
       if (! this.isUsernameValid) {
@@ -177,14 +161,16 @@ export default {
       if (! this.isEmailValid) {
         return false
       }
-      if (! this.isInsuranceCompanyValid) {
-        return false
-      }
       return true
     }
   },
   methods: {
     onSubmit() {
+      if(this.company_username === ""){
+        this.errorMsg = "Please select an Insurance Company"
+        return
+      }
+      this.waitingResponse = true
       let promise= this.$axios.post('api/experts', {
           username: this.username,
           password: this.password,
@@ -200,6 +186,7 @@ export default {
       promise.catch(({ response: err }) => {
         this.errorMsg = err.data
         this.$toast.error('Sorry, expert couldn\'t be registered. Ensure you don\'t have any errors').goAway(3000)
+        this.waitingResponse = false
       })
 
     },
@@ -210,6 +197,12 @@ export default {
       this.email = null
       this.company_username = null
     }
+  },
+  created() {
+    this.$axios.get(`https://63a9db1a594f75dc1dc27d9b.mockapi.io/insuranceCompanies`)
+      .then((companies)=>{
+        this.insuranceCompanies = companies.data.map(insurance => {return insurance.name})
+      })
   }
 }
 </script>

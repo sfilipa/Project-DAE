@@ -22,7 +22,7 @@
       </b-form>
 
       <div class="all-occurrences-item-row flex-grow-1" :class="{'all-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
-        <p class="text-uppercase">{{ occurrence.state }}</p>
+        <p class="text-uppercase">{{ occurrence.state.split('_').join(' ') }}</p>
         <div v-if="!isAssigned &&
                     occurrence.state!=='REPAIRER_WAITING_LIST' &&
                     occurrence.state!=='ACTIVE' &&
