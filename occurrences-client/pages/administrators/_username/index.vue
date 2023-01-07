@@ -16,7 +16,6 @@
         <p class="profile-field"><span class="profile-label">Username:</span> {{this.username}}</p>
         <p class="profile-field"><span class="profile-label">Name:</span> {{ this.name }}</p>
         <p class="profile-field"><span class="profile-label">Email:</span> {{this.email}}</p>
-        <p class="profile-field"><span class="profile-label">Insurance Company:</span> {{this.company_username}}</p>
       </div>
     </div>
   </b-container>
@@ -30,16 +29,15 @@ export default {
       username: "",
       name: "",
       email: "",
-      company_username: "",
+      address: "",
     }
   },
   created () {
-    this.$axios.$get(`/api/experts/${this.$auth.user.username}`)
+    this.$axios.$get(`/api/administrators/${this.$auth.user.username}`)
       .then((response) => {
         this.username = response.username;
         this.name = response.name;
         this.email = response.email;
-        this.company_username = response.company_username;
       })
   }
 }

@@ -3,7 +3,7 @@
     <ClientHome v-if="this.$auth.user.role.toLowerCase() == 'client'"></ClientHome>
     <ExpertHome v-else-if="this.$auth.user.role.toLowerCase() == 'expert'"></ExpertHome>
     <RepairerHome v-else-if="this.$auth.user.role.toLowerCase() == 'repairer'"></RepairerHome>
-    <AdminHome v-else-if="this.$auth.user.role.toLowerCase() == 'admin'"></AdminHome>
+    <AdminHome v-else-if="this.$auth.user.role.toLowerCase() == 'administrator'"></AdminHome>
   </div>
 </template>
 
