@@ -183,6 +183,10 @@ public class RepairerBean {
 
             // Start Occurrence
             occurrence.setState(State.ACTIVE);
+
+            // Send email to the client that the occurrence was started
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " started",
+                    "The occurrence " + occurrence.getId() + " has been started by " + repairer.getUsername() + ".\n\n" + occurrence.getDescription());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -208,6 +212,9 @@ public class RepairerBean {
             String newOccurrenceDescription = occurrenceDescription + "\n- " + repairer.getUsername() + ": " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
+            // Send email to the client that the occurrence was failed
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " failed",
+                    "The occurrence " + occurrence.getId() + " has been failed by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -240,6 +247,9 @@ public class RepairerBean {
             String newOccurrenceDescription = occurrenceDescription + "\n- " + repairer.getUsername() + ": " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
+            // Send email to the client that the occurrence was finished
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " finished",
+                    "The occurrence " + occurrence.getId() + " has been finished by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
