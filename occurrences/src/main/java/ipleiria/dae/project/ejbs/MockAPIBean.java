@@ -6,6 +6,7 @@ import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.exceptions.APIBadResponseException;
+import ipleiria.dae.project.exceptions.MyEntityCreationViolationException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,8 +17,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @Stateless
 public class MockAPIBean {
@@ -88,25 +91,30 @@ public class MockAPIBean {
     }
 
     private List<String> parseAPIObjectsToMatchDatabaseObjects(String objectName, JSONArray apiObjects) {
-        List<String> matchedStrings = new LinkedList<>();
+        List<String> matchedRepairers = new LinkedList<>();
         if (objectName.equals("repairers")) {
-            //Check if repairer from insurance company exists in our database
+            // Create a Map of repairers in the database with the username as the key
             List<Repairer> repairersInDB = repairerBean.getAllRepairers();
+            Map<String, Repairer> repairerMap = new HashMap<>();
+            for (Repairer repairer : repairersInDB) {
+                repairerMap.put(repairer.getUsername(), repairer);
+            }
+
+            // Check if repairer from insurance company exists in our database
             for (int i = 0; i < apiObjects.length(); i++) {
-                String repairerStringInAPI = apiObjects.getString(i);
-                for (Repairer repairer : repairersInDB) {
-                    if (repairer.getUsername().equals(repairerStringInAPI)) {
-                        matchedStrings.add(repairerStringInAPI);
-                    }
+                String repairerUsernameInAPI = apiObjects.getString(i);
+                if (repairerMap.containsKey(repairerUsernameInAPI)) {
+                    matchedRepairers.add(repairerUsernameInAPI);
                 }
             }
         }
-        return matchedStrings;
+        return matchedRepairers;
     }
 
     public static Administrator getAdministrator(String username) throws MyEntityNotFoundException, APIBadResponseException {
-        // Receive Administrator in a JSONArray format
+        // Receive administrators in a JSONArray format
         JSONArray jsonArray = get("administrators", "username", username);
+
         if (jsonArray.length() == 0) {
             throw new MyEntityNotFoundException("Administrator " + username + " not found");
         }
@@ -118,6 +126,12 @@ public class MockAPIBean {
 
         // Get the first element of the JSONArray
         JSONObject jsonObject = jsonArray.getJSONObject(0);
+
+        // Validate required fields are present
+        if (!jsonObject.has("username") || !jsonObject.has("password") ||
+                !jsonObject.has("name") || !jsonObject.has("email")) {
+            throw new MyEntityCreationViolationException("Administrator " + username + " is missing required fields");
+        }
 
         // Create an Administrator Entity
         return new Administrator(
