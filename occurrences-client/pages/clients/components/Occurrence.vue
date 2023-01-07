@@ -30,23 +30,26 @@
 
           <div class="repair-column flex-grow-1" style="padding: 0 5%">
             <span v-if="entrustedRepairers == null" style="margin-left: 2px">---</span>
-            <span v-else-if="entrustedRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
-            <select v-else class="form-select mb-2">
+            <span v-else-if="entrustedRepairers.length==0" style="margin-left: 2px">No entrusted repairers available</span>
+            <select v-else class="form-select mb-2"  v-model="insuranceRepairer" @focus="errorMsg = null">
+              <option disabled value="">Select Entrusted Repairer</option>
               <option v-for="repairerService in entrustedRepairers">{{repairerService}}</option>
             </select>
             <div class="repair-row">
               <span v-if="otherRepairers == null" style="margin-left: 2px" >---</span>
               <span v-else-if="otherRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
-              <select v-else class="form-select mb-2" >
+              <select v-else class="form-select mb-2" v-model="solicitedRepairer" @focus="errorMsg = null">
+                <option disabled value="">Select Solicited Repairer</option>
                 <option v-for="repairerService in otherRepairers">{{repairerService}}</option>
               </select>
             </div>
           </div>
-          <div>
-            <button class="btn btn-associate-repairers"  @click.prevent="associateRepairer">Assign Repairer</button>
-          </div>
 
+          <div>
+            <button class="btn btn-associate-repairers select-repairer-error-msg"  @click.prevent="associateRepairer" :disabled="waitingResponse">Assign Repairer</button>
+          </div>
       </div>
+      <p class="text-danger text-center select-repairer-error-msg" v-show="errorMsg">{{ errorMsg }}</p>
     </div>
   </div>
 </template>
@@ -60,36 +63,63 @@ export default {
       entrustedRepairers: null,
       otherRepairers: null,
       checked: false,
-      insuranceRepairer: null,
-      solicitedRepairer: null
+      insuranceRepairer: "",
+      solicitedRepairer: "",
+      waitingResponse: false,
+      errorMsg: null
     }
   },
   created () {
-    this.$axios.$get(`api/mock/insuranceCompanies/name/${this.occurrence.insuranceCompanyName}/repairers`)
-      .then((entrustedRepairers) => {
-        this.entrustedRepairers = []
-        this.entrustedRepairers = entrustedRepairers
-        this.$axios.$get(`api/repairers`)
-          .then((repairers) => {
-            this.otherRepairers = []
-            this.otherRepairers = repairers.filter(function(rep){return !this.entrustedRepairers.includes(rep)})
-          })
-      })
+    if(this.occurrence.state.toUpperCase() == 'APPROVED') {
+      this.$axios.$get(`api/mock/insuranceCompanies/name/${this.occurrence.insuranceCompanyName}/repairers`)
+        .then((entrustedRepairers) => {
+          this.entrustedRepairers = []
+          this.entrustedRepairers = entrustedRepairers
+          this.$axios.$get(`api/repairers`)
+            .then((repairers) => {
+              this.otherRepairers = []
+              this.otherRepairers = repairers.filter(function (rep) {
+                return !entrustedRepairers.includes(rep.username)
+              })
+            })
+        })
+    }
   },
   methods: {
     associateRepairer(){
+      this.waitingResponse = true
       //Enviar mail ao repairer com o link api/occurrences/{id}
       if(!this.checked){
+        if(this.insuranceRepairer === ""){
+          this.errorMsg = "Select an entrusted repairer first"
+          this.waitingResponse = false
+          return
+        }
         //Without need for approval - send mail to repairer
-        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence}/repairers/${this.insuranceRepairer}/assign`)
+        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.insuranceRepairer}/assign`)
           .then(()=>{
-            //TODO
+            this.$router.push('/clients/insurances')
+            this.$toast.success('Request made!').goAway(3000)
+            this.waitingResponse = false
+          })
+          .catch(()=>{
+            this.waitingResponse = false
           })
       }else{
+        if(this.solicitedRepairer === ""){
+          this.errorMsg = "Select a solicitated repairer first"
+          this.waitingResponse = false
+          return
+        }
         //With need of approval - for expert
-        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence}/repairers/${this.solicitedRepairer}/assign`)
+        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence}/${this.solicitedRepairer}/assign`)
           .then(()=>{
-
+            this.$router.push('/clients/insurances')
+            this.$toast.success('Request made!').goAway(3000)
+            this.waitingResponse = false
+          })
+          .catch(()=>{
+            this.waitingResponse = false
           })
       }
     },
@@ -98,6 +128,11 @@ export default {
 </script>
 
 <style scoped>
+
+.select-repairer-error-msg{
+  margin-bottom: 0 !important;
+  margin-top: 1rem !important;
+}
 
 .checkbox{
   margin-left: 5px;

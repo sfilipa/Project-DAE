@@ -164,6 +164,24 @@ export default {
       }
       return this.invalidAddressFeedback === ''
     },
+    isFormValid () {
+      if (! this.isUsernameValid) {
+        return false
+      }
+      if (! this.isPasswordValid) {
+        return false
+      }
+      if (! this.isNameValid) {
+        return false
+      }
+      if (! this.isEmailValid) {
+        return false
+      }
+      if (! this.isAddressValid) {
+        return false
+      }
+      return true
+    }
   },
   methods: {
     onSubmit() {

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="this.$route.params.insurance">
     <nuxt-link
       class="btn pb-3 pr-5 text-uppercase"
       :to="`/clients/insurances`">
@@ -79,15 +79,15 @@
       </div>
 
       <!--      Report an Occurrence-->
-      <div v-if="reportOccurrence" class="report-an-occurrence">
+      <b-form @submit.prevent="onSubmit" :disabled="!isFormValid" v-if="reportOccurrence" class="report-an-occurrence">
         <p><b>The Affected Object:</b> &nbsp; {{this.$route.params.insurance.objectInsured}} - {{this.$route.params.insurance.insuredAssetType}}</p>
         <p><b>1. Choose the Coverage Type:</b></p>
         <div class="report-an-occurrence-div">
           <div v-if="this.$route.params.insurance.covers.length==0">
             No Coverages Registered
           </div>
-          <div v-else class="items-grid">
-            <div v-for="coverageType in this.$route.params.insurance.covers" class="item-grid-div" :class="{'grid-item-selected': selectedCoverageType == coverageType}"
+          <div v-else class="items-grid" :invalid-feedback="invalidCoverageTypeFeedback" :state="isCoverageTypeValid">
+            <div :state="isCoverageTypeValid" v-for="coverageType in this.$route.params.insurance.covers" class="item-grid-div" :class="{'grid-item-selected': selectedCoverageType == coverageType}"
                  @click="selectedCoverageType = coverageType">
               {{ coverageType.charAt(0).toUpperCase() +
             coverageType.split('_').join(' ').slice(1).toLowerCase() }}
@@ -96,14 +96,15 @@
         </div>
 
         <p><b>2. What Happened</b></p>
-        <div class="report-an-occurrence-div">
-          <textarea class="form-control report-an-occurrence-text" placeholder="Describe here what happened" v-model="description"></textarea>
+        <div :invalid-feedback="invalidDescriptionFeedback" :state="isDescriptionValid"  class="report-an-occurrence-div">
+          <b-textarea :state="isDescriptionValid" class="form-control report-an-occurrence-text" placeholder="Describe here what happened"
+                      v-model="description" required></b-textarea>
         </div>
 
         <p><b>3. Date of the Occurrence</b></p>
         <div class="report-an-occurrence-div">
-          <div class="report-an-occurrence-div">
-            <input class="form-control" placeholder="Enter the date" v-model="date">
+          <div :invalid-feedback="invalidDateFeedback" :state="isDateValid"  class="report-an-occurrence-div">
+            <b-input :state="isDateValid" class="form-control" type="date" required  v-model="date"/>
           </div>
         </div>
 
@@ -114,14 +115,16 @@
           </div>
         </div>
 
+        <p class="text-danger text-center" v-show="errorMsg">{{ errorMsg }}</p>
+
         <div style="display: flex;">
           <div class="register-occurrence-btn-div" >
-            <button @click.prevent="register" class="btn register-occurrence-btn">
+            <button type="submit" class="btn register-occurrence-btn" :disabled="waitingResponse">
               Register Occurrence
             </button>
           </div>
         </div>
-      </div>
+      </b-form>
 
       <!--      Ongoing Occurrences-->
       <div v-if="ongoingOccurrences" class="ongoing-occurrences">
@@ -170,10 +173,12 @@ export default {
       ongoingOccurrences: false,
       completedOccurrences: false,
       occurrences: [],
-      selectedCoverageType: "",
-      description: "",
-      date: "",
+      selectedCoverageType: null,
+      description: null,
+      date: null,
       expertName: "",
+      errorMsg: null,
+      waitingResponse: false
     }
   },
   computed: {
@@ -182,8 +187,63 @@ export default {
         "name": "Verde"
       }
     ]},
+    invalidCoverageTypeFeedback () {
+      if (!this.selectedCoverageType) {
+        return null
+      }
+      return ''
+    },
+    isCoverageTypeValid () {
+      if (this.invalidCoverageTypeFeedback === null) {
+        return null
+      }
+      return this.invalidCoverageTypeFeedback === ''
+    },
+    invalidDescriptionFeedback () {
+      if (!this.description) {
+        return null
+      }
+      let descriptionLen = this.description.length
+      if (descriptionLen < 3 || descriptionLen > 255) {
+        return 'The password must be between [3, 255] characters.'
+      }
+      return ''
+    },
+    isDescriptionValid () {
+      if (this.invalidDescriptionFeedback === null) {
+        return null
+      }
+      return this.invalidDescriptionFeedback === ''
+    },
+    invalidDateFeedback () {
+      if (!this.date) {
+        return null
+      }
+      return ''
+    },
+    isDateValid () {
+      if (this.invalidDateFeedback === null) {
+        return null
+      }
+      return this.invalidDateFeedback === ''
+    },
+    isFormValid () {
+      if (! this.isCoverageTypeValid) {
+        return false
+      }
+      if (! this.isDescriptionValid) {
+        return false
+      }
+      if (! this.isDateValid) {
+        return false
+      }
+      return true
+    }
   },
   created () {
+    if(!this.$route.params.insurance){
+      this.$router.push('/clients/insurances')
+    }
     this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences`)
       .then((occurrences) => {
         this.occurrences = occurrences
@@ -196,7 +256,12 @@ export default {
     getCompletedOccurrences(){
       return this.occurrences.filter(function(oc){return oc.state == 'RESOLVED' || oc.state == 'DISAPPROVED' || oc.state == 'FAILED' })
     },
-    register() {
+    onSubmit() {
+      this.waitingResponse = true
+      if(this.date) {
+        const [year, month, day] = this.date.split('-');
+        this.date = [month, day, year].join('/');
+      }
       this.$axios.$post('/api/occurrences', {
         usernameClient: this.$auth.user.username,
         entryDate: this.date,
@@ -208,9 +273,12 @@ export default {
         .then(() => {
           this.$router.push('/clients/occurrences')
           this.$toast.success('Your occurrence has been registered!').goAway(3000)
+          this.waitingResponse = false
         })
-        .catch((error) => {
-          this.errorMsg = error.response.data
+        .catch(({ response: err }) => {
+          this.errorMsg = err.data
+          this.$toast.error('Occurrence couldn\'t be created, please check the errors').goAway(3000)
+          this.waitingResponse = false
         })
     }
   }
