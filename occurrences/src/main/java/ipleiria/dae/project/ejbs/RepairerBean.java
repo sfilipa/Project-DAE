@@ -31,6 +31,10 @@ public class RepairerBean {
 
     @EJB
     private MockAPIBean mockAPIBean;
+    @EJB
+    private EmailBean emailBean;
+    @EJB
+    private ExpertBean expertBean;
 
     public List<Repairer> getAllRepairers() {
         return (List<Repairer>) em.createNamedQuery("getAllRepairers").getResultList();
@@ -118,10 +122,17 @@ public class RepairerBean {
             //Check if repairer is in insurance companies' experts. If so, then we don't need experts' approval
             if(checkIfRepairerIsInInsuranceCompanyRepairers(repairer.getUsername(), occurrence.getInsurance().getInsuranceCompany())){
                 occurrence.setState(State.REPAIRER_WAITING_LIST);
-                //send email to the repairer assigned
+                // Send email to the repairer that the occurrence was assigned
+                emailBean.send(repairer.getEmail(), "Occurrence " + occurrence.getId() + " assigned to you",
+                        "A new occurrence has been assigned to you by " + occurrence.getClient().getUsername() + ".\n\n" + occurrence.getDescription());
             }else{
-                //send email to the experts
                 occurrence.setState(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
+                // Send email to Experts to approve the repairer
+                List<Expert> experts = expertBean.getAllExperts();
+                for (Expert expert : experts) {
+                    emailBean.send(expert.getEmail(), "Occurrence " + occurrence.getId() + " assigned to " + repairer.getUsername() + " waiting approval",
+                            "A new occurrence has been assigned to " + repairer.getUsername() + " by " + occurrence.getClient().getUsername() + " and is waiting for your approval.\n\n" + occurrence.getDescription());
+                }
             }
 
             occurrence.setRepairer(repairer);
@@ -172,6 +183,10 @@ public class RepairerBean {
 
             // Start Occurrence
             occurrence.setState(State.ACTIVE);
+
+            // Send email to the client that the occurrence was started
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " started",
+                    "The occurrence " + occurrence.getId() + " has been started by " + repairer.getUsername() + ".\n\n" + occurrence.getDescription());
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -197,6 +212,9 @@ public class RepairerBean {
             String newOccurrenceDescription = occurrenceDescription + "\n- " + repairer.getUsername() + ": " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
+            // Send email to the client that the occurrence was failed
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " failed",
+                    "The occurrence " + occurrence.getId() + " has been failed by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -229,6 +247,9 @@ public class RepairerBean {
             String newOccurrenceDescription = occurrenceDescription + "\n- " + repairer.getUsername() + ": " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
+            // Send email to the client that the occurrence was finished
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " finished",
+                    "The occurrence " + occurrence.getId() + " has been finished by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }

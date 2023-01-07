@@ -268,6 +268,15 @@ public class ExpertBean {
             validateOccurrenceState(occurrence, State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
 
             occurrence.setState(State.REPAIRER_WAITING_LIST);
+
+            // Send Email to Repairer about being accepted to repair the occurrence
+            emailBean.send(occurrence.getRepairer().getEmail(), "Occurrence " + occurrence.getId() + " accepted",
+                    "You were accepted to repair the occurrence " + occurrence.getId() + " by " + expert.getUsername() + ".\n\n" + occurrence.getDescription());
+
+            // Send Email to Client about the Repairer of the occurrence being accepted by the Expert
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " accepted",
+                    "The repairer " + occurrence.getRepairer().getUsername() + " was accepted to repair the occurrence " + occurrence.getId() + " by " + expert.getUsername() + ".\n\n" + occurrence.getDescription());
+
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
         } catch (NotAuthorizedException e) {
