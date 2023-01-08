@@ -2,6 +2,7 @@ package ipleiria.dae.project.ws;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.dtos.create.RepairerCreateDTO;
 import ipleiria.dae.project.dtos.RepairerDTO;
 import ipleiria.dae.project.ejbs.EmailBean;
@@ -132,6 +133,18 @@ public class RepairerService {
                     .entity(e.getMessage())
                     .build();
         }
+    }
+
+    @GET
+    @Authenticated
+    @RolesAllowed({"Repairer"})
+    @Path("/{username}/occurrences/assigned")
+    public Response getAssignedOccurrences(@PathParam("username") String username) throws MyEntityNotFoundException {
+        if (!securityContext.getUserPrincipal().getName().equals(username)) {
+            throw new ForbiddenException(username + ", You are not allowed to access this resource");
+        }
+
+        return Response.ok(OccurrenceDTO.from(repairerBean.occurrences(username))).build();
     }
 
     /**

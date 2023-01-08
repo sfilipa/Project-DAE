@@ -10,6 +10,7 @@ import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Hasher;
+import org.hibernate.Hibernate;
 import org.json.JSONArray;
 
 import javax.ejb.EJB;
@@ -313,5 +314,23 @@ public class RepairerBean {
             }
         }
         return false;
+    }
+
+    public List<Occurrence> occurrences(String username) throws MyEntityNotFoundException {
+        try {
+            // Find Repairer
+            Repairer repairer = find(username);
+            if (repairer == null){
+                throw new MyEntityNotFoundException("Repairer not found");
+            }
+
+            // Get Occurrences
+            Hibernate.initialize(repairer.getOccurrences());
+            return repairer.getOccurrences();
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 }

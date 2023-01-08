@@ -140,6 +140,10 @@ public class ExpertService {
     @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/assigned")
     public Response getAssignedOccurrences(@PathParam("username") String username) throws MyEntityNotFoundException {
+        if (!securityContext.getUserPrincipal().getName().equals(username)) {
+            throw new ForbiddenException(username + ", You are not allowed to access this resource");
+        }
+
         return Response.ok(OccurrenceDTO.from(expertBean.occurrences(username))).build();
     }
 
