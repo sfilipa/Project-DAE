@@ -10,6 +10,7 @@ import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Hasher;
+import org.hibernate.Hibernate;
 import org.json.JSONArray;
 
 import javax.ejb.EJB;
@@ -40,6 +41,8 @@ public class RepairerBean {
     private EmailBean emailBean;
     @EJB
     private ExpertBean expertBean;
+    @EJB
+    private BlobBean blobBean;
 
     public List<Repairer> getAllRepairers() {
         return (List<Repairer>) em.createNamedQuery("getAllRepairers").getResultList();
@@ -257,43 +260,10 @@ public class RepairerBean {
                     "The occurrence " + occurrence.getId() + " has been finished by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription);
 
             // Transform Documents into a Blob
-            transformDocumentsIntoBlob(occurrence);
+            blobBean.transformDocumentsIntoBlob(occurrence);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
-        }
-    }
-
-    private void transformDocumentsIntoBlob(Occurrence occurrence) {
-        // Transform Occurrence Documents into a Blob to save DB space
-        try {
-            List<Document> documents = occurrence.getDocuments();
-
-            // Serialize the List of Document objects into a BLOB
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-
-            oos.writeObject(documents);
-            oos.close();
-
-            byte[] data = baos.toByteArray();
-            Blob blob = new SerialBlob(data);
-
-            // Deserialize the BLOB back into a List of Document objects
-            byte[] blobData = blob.getBytes(1, (int) blob.length());
-
-            ByteArrayInputStream bais = new ByteArrayInputStream(blobData);
-            ObjectInputStream ois = new ObjectInputStream(bais);
-
-            List<Document> deserializedDocuments = (List<Document>) ois.readObject();
-
-            // Set the documents field of the occurrence object to the List of Document objects
-            occurrence.setDocuments(deserializedDocuments);
-
-        } catch (IOException | SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -344,5 +314,23 @@ public class RepairerBean {
             }
         }
         return false;
+    }
+
+    public List<Occurrence> occurrences(String username) throws MyEntityNotFoundException {
+        try {
+            // Find Repairer
+            Repairer repairer = find(username);
+            if (repairer == null){
+                throw new MyEntityNotFoundException("Repairer not found");
+            }
+
+            // Get Occurrences
+            Hibernate.initialize(repairer.getOccurrences());
+            return repairer.getOccurrences();
+        } catch (MyEntityNotFoundException e) {
+            throw new MyEntityNotFoundException(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
     }
 }

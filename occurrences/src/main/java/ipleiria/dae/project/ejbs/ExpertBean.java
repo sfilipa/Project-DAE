@@ -33,24 +33,18 @@ public class ExpertBean {
         }
     }
 
-    public Expert create(String username, String password, String name, String email, String insuranceCompany) throws MyEntityExistsException {
-        try {
-            // Find Insurance Company
-            String company = findInsuranceCompany(insuranceCompany);
+    public Expert create(String username, String password, String name, String email, String insuranceCompany) throws MyEntityExistsException, IllegalArgumentException{
+        // Find Insurance Company
+        String company = findInsuranceCompany(insuranceCompany);
 
-            // Verify if the username already exists
-            Expert expert = find(username);
-            validateExpertDoesNotExist(expert);
+        // Verify if the username already exists
+        Expert expert = find(username);
+        validateExpertDoesNotExist(expert);
 
-            // Create Expert
-            Expert newExpert = new Expert(username, hasher.hash(password), name, email, company);
-            em.persist(newExpert);
-            return find(username);
-        } catch (MyEntityExistsException e) {
-            throw new MyEntityExistsException(e.getMessage());
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
+        // Create Expert
+        Expert newExpert = new Expert(username, hasher.hash(password), name, email, company);
+        em.persist(newExpert);
+        return newExpert;
     }
 
     public Expert update(String username, String password, String name, String email, String insuranceCompany) throws MyEntityNotFoundException {
@@ -68,6 +62,10 @@ public class ExpertBean {
             expert.setName(name);
             expert.setEmail(email);
             expert.setInsuranceCompany(company);
+
+            // To ensure the changes are persisted to the database
+            em.merge(expert);
+
             return expert;
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
@@ -81,75 +79,58 @@ public class ExpertBean {
     }
 
     public Expert findOrFail(String username) throws MyEntityNotFoundException {
-        try {
-            Expert expert = em.find(Expert.class, username);
-            if (expert == null) {
-                throw new MyEntityNotFoundException("Expert not found");
-            }
-            return expert;
-        } catch (MyEntityNotFoundException e) {
-            throw new MyEntityNotFoundException(e.getMessage());
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
+        Expert expert = em.find(Expert.class, username);
+        validateExpertExists(expert);
+        return expert;
     }
 
     public String findInsuranceCompany(String insuranceCompany) throws MyEntityNotFoundException {
         // Find Insurance Company
         String company = MockAPIBean.getInsuranceCompany(insuranceCompany);
-        if (company.equals("")) {
-            throw new MyEntityNotFoundException("Insurance Company " + insuranceCompany + " not found");
-        }
+        validateCompanyExists(company);
         return company;
     }
 
     public void delete(String username) throws MyEntityNotFoundException {
-        try {
-            // Find Expert
-            Expert expert = find(username);
-            validateExpertExists(expert);
+        // Find Expert
+        Expert expert = find(username);
+        validateExpertExists(expert);
 
-            // Delete Expert
-            em.remove(expert);
-        } catch (MyEntityNotFoundException e) {
-            throw new MyEntityNotFoundException(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
+        // Delete Expert
+        em.remove(expert);
     }
 
     public void disapproveOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException {
-        try {
-            // Find Expert
-            Expert expert = find(username);
-            validateExpertExists(expert);
+        // Find Expert
+        Expert expert = find(username);
+        validateExpertExists(expert);
 
-            // Find Occurrence
-            Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(expert, occurrence);
+        // Find Occurrence
+        Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
+        validateOccurrence(expert, occurrence);
 
-            validateOccurrenceState(occurrence, State.PENDING);
+        validateOccurrenceState(occurrence, State.PENDING);
 
-            // Disapprove Occurrence
-            occurrence.setState(State.DISAPPROVED);
+        // Disapprove Occurrence
+        occurrence.setState(State.DISAPPROVED);
 
-            // Get Occurrence Description
-            String occurrenceDescription = occurrence.getDescription();
+        // Get Occurrence Description
+        String occurrenceDescription = occurrence.getDescription();
 
-            // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
-            occurrence.setDescription(newOccurrenceDescription);
+        // Build Occurrence Description
+        String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
+        occurrence.setDescription(newOccurrenceDescription);
 
-            // Send Email to Client
-            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " disapproved", "Your occurrence was disapproved by " + expert.getUsername() + ".\n\n" + newOccurrenceDescription);
+        // Send Email to Client
+        sendDisapprovalEmail(occurrence, expert, newOccurrenceDescription);
+    }
 
-        } catch (MyEntityNotFoundException e) {
-            throw new MyEntityNotFoundException(e.getMessage());
-        } catch (NotAuthorizedException e) {
-            throw new NotAuthorizedException(e.getMessage());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
+    private void sendDisapprovalEmail(Occurrence occurrence, Expert expert, String newOccurrenceDescription) {
+        emailBean.send(
+                occurrence.getClient().getEmail(),
+                "Occurrence " + occurrence.getId() + " disapproved",
+                "Your occurrence was disapproved by " + expert.getUsername() + ".\n\n" + newOccurrenceDescription
+        );
     }
 
     public void approveOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException {
@@ -175,7 +156,7 @@ public class ExpertBean {
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send Email to Client
-            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " approved", "Your occurrence was approved by " + expert.getUsername() + ".\n\n" + newOccurrenceDescription);
+            sendApprovalEmail(occurrence, expert, newOccurrenceDescription);
 
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
@@ -184,6 +165,14 @@ public class ExpertBean {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+
+    private void sendApprovalEmail(Occurrence occurrence, Expert expert, String newOccurrenceDescription) {
+        emailBean.send(
+                occurrence.getClient().getEmail(),
+                "Occurrence " + occurrence.getId() + " approved",
+                "Your occurrence was approved by " + expert.getUsername() + ".\n\n" + newOccurrenceDescription
+        );
     }
 
     public void addOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException {
