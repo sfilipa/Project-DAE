@@ -1,86 +1,67 @@
 <template>
   <div>
-    <h3 class="text-center index-header">Welcome to your occurrence management platform</h3>
+    <nuxt-link
+      class="btn pb-3 pr-5 text-uppercase"
+      :to="`/`">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        &nbsp; Back to HomePage
+      </div>
+    </nuxt-link>
+
+    <h3 class="text-center index-header">Repairers Management</h3>
+
     <div class="administrator-row" style="margin-top: 1.5rem;">
       <div style="margin: auto;">
-        <nuxt-link to="/administrators/experts/create" class="btn administrator-regist-btn">
-          Regist an Expert
-        </nuxt-link>
         <nuxt-link to="/administrators/repairers/create" class="btn administrator-regist-btn">
           Regist a Repairer
         </nuxt-link>
       </div>
     </div>
-    <div v-if="experts == null || repairers == null || clients == null" class="spinner-div" style="margin-top: 2rem">
+    <div v-if="repairers == null" class="spinner-div" style="margin-top: 2rem">
       <div class="spinner-border"></div>
     </div>
     <div v-else>
-      <div >
-        <h4>Experts:</h4>
-        <p v-if="experts.length === 0" class="text-center">There are no experts registered yet</p>
-        <ExpertBody v-else :experts="experts"  @updateExperts="updateExperts"></ExpertBody>
-      </div>
       <div >
         <h4>Repairers:</h4>
         <p v-if="repairers.length === 0" class="text-center">There are no repairers registered yet</p>
         <RepairerBody v-else :repairers="repairers" @updateRepairers="updateRepairers"></RepairerBody>
       </div>
-      <div >
-        <h4>Clients:</h4>
-        <p v-if="clients.length === 0" class="text-center">There are no clients registered yet</p>
-        <ClientBody v-else :clients="clients" @updateClients="updateClients"></ClientBody>
-      </div>
     </div>
   </div>
 </template>
 <script>
-import ExpertBody from "~/pages/administrators/components/ExpertBody.vue";
 import RepairerBody from "~/pages/administrators/components/RepairerBody.vue";
-import ClientBody from "~/pages/administrators/components/ClientBody.vue";
 export default {
   components: {
-    ExpertBody,
-    RepairerBody,
-    ClientBody
+    RepairerBody
   },
   methods: {
-    updateExperts(){
-      this.$axios.$get('/api/experts')
-        .then((experts) => {
-          this.experts = []
-          this.experts = experts
-        })
-    },
     updateRepairers(){
       this.$axios.$get('/api/repairers')
         .then((repairers) => {
           this.repairers = []
           this.repairers = repairers
         })
-    },
-    updateClients(){
-      this.$axios.$get('/api/clients')
-        .then((clients) => {
-          this.clients = []
-          this.clients = clients
-        })
     }
   },
   data () {
     return {
-      experts: null,
       repairers: null,
-      clients: null
     }
   },
   created () {
-    this.updateExperts()
     this.updateRepairers()
-    this.updateClients()
   }
 }
 </script>
 <style scoped>
+
+.user-list-body{
+  margin: 0 2rem
+}
 
 .administrator-regist-btn:hover{
   background-color: red !important;

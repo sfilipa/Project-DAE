@@ -24,18 +24,18 @@
       <div class="all-occurrences-item-row flex-grow-1" :class="{'all-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
         <p class="text-uppercase">{{ occurrence.state.split('_').join(' ') }}</p>
         <div v-if="!isAssigned &&
-                    occurrence.state!=='REPAIRER_WAITING_LIST' &&
-                    occurrence.state!=='ACTIVE' &&
+                    occurrence.state!=='PENDING' &&
+                    occurrence.state!=='APPROVED' &&
                     occurrence.state!=='FAILED' &&
                     occurrence.state!=='RESOLVED' &&
-                    occurrence.state!=='DISAPPROVED' && occurrence.insuranceCompanyName === this.$auth.user.company_username">
+                    occurrence.state!=='DISAPPROVED'">
           <button  class="btn btn-associate-repairers" @click.prevent="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>
         </div>
-        <div v-else-if="occurrence.state!=='REPAIRER_WAITING_LIST' &&
-                        occurrence.state!=='ACTIVE' &&
-                        occurrence.state!=='FAILED' &&
-                        occurrence.state!=='RESOLVED' &&
-                        occurrence.state!=='DISAPPROVED' && occurrence.insuranceCompanyName === this.$auth.user.company_username">
+        <div v-else-if="occurrence.state!=='PENDING' &&
+                    occurrence.state!=='APPROVED' &&
+                    occurrence.state!=='FAILED' &&
+                    occurrence.state!=='RESOLVED' &&
+                    occurrence.state!=='DISAPPROVED'">
           <button class="btn btn-associate-repairers" @click.prevent="unassign(occurrence.id)" :disabled="waitingRefresh">Unassign</button>
         </div>
       </div>

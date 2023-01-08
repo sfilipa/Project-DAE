@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import Occurrence from "~/pages/experts/components/Occurrence.vue";
+import Occurrence from "~/pages/repairers/components/Occurrence.vue";
 export default {
   components: {
     Occurrence
