@@ -78,9 +78,8 @@ export default {
       password: null,
       name: null,
       email: null,
-      company_username: null,
+      address: null,
       errorMsg: null,
-      isFormValid: false
     }
   },
   computed: {

@@ -15,8 +15,8 @@
         <!--        <p>Documents: <span v-for="document in occurrence.documents"> {{ document.filename }};</span></p>-->
       </div>
 
-      <div class="occurrences-item-row flex-grow-1" :class="{'occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
-        <p class="text-uppercase">{{ occurrence.state }}</p>
+      <div class="occurrences-item-row flex-grow-1" :class="{'occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end; width: 10rem;">
+        <p class="text-uppercase">{{ occurrence.state.split('_').join(' ') }}</p>
       </div>
     </div>
     <div v-if="occurrence.state.toUpperCase() == 'APPROVED'">
@@ -40,7 +40,7 @@
               <span v-else-if="otherRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
               <select v-else class="form-select mb-2" v-model="solicitedRepairer" @focus="errorMsg = null">
                 <option disabled value="">Select Solicited Repairer</option>
-                <option v-for="repairerService in otherRepairers">{{repairerService}}</option>
+                <option v-for="repairerService in otherRepairers">{{repairerService.username}}</option>
               </select>
             </div>
           </div>
@@ -77,6 +77,8 @@ export default {
           this.entrustedRepairers = entrustedRepairers
           this.$axios.$get(`api/repairers`)
             .then((repairers) => {
+              console.log(repairers)
+              console.log(entrustedRepairers)
               this.otherRepairers = []
               this.otherRepairers = repairers.filter(function (rep) {
                 return !entrustedRepairers.includes(rep.username)
@@ -95,7 +97,7 @@ export default {
           this.waitingResponse = false
           return
         }
-        //Without need for approval - send mail to repairer
+        //Without need for approval
         this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.insuranceRepairer}/assign`)
           .then(()=>{
             this.$router.push('/clients/insurances')
@@ -112,7 +114,7 @@ export default {
           return
         }
         //With need of approval - for expert
-        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence}/${this.solicitedRepairer}/assign`)
+        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.solicitedRepairer}/assign`)
           .then(()=>{
             this.$router.push('/clients/insurances')
             this.$toast.success('Request made!').goAway(3000)

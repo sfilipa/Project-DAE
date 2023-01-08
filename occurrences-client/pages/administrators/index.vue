@@ -11,19 +11,30 @@
         </nuxt-link>
       </div>
     </div>
-    <div v-if="experts == null || repairers == null" class="spinner-div">
+    <div v-if="experts == null || repairers == null || clients == null" class="spinner-div" style="margin-top: 2rem">
       <div class="spinner-border"></div>
     </div>
     <div v-else>
       <div >
         <h4>Experts:</h4>
-        <p v-if="experts.length == 0">There are no experts registered yet</p>
-        <p v-for="expert in experts">{{expert.name}}</p>
+        <p v-if="experts.length == 0" class="text-center">There are no experts registered yet</p>
+        <div class="user-list-body">
+          <p v-for="expert in experts">{{expert.name}}</p>
+        </div>
       </div>
       <div >
         <h4>Repairers:</h4>
-        <p v-if="repairers.length == 0">There are no repairers registered yet</p>
-        <p v-for="repairer in repairers">{{repairer.name}}</p>
+        <p v-if="repairers.length == 0" class="text-center">There are no repairers registered yet</p>
+        <div class="user-list-body">
+          <p v-for="repairer in repairers">{{repairer.name}}</p>
+        </div>
+      </div>
+      <div >
+        <h4>Clients:</h4>
+        <p v-if="clients.length == 0" class="text-center">There are no clients registered yet</p>
+        <div class="user-list-body">
+          <p v-for="client in clients">{{client.name}}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -33,7 +44,8 @@ export default {
   data () {
     return {
       experts: null,
-      repairers: null
+      repairers: null,
+      clients: null
     }
   },
   created () {
@@ -47,10 +59,19 @@ export default {
         this.repairers = []
         this.repairers = repairers
       })
+    this.$axios.$get('/api/clients')
+      .then((clients) => {
+        this.clients = []
+        this.clients = clients
+      })
   }
 }
 </script>
 <style scoped>
+
+.user-list-body{
+  margin: 0 2rem
+}
 
 .administrator-regist-btn:hover{
   background-color: red !important;
