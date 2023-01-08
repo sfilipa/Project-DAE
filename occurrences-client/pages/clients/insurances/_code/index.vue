@@ -244,17 +244,30 @@ export default {
     if(!this.$route.params.insurance){
       this.$router.push('/clients/insurances')
     }
+
     this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences`)
       .then((occurrences) => {
-        this.occurrences = occurrences
+        if(!this.$route.params.code){
+          this.occurrences = occurrences
+          return
+        }
+
+        const codeParams = this.$route.params.code
+        this.occurrences = occurrences.filter(function(oc){
+          return oc.insuranceCode === codeParams
+        })
       })
   },
   methods: {
     getOnGoingOccurrences(){
-      return this.occurrences.filter(function(oc){return oc.state != 'RESOLVED' && oc.state != 'DISAPPROVED' && oc.state != 'FAILED' })
+      return this.occurrences.filter(function(oc){return oc.state !== 'RESOLVED' &&
+                                                          oc.state !== 'DISAPPROVED' &&
+                                                          oc.state !== 'FAILED'})
     },
     getCompletedOccurrences(){
-      return this.occurrences.filter(function(oc){return oc.state == 'RESOLVED' || oc.state == 'DISAPPROVED' || oc.state == 'FAILED' })
+      return this.occurrences.filter(function(oc){return (oc.state === 'RESOLVED' ||
+                                                          oc.state === 'DISAPPROVED' ||
+                                                          oc.state === 'FAILED')})
     },
     onSubmit() {
       this.waitingResponse = true
