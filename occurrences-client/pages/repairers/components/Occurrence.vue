@@ -9,35 +9,39 @@
         <p>Entry Date: {{occurrence.entryDate}} &nbsp; Final Date: {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</p>
       </div>
 
-      <b-form @submit.prevent="onSubmit" :disabled="!isFormValid" class="flex-grow-1" style="margin: 0 6%"  v-if="occurrence.state.toLowerCase() == 'pending' && isAssigned">
+      <b-form @submit.prevent="onSubmit" :disabled="!isFormValid" class="flex-grow-1" style="margin: 0 6%"  v-if="occurrence.state.toLowerCase() === 'active' && isAssigned">
         <p>Appointments: </p>
         <b-form-group :invalid-feedback="invalidDescriptionFeedback" :state="isDescriptionValid">
           <b-textarea :state="isDescriptionValid" class="form-control" style="margin-bottom: 20px;" placeholder="Enter some thoughts on your decision" v-model="descriptionApprovePending" required/>
         </b-form-group>
 
         <div style="display: flex">
-          <button type="submit" value="disapprove" class="btn btn-approve-occurrence" @click="disapprove(occurrence.id)">Disapprove</button> <!--@click.prevent="disapprove(occurrence.id)"-->
-          <button type="submit" value="approve" class="btn btn-approve-occurrence" @click="approve(occurrence.id)" style="margin-left: auto" >Approve</button>
+          <button type="submit" value="fail" class="btn btn-active-occurrence" @click="fail(occurrence.id)">Fail</button>
+          <button type="submit" value="finish" class="btn btn-active-occurrence" @click="finish(occurrence.id)" style="margin-left: auto" >Finish</button>
         </div>
       </b-form>
 
       <div class="all-occurrences-item-row flex-grow-1" :class="{'all-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
         <p class="text-uppercase">{{ occurrence.state.split('_').join(' ') }}</p>
-        <div v-if="!isAssigned &&
-                    occurrence.state!=='PENDING' &&
-                    occurrence.state!=='APPROVED' &&
-                    occurrence.state!=='FAILED' &&
-                    occurrence.state!=='RESOLVED' &&
-                    occurrence.state!=='DISAPPROVED'">
-          <button  class="btn btn-associate-repairers" @click.prevent="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>
-        </div>
-        <div v-else-if="occurrence.state!=='PENDING' &&
-                    occurrence.state!=='APPROVED' &&
-                    occurrence.state!=='FAILED' &&
-                    occurrence.state!=='RESOLVED' &&
-                    occurrence.state!=='DISAPPROVED'">
-          <button class="btn btn-associate-repairers" @click.prevent="unassign(occurrence.id)" :disabled="waitingRefresh">Unassign</button>
-        </div>
+            <div v-if="isAssigned &&
+                        occurrence.state==='REPAIRER_WAITING_LIST'">
+              <button  class="btn btn-repairer-button" @click.prevent="start(occurrence.id)" :disabled="waitingRefresh">Start</button>
+            </div>
+<!--        <div v-if="!isAssigned &&-->
+<!--                    occurrence.state!=='PENDING' &&-->
+<!--                    occurrence.state!=='APPROVED' &&-->
+<!--                    occurrence.state!=='FAILED' &&-->
+<!--                    occurrence.state!=='RESOLVED' &&-->
+<!--                    occurrence.state!=='DISAPPROVED'">-->
+<!--          <button  class="btn btn-associate-repairers" @click.prevent="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>-->
+<!--        </div>-->
+<!--        <div v-else-if="occurrence.state!=='PENDING' &&-->
+<!--                    occurrence.state!=='APPROVED' &&-->
+<!--                    occurrence.state!=='FAILED' &&-->
+<!--                    occurrence.state!=='RESOLVED' &&-->
+<!--                    occurrence.state!=='DISAPPROVED'">-->
+<!--          <button class="btn btn-associate-repairers" @click.prevent="unassign(occurrence.id)" :disabled="waitingRefresh">Unassign</button>-->
+<!--        </div>-->
       </div>
     </div>
   </div>
@@ -50,8 +54,8 @@ export default {
   emits: ['updateOccurrences'],
   data(){
     return {
-      descriptionApprovePending: null,
       approveOrDisapprove: "",
+      descriptionApprovePending: null
     }
   },
   computed: {
@@ -82,45 +86,56 @@ export default {
     onSubmit() {
       console.log('teste')
     },
-    approve(occurence_id)
+    start(occurence_id)
+    {
+      this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/start`)
+        .then(()=> {
+          this.$toast.success('Occurrence started!').goAway(3000)
+          this.$emit('updateOccurrences')
+      })
+    },
+    fail(occurence_id)
     {
       if(this.descriptionApprovePending === null){
         return
       }
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/approve`, {
-        description: this.descriptionApprovePending
-      }).then(()=> {
-        this.descriptionApprovePending = "";
-        this.$emit('updateOccurrences')
-      })
 
+      this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/fail`, {
+        description: this.descriptionApprovePending
+      })
+        .then(()=> {
+          this.$toast.success('Occurrence failed!').goAway(3000)
+          this.$emit('updateOccurrences')
+        })
     },
-    disapprove(occurence_id)
+    finish(occurence_id)
     {
       if(this.descriptionApprovePending === null){
         return
       }
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/disapprove`, {
-        description: this.descriptionApprovePending}
-      ).then(()=> {
-        this.descriptionApprovePending = "";
-        this.$emit('updateOccurrences')
+
+      this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/finish`, {
+        description: this.descriptionApprovePending
       })
-    },
-    assign(occurence_id)
-    {
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/assign`)
         .then(()=> {
+          this.$toast.success('Occurrence finished!').goAway(3000)
           this.$emit('updateOccurrences')
         })
     },
-    unassign(occurence_id)
-    {
-      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/unassign`)
-        .then(()=> {
-          this.$emit('updateOccurrences')
-        })
-    }
+    // assign(occurence_id)
+    // {
+    //   this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/assign`)
+    //     .then(()=> {
+    //       this.$emit('updateOccurrences')
+    //     })
+    // },
+    // unassign(occurence_id)
+    // {
+    //   this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/unassign`)
+    //     .then(()=> {
+    //       this.$emit('updateOccurrences')
+    //     })
+    // }
   }
 }
 </script>
@@ -133,28 +148,50 @@ export default {
   margin-bottom: 1.5%;
 }
 
-.btn-approve-occurrence:hover{
+.btn-active-occurrence:hover{
   background-color: red !important;
   color: white !important;
 }
 
-.btn-approve-occurrence{
+.btn-active-occurrence{
   border: 1px solid black;
   width: 45%;
   height: 2.5rem;
   align-self: self-end;
 }
 
-.btn-associate-repairers:hover{
+/*.btn-start-occurrence:hover{*/
+/*  background-color: red !important;*/
+/*  color: white !important;*/
+/*}*/
+
+/*.btn-start-occurrence{*/
+/*  border: 1px solid black;*/
+/*  width: 45%;*/
+/*  height: 2.5rem;*/
+/*  align-self: self-end;*/
+/*}*/
+
+/*.btn-repairer-button-active:hover{*/
+/*  background-color: red !important;*/
+/*  color: white !important;*/
+/*}*/
+
+/*.btn-repairer-button-active{*/
+/*  border: 1px solid black;*/
+/*  height: 3rem;*/
+/*  width: 5rem;*/
+/*}*/
+
+.btn-repairer-button:hover{
   background-color: red !important;
   color: white !important;
 }
 
-.btn-associate-repairers{
+.btn-repairer-button{
   border: 1px solid black;
-  width: fit-content;
   height: 3rem;
-  align-self: self-end;
+  width: 10rem;
 }
 
 .all-occurrences-item-row{
