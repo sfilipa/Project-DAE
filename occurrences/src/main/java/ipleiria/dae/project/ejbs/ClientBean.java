@@ -4,13 +4,11 @@ import ipleiria.dae.project.entities.Client;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Insurance;
 import ipleiria.dae.project.entities.Occurrence;
-import ipleiria.dae.project.exceptions.APIBadResponseException;
-import ipleiria.dae.project.exceptions.MyEntityExistsException;
-import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
-import ipleiria.dae.project.exceptions.NifNotValidException;
+import ipleiria.dae.project.exceptions.*;
 import ipleiria.dae.project.security.Hasher;
 import org.hibernate.Hibernate;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -26,6 +24,9 @@ public class ClientBean {
 
     @Inject
     private Hasher hasher;
+
+    @EJB
+    private OccurrenceBean occurrenceBean;
 
     public Client create(String username, String password, String name, String email, String address, long phoneNumber, long nif_nipc) {
         Client client = find(username);
@@ -130,6 +131,22 @@ public class ClientBean {
             throw new APIBadResponseException(e.getMessage());
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+    public void verifyOccurrenceBelongsToClient(String username, long id) throws MyEntityNotFoundException, NotAuthorizedException {
+        Occurrence occurrence = occurrenceBean.find(id);
+        if (occurrence == null) {
+            throw new MyEntityNotFoundException("Occurrence not found");
+        }
+
+        Client client = find(username);
+        if (client == null) {
+            throw new MyEntityNotFoundException("Client not found");
+        }
+
+        if (!occurrence.getClient().getUsername().equals(username)) {
+            throw new NotAuthorizedException("Occurrence does not belong to client");
         }
     }
 
