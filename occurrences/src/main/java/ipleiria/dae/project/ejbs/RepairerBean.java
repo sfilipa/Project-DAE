@@ -212,6 +212,13 @@ public class RepairerBean {
             // Fail Occurrence
             occurrence.setState(State.FAILED);
 
+            //Update final date occurrence
+            Date finalDate = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            String finalDateStr = formatter.format(finalDate);
+
+            occurrence.setFinalDate(finalDateStr);
+
             // Get Occurrence Description
             String occurrenceDescription = occurrence.getDescription();
 
