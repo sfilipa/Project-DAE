@@ -16,6 +16,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @Stateless
@@ -109,6 +111,13 @@ public class ExpertBean {
 
         // Disapprove Occurrence
         occurrence.setState(State.DISAPPROVED);
+
+        //Update final date occurrence
+        Date finalDate = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        String finalDateStr = formatter.format(finalDate);
+
+        occurrence.setFinalDate(finalDateStr);
 
         // Get Occurrence Description
         String occurrenceDescription = occurrence.getDescription();
