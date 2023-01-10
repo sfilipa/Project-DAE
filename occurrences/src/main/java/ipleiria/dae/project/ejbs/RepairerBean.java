@@ -216,7 +216,7 @@ public class RepairerBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n- " + repairer.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + repairer.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send email to the client that the occurrence was failed
@@ -251,7 +251,7 @@ public class RepairerBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n- " + repairer.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + repairer.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send email to the client that the occurrence was finished
