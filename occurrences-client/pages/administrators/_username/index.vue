@@ -12,7 +12,11 @@
     </nuxt-link>
     <h3 class="text-center index-header">Profile</h3>
     <div class="profile-body">
-      <div class="profile-body-div">
+      <div v-if="this.name == null" class="spinner-div">
+        <div class="spinner-border"></div>
+      </div>
+
+      <div v-else class="profile-body-div">
         <p class="profile-field"><span class="profile-label">Username:</span> {{this.username}}</p>
         <p class="profile-field"><span class="profile-label">Name:</span> {{ this.name }}</p>
         <p class="profile-field"><span class="profile-label">Email:</span> {{this.email}}</p>
@@ -26,10 +30,9 @@ export default {
   name: "index.vue",
   data () {
     return {
-      username: "",
-      name: "",
-      email: "",
-      address: "",
+      username: null,
+      name: null,
+      email: null,
     }
   },
   created () {
@@ -53,11 +56,13 @@ export default {
 
 .profile-field{
   width: 100%;
+  height: 2.2rem;
 }
 
 .profile-body-div{
   margin: auto;
-  width: 90%;
+  width: 50%;
+  margin-bottom: 2rem;
 }
 
 .profile-body{
@@ -65,7 +70,6 @@ export default {
   flex-direction: column;
   align-items: center;
 }
-
 .index-header{
   margin-bottom: 3rem;
 }

@@ -1,17 +1,18 @@
 <template>
   <div class="occurrences-div">
-    <p style="font-size: 20px"><b>{{occurrence.objectInsured}}
+    <p style="font-size: 20px; margin-bottom: 1rem"><b>{{occurrence.objectInsured}}
       ({{ occurrence.coverageType.charAt(0).toUpperCase() + occurrence.coverageType.split('_').join(' ').slice(1).toLowerCase() }})
       - <span>{{occurrence.insuranceCode}}</span></b></p>
     <div class="occurrences-item" >
       <div class="occurrences-item-row" style="width: 30%;">
-        <p>Occurrence {{ occurrence.id }}</p>
-        <p>Repairer: {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</p>
+        <span>Occurrence {{ occurrence.id }}</span>
+        <span>Repairer: {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</span>
+        <span>Entry Date: {{occurrence.entryDate}} &nbsp; Final Date: {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</span>
       </div>
 
       <div class="occurrences-item-row" style="align-self: flex-end;">
-        <p>Entry Date: {{occurrence.entryDate}} &nbsp; Final Date: {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</p>
-        <p>Description: {{ occurrence.description }}</p>
+
+        <p style="white-space: pre;">Description: <br>{{ occurrence.description }}</p>
         <!--        <p>Documents: <span v-for="document in occurrence.documents"> {{ document.filename }};</span></p>-->
       </div>
 
@@ -31,14 +32,14 @@
           <div class="repair-column flex-grow-1" style="padding: 0 5%">
             <span v-if="entrustedRepairers == null" style="margin-left: 2px">---</span>
             <span v-else-if="entrustedRepairers.length==0" style="margin-left: 2px">No entrusted repairers available</span>
-            <select v-else class="form-select mb-2"  v-model="insuranceRepairer" @focus="errorMsg = null">
+            <select v-else class="form-select mb-2"  v-model="insuranceRepairer" @focus="errorMsg = null" :disabled="checked">
               <option disabled value="">Select Entrusted Repairer</option>
               <option v-for="repairerService in entrustedRepairers">{{repairerService}}</option>
             </select>
             <div class="repair-row">
               <span v-if="otherRepairers == null" style="margin-left: 2px" >---</span>
               <span v-else-if="otherRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
-              <select v-else class="form-select mb-2" v-model="solicitedRepairer" @focus="errorMsg = null">
+              <select v-else class="form-select mb-2" v-model="solicitedRepairer" @focus="errorMsg = null" :disabled="!checked">
                 <option disabled value="">Select Solicited Repairer</option>
                 <option v-for="repairerService in otherRepairers">{{repairerService.username}}</option>
               </select>
