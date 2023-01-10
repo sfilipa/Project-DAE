@@ -50,11 +50,11 @@ export default {
       })
       promise.then(() => {
         this.$toast.success('You are logged in!').goAway(3000)
-        // this.$router.push(`/${this.$auth.user.role.toLowerCase()}s/`)
         this.$router.push('/')
       })
       promise.catch((response) => {
         console.log(response)
+        console.log("ERROR")
         let promiseAdmin = this.$auth.loginWith('admin', {
           data: {
             username: this.username,
@@ -62,11 +62,12 @@ export default {
           }
         })
         promiseAdmin.then(() => {
+          console.log("Success")
           this.$toast.success('You are logged in!').goAway(3000)
           this.$router.push(`/`)
         })
         promiseAdmin.catch(({ response: err }) => {
-          console.log(err)
+          console.log("ERROR")
           this.errorMsg = err.data
           this.$toast.error('Sorry, you cant login. Ensure your credentials are correct').goAway(3000)
         })

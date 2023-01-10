@@ -2,11 +2,13 @@ package ipleiria.dae.project.ws;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ipleiria.dae.project.dtos.ExpertDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.dtos.create.RepairerCreateDTO;
 import ipleiria.dae.project.dtos.RepairerDTO;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.ejbs.RepairerBean;
+import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
@@ -210,7 +212,7 @@ public class RepairerService {
     @Authenticated
     @RolesAllowed({"Administrator", "Repairer"})
     @Path("/{username}")
-    public Response update(@PathParam("username") String username, RepairerCreateDTO repairerDTO) throws MyEntityNotFoundException {
+    public Response update(@PathParam("username") String username, RepairerDTO repairerDTO) throws MyEntityNotFoundException {
         try {
             if (!securityContext.getUserPrincipal().getName().equals(username)) {
                 throw new ForbiddenException(username + ", You are not allowed to access this resource");
@@ -218,7 +220,6 @@ public class RepairerService {
 
         Repairer repairer = repairerBean.update(
                 repairerDTO.getUsername(),
-                repairerDTO.getPassword(),
                 repairerDTO.getName(),
                 repairerDTO.getEmail(),
                 repairerDTO.getAddress()
@@ -235,6 +236,26 @@ public class RepairerService {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
     }
+
+    @PATCH
+    @Authenticated
+    @RolesAllowed({"Repairer"})
+    @Path("/{username}/password")
+    public Response updatePassword(@PathParam("username") String username, String password) {
+        if(!securityContext.getUserPrincipal().getName().equals(username)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
+        Repairer repairer = repairerBean.updatePassword(username, password);
+
+        if (repairer == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        return Response.status(Response.Status.OK)
+                .entity(RepairerDTO.from(repairer))
+                .build();
+    }
+
 
     @DELETE
     @Authenticated

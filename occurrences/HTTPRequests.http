@@ -5,8 +5,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "client2",
-  "password": "client"
+  "username": "expert1",
+  "password": "123"
 }
 
 ##### Get Occurrences
@@ -115,6 +115,26 @@ Content-Type: application/json
   "password": "123",
   "name": "Repairer 1",
   "email": "repairer@mail.pt",
+  "address": "Rua 1"
+}
+
+### Update Expert
+PUT http://localhost:8080/occurrences/api/experts/expert1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczMzUxNjA3LCJleHAiOjE2NzMzNTUyMDd9.SaPOS8FXX6hhHIBPvy3V6d6Hm7g5JhcXE70EFTrIhDI
+Content-Type: application/json
+
+{
+  "name": "Expert 3",
+  "email": "expert3@mail.pt"
+}
+
+### Update Repairer
+PUT http://localhost:8080/occurrences/api/repairers/repairer1
+Content-Type: application/json
+
+{
+  "name": "Repairer 2",
+  "email": "repairer2@mail.pt",
   "address": "Rua 1"
 }
 

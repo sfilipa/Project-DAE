@@ -35,9 +35,7 @@
             <b-input class="form-control regist-textbox"
                      name="email"
                      type="email"
-                     ref="email"
                      :state="isEmailValid"
-                     pattern=".+@gmail.com"
                      v-model.trim="email"
                      required/>
           </b-form-group>
@@ -135,9 +133,8 @@ export default {
       if (!this.email) {
         return null
       }
-// asks the component if it’s valid. We don’t need to use a regex for the e-mail. The input field already does the job for us, because it is of type “email” and validates that the user writes an e-mail that belongs to the domain of IPLeiria.
-      if(!this.$refs.email.checkValidity()){
-        return 'The email should end with "@gmail.com"'
+      if(!this.validEmail(this.email)){
+        return 'The email should follow the format -@-.--'
       }
       return ''
     },
@@ -208,6 +205,9 @@ export default {
       this.name = null
       this.email = null
       this.address = null
+    },
+    validEmail(email) {
+      return /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(email);
     }
   }
 }

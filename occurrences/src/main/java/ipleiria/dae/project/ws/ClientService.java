@@ -86,7 +86,7 @@ public class ClientService {
    /* @Authenticated*/
    // @RolesAllowed({"Client"})
     @Path("/{username}")
-    public Response updateClient(@PathParam("username") String username, ClientCreateDTO clientDTO) {
+    public Response updateClient(@PathParam("username") String username, ClientDTO clientDTO) {
         Client client = clientBean.update(
                 username,
                 clientDTO.getName(),
@@ -173,7 +173,7 @@ public class ClientService {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
 
-            //TODO: verificar se o cliente é o dono da ocorrencia
+            clientBean.verifyOccurrenceBelongsToClient(clientUsername, occurrence_code);
 
             repairerBean.assignOccurrence(repairerUsername, occurrence_code);
             return Response.ok().build();
@@ -197,13 +197,13 @@ public class ClientService {
     @RolesAllowed({"Client"})
     @Path("/{clientUsername}/occurrences/{occurrence_code}/{repairerUsername}/unassign")
     public Response unassignOccurrence(@Context HttpServletRequest request, @PathParam("clientUsername") String clientUsername, @PathParam("repairerUsername") String repairerUsername, @PathParam("occurrence_code") long occurrence_code)
-            throws MyEntityNotFoundException {
+            throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             if(!securityContext.getUserPrincipal().getName().equals(clientUsername)) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
 
-            //TODO: verificar se o cliente é o dono da ocorrencia
+            clientBean.verifyOccurrenceBelongsToClient(clientUsername, occurrence_code);
 
             repairerBean.unassignOccurrence(repairerUsername, occurrence_code);
             return Response.ok().build();

@@ -1,12 +1,13 @@
 <template>
   <div class="all-occurrences">
+    <p style="font-size: 20px; color: red"><b>{{occurrence.objectInsured}} - <span>{{occurrence.insuranceCompanyName}} ({{occurrence.insuranceCode}})</span></b></p>
     <div class="all-occurrences-item">
       <div class="all-occurrences-item-row" style="width: 30%;">
-        <p style="font-size: 20px"><b>{{occurrence.objectInsured}} - <span>{{occurrence.insuranceCode}}</span></b></p>
-        <p>Occurrence {{ occurrence.id }}</p>
-        <p>Repairer: {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</p>
-        <p>Description {{ occurrence.description }}</p>
-        <p>Entry Date: {{occurrence.entryDate}} &nbsp; Final Date: {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</p>
+        <p><b>Occurrence {{ occurrence.id }} - Client {{occurrence.usernameClient}}</b></p>
+        <p><b>Repairer:</b> {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</p>
+        <p style="white-space: pre;"><b>Description:</b> <br>{{ occurrence.description }}</p>
+        <p style="margin-bottom: 0;"><b>Entry Date:</b> {{occurrence.entryDate}} &nbsp; </p>
+        <p><b>Final Date:</b> {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</p>
       </div>
 
       <b-form @submit.prevent="onSubmit" :disabled="!isFormValid" class="flex-grow-1" style="margin: 0 6%"  v-if="occurrence.state.toLowerCase() === 'active' && isAssigned">
@@ -22,7 +23,7 @@
       </b-form>
 
       <div class="all-occurrences-item-row flex-grow-1" :class="{'all-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
-        <p class="text-uppercase">{{ occurrence.state.split('_').join(' ') }}</p>
+        <p class="text-uppercase"  style="width: 13rem; margin-left: auto;">{{ occurrence.state.split('_').join(' ') }}</p>
             <div v-if="isAssigned &&
                         occurrence.state==='REPAIRER_WAITING_LIST'">
               <button  class="btn btn-repairer-button" @click.prevent="start(occurrence.id)" :disabled="waitingRefresh">Start</button>

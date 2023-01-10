@@ -17,6 +17,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.*;
@@ -67,7 +68,7 @@ public class RepairerBean {
         }
     }
 
-    public Repairer update(String username, String password, String name, String email, String address) throws MyEntityNotFoundException {
+    public Repairer update(String username, String name, String email, String address) throws MyEntityNotFoundException {
         try {
 
             // Find the repairer
@@ -77,7 +78,6 @@ public class RepairerBean {
             }
 
             // Update the repairer
-            repairer.setPassword(password);
             repairer.setName(name);
             repairer.setEmail(email);
             repairer.setAddress(address);
@@ -332,5 +332,15 @@ public class RepairerBean {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
+    }
+
+    public Repairer updatePassword(String username, String password) {
+        Repairer repairer = find(username);
+        if (repairer == null) {
+            throw new MyEntityNotFoundException("Repairer not found");
+        }
+        em.lock(repairer, LockModeType.OPTIMISTIC);
+        repairer.setPassword(hasher.hash(password));
+        return repairer;
     }
 }

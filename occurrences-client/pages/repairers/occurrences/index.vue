@@ -46,7 +46,7 @@ export default {
   methods: {
     updateOccurrences(){
       this.waitingRefresh = true
-      this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
+      this.$axios.$get(`/api/repairers/${this.$auth.user.username}/occurrences/assigned`)
         .then((assignedOccurrences) => {
           this.assignedOccurrences = assignedOccurrences
           this.waitingRefresh = false
