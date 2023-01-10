@@ -139,6 +139,10 @@ Content-Type: application/json
   "address": "Rua 1"
 }
 
+### Update Expert's Insurance Company
+PATCH http://localhost:8080/occurrences/api/experts/expert1/insuranceCompany/Fidelidade
+Content-Type: application/json
+
 ### GET Experts
 GET http://localhost:8080/occurrences/api/experts
 Accept: application/json
