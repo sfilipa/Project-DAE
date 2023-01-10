@@ -16,6 +16,10 @@ public class ClientCreateDTO extends ClientDTO {
         this.password = password;
     }
 
+    public ClientCreateDTO(String password) {
+        this.password = password;
+    }
+
     public String getPassword() {
         return password;
     }

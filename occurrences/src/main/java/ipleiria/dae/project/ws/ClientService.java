@@ -83,8 +83,8 @@ public class ClientService {
     }
 
     @PUT
-   /* @Authenticated
-    @RolesAllowed({"Client"})*/
+   /* @Authenticated*/
+   // @RolesAllowed({"Client"})
     @Path("/{username}")
     public Response updateClient(@PathParam("username") String username, ClientDTO clientDTO) {
         Client client = clientBean.update(
@@ -108,11 +108,12 @@ public class ClientService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("/{username}/password")
-    public Response updatePassword(@PathParam("username") String username, String password) {
+    public Response updatePassword(@PathParam("username") String username, ClientCreateDTO clientDTO) {
         if(!securityContext.getUserPrincipal().getName().equals(username)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
-        Client client = clientBean.updatePassword(username, password);
+
+        Client client = clientBean.updatePassword(username, clientDTO.getPassword());
 
         if (client == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
@@ -123,10 +124,10 @@ public class ClientService {
     }
 
     @DELETE
-   /* @Authenticated
-    @RolesAllowed({"Client"})*/
+    @Authenticated
+    @RolesAllowed({"Client", "Administrator"})
     @Path("/{username}")
-    public Response deleteOccurrence(@PathParam("username") String username) {
+    public Response delete(@PathParam("username") String username) {
         clientBean.delete(username);
 
         return Response.noContent().build();

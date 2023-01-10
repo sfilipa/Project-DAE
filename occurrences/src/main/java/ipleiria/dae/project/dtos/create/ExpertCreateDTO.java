@@ -16,6 +16,10 @@ public class ExpertCreateDTO extends ExpertDTO {
         this.password = password;
     }
 
+    public ExpertCreateDTO(String password) {
+        this.password = password;
+    }
+
     public String getPassword() {
         return password;
     }

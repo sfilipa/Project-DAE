@@ -16,6 +16,10 @@ public class RepairerCreateDTO extends RepairerDTO {
         this.password = password;
     }
 
+    public RepairerCreateDTO(String password) {
+        this.password = password;
+    }
+
     public String getPassword() {
         return password;
     }

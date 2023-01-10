@@ -35,9 +35,7 @@
             <b-input class="form-control regist-textbox"
                      name="email"
                      type="email"
-                     ref="email"
                      :state="isEmailValid"
-                     pattern=".+@gmail.com"
                      v-model.trim="email"
                      required/>
           </b-form-group>
@@ -137,8 +135,8 @@ export default {
       if (!this.email) {
         return null
       }
-      if(!this.$refs.email.checkValidity()){
-        return 'The email should end with "@gmail.com"'
+      if(!this.validEmail(this.email)){
+        return 'The email should follow the format -@-.--'
       }
       return ''
     },
@@ -196,6 +194,9 @@ export default {
       this.name = null
       this.email = null
       this.company_username = null
+    },
+    validEmail(email) {
+      return /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(email);
     }
   },
   created() {

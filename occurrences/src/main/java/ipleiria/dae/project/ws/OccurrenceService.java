@@ -1,12 +1,8 @@
 package ipleiria.dae.project.ws;
 
 import ipleiria.dae.project.dtos.OccurrenceDTO;
-import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.ejbs.OccurrenceBean;
-import ipleiria.dae.project.ejbs.RepairerBean;
-import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
-import ipleiria.dae.project.entities.Repairer;
 import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NotAuthorizedException;
@@ -19,11 +15,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
+import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("occurrences")
 @Produces({MediaType.APPLICATION_JSON}) // injects header “Content-Type: application/json”
@@ -79,7 +72,7 @@ public class OccurrenceService {
 
     @PUT
     @Authenticated
-    @RolesAllowed({"Client"})
+    @RolesAllowed({"Client", "Administrator"})
     @Path("/{id}")
     public Response updateOccurrence(@PathParam("id") long id, OccurrenceDTO occurrenceDTO) throws MyEntityNotFoundException, APIBadResponseException, NotAuthorizedException {
         if (!securityContext.getUserPrincipal().getName().equals(occurrenceDTO.getUsernameClient())) {
@@ -117,6 +110,8 @@ public class OccurrenceService {
 //    }
 
     @DELETE
+    @Authenticated
+    @RolesAllowed({"Client", "Administrator"})
     @Path("/{id}")
     public Response deleteOccurrence(@PathParam("id") long id) throws MyEntityNotFoundException {
         occurrenceBean.delete(id);
@@ -142,4 +137,5 @@ public class OccurrenceService {
                 occurrence.getObject()
         );
     }*/
+
 }
