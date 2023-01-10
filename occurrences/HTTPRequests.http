@@ -332,8 +332,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "repairer1",
-  "password": "repairer"
+  "username": "client2",
+  "password": "123"
 }
 
 ###Repairer Send Email
@@ -348,7 +348,7 @@ Content-Type: application/json
 
 ###Update Password
 PATCH http://localhost:8080/occurrences/api/clients/client2/password
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTQ4MjQ5LCJleHAiOjE2NzI5NTE4NDl9.crqPqtCUB_P1cMzpbq2uut3q_0-L7VMxaEZPmzYKvAg
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzYyMDI5LCJleHAiOjE2NzMzNjU2Mjl9.lhczuP6NiUeisJ_W4qk2J08oxJECeAlJkepqtSFICxo
 Content-Type: application/json
 
 {

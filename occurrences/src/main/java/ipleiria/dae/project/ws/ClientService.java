@@ -108,11 +108,12 @@ public class ClientService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("/{username}/password")
-    public Response updatePassword(@PathParam("username") String username, String password) {
+    public Response updatePassword(@PathParam("username") String username, ClientCreateDTO clientDTO) {
         if(!securityContext.getUserPrincipal().getName().equals(username)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
-        Client client = clientBean.updatePassword(username, password);
+
+        Client client = clientBean.updatePassword(username, clientDTO.getPassword());
 
         if (client == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();

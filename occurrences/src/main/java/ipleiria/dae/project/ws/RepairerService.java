@@ -241,12 +241,12 @@ public class RepairerService {
     @Authenticated
     @RolesAllowed({"Repairer"})
     @Path("/{username}/password")
-    public Response updatePassword(@PathParam("username") String username, String password) {
+    public Response updatePassword(@PathParam("username") String username, RepairerCreateDTO repairerDTO) {
         if(!securityContext.getUserPrincipal().getName().equals(username)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        Repairer repairer = repairerBean.updatePassword(username, password);
+        Repairer repairer = repairerBean.updatePassword(username, repairerDTO.getPassword());
 
         if (repairer == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();

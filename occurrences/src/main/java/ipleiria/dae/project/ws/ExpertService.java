@@ -292,12 +292,12 @@ public class ExpertService {
     @Authenticated
     @RolesAllowed({"Expert"})
     @Path("/{username}/password")
-    public Response updatePassword(@PathParam("username") String username, String password) {
+    public Response updatePassword(@PathParam("username") String username, ExpertCreateDTO expertDTO) {
         if(!securityContext.getUserPrincipal().getName().equals(username)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        Expert expert = expertBean.updatePassword(username, password);
+        Expert expert = expertBean.updatePassword(username, expertDTO.getPassword());
 
         if (expert == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
