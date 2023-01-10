@@ -78,7 +78,10 @@ public class DocumentService {
     @Path("download/{id}")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response download(@PathParam("id") Long id) {
-        var document = documentBean.findOrFail(id);
+        var document = documentBean.find(id);
+        if (document == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         var response = Response.ok(new File(document.getFilepath()));
 
         response.header("Content-Disposition", "attachment;filename=" + document.getFilename());
@@ -97,9 +100,9 @@ public class DocumentService {
     @GET
     @Path("/{occurrenceId}/exists")
     public Response hasDocuments(@PathParam("occurrenceId") long occurrenceId) {
-        var occurrence = occurrenceBean.findOrFail(occurrenceId);
+        Boolean hasDocuments = documentBean.seeIfOccurrencyHasDocuments(occurrenceId);
 
-        return Response.status(Response.Status.OK).entity(!occurrence.getDocuments().isEmpty()).build();
+        return Response.status(Response.Status.OK).entity(hasDocuments).build();
     }
 
     private String getFilename(MultivaluedMap<String, String> headers) {

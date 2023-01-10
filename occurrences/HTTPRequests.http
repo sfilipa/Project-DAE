@@ -5,7 +5,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "repairer1",
+  "username": "client2",
   "password": "123"
 }
 
@@ -50,8 +50,8 @@ Content-Type: application/json
 
 ###DOCUMENTS
 ### Add Documents to occurrency
-POST http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyOTEzNjE3LCJleHAiOjE2NzI5MTcyMTd9.um4469JI7SxLC_cdeIjUIemytQFz7dLnhkvj6z4uYFY
+POST http://localhost:8080/occurrences/api/documents/1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzY3NjIzLCJleHAiOjE2NzMzNzEyMjN9.4G4h_l14WhJdVWOMgDqANLBKhE7qXGfKD09fof1eizk
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -59,19 +59,24 @@ Content-Disposition: form-data; name="file"; filename="<C:\popo\statistics.txt"
 
 --boundary
 
+--boundary
+Content-Disposition: form-data; name="file"; filename="<C:\popo\alalal.txt"
+
+--boundary
+
 ### Gets documents of occurrency with id = 2
-GET http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyOTEzNjE3LCJleHAiOjE2NzI5MTcyMTd9.um4469JI7SxLC_cdeIjUIemytQFz7dLnhkvj6z4uYFY
+GET http://localhost:8080/occurrences/api/documents/1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzY2NTY4LCJleHAiOjE2NzMzNzAxNjh9.WpGtJPDJLEUEGlmsuL3sGlaZ_obvmmIfHL228fvU8Hk
 Content-Type: application/x-www-form-urlencoded
 
 ###Download documents with id=1
-GET http://localhost:8080/occurrences/api/documents/download/1 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyNjY4NTQ0LCJleHAiOjE2NzI2NzIxNDR9.twJ6VmBx_BXRDNqdv-Jedc0zJOGwa9IFEwffiSFFe9M
+GET http://localhost:8080/occurrences/api/documents/download/2 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzY2NTY4LCJleHAiOjE2NzMzNzAxNjh9.WpGtJPDJLEUEGlmsuL3sGlaZ_obvmmIfHL228fvU8Hk
 Content-Type: application/x-www-form-urlencoded
 
 ###See if occurrency with id = 2 has documents
-GET http://localhost:8080/occurrences/api/documents/2/exists HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQzIiwiaWF0IjoxNjcyOTEzNjE3LCJleHAiOjE2NzI5MTcyMTd9.um4469JI7SxLC_cdeIjUIemytQFz7dLnhkvj6z4uYFY
+GET http://localhost:8080/occurrences/api/documents/1/exists HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzY3NjIzLCJleHAiOjE2NzMzNzEyMjN9.4G4h_l14WhJdVWOMgDqANLBKhE7qXGfKD09fof1eizk
 Content-Type: application/x-www-form-urlencoded
 
 ##### CLIENT Occurrences
