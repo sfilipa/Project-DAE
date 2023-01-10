@@ -1,5 +1,7 @@
 package ipleiria.dae.project.entities;
 
+import org.hibernate.Hibernate;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

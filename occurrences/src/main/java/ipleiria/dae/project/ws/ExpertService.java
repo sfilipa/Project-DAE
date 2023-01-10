@@ -307,6 +307,17 @@ public class ExpertService {
                 .build();
     }
 
+    @PATCH
+    @Authenticated
+    @RolesAllowed({"Administrator"})
+    @Path("/{username}/insuranceCompany/{company_username}")
+    public Response updateInsuranceCompany(@PathParam("username") String username, @PathParam("company_username") String insuranceCompany) {
+        expertBean.updateInsuranceCompany(username, insuranceCompany);
+        return Response.status(Response.Status.OK)
+                .entity("Insurance company updated for expert " + username)
+                .build();
+    }
+
     @DELETE
     @Authenticated
     @RolesAllowed({"Administrator"})

@@ -364,4 +364,32 @@ public class ExpertBean {
         expert.setPassword(hasher.hash(password));
         return expert;
     }
+
+    public void updateInsuranceCompany(String username, String insuranceCompany) {
+        Expert expert = find(username);
+        if (expert == null) {
+            throw new MyEntityNotFoundException("Expert not found");
+        }
+        em.lock(expert, LockModeType.OPTIMISTIC);
+        Hibernate.initialize(expert);
+
+        var occurrences = expert.getOccurrences();
+        Hibernate.initialize(occurrences);
+
+        if(checkIfHasOccurrencesInProgress(occurrences)){
+            throw new MyEntityExistsException("Expert has occurrences in progress - can't update his insurance company");
+        }
+
+        expert.setInsuranceCompany(insuranceCompany);
+    }
+
+    private boolean checkIfHasOccurrencesInProgress(List<Occurrence> occurrences) {
+        for (Occurrence occurrence : occurrences) {
+            State state = occurrence.getState();
+            if(state != State.FAILED && state != State.RESOLVED){
+                return true;
+            }
+        }
+        return false;
+    }
 }
