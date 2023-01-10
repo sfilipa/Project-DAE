@@ -86,7 +86,7 @@ public class ClientService {
    /* @Authenticated
     @RolesAllowed({"Client"})*/
     @Path("/{username}")
-    public Response updateClient(@PathParam("username") String username, ClientCreateDTO clientDTO) {
+    public Response updateClient(@PathParam("username") String username, ClientDTO clientDTO) {
         Client client = clientBean.update(
                 username,
                 clientDTO.getName(),

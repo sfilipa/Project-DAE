@@ -1,5 +1,6 @@
 package ipleiria.dae.project.ejbs;
 
+import ipleiria.dae.project.entities.Client;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.enumerators.State;
@@ -13,6 +14,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
@@ -47,7 +49,7 @@ public class ExpertBean {
         return newExpert;
     }
 
-    public Expert update(String username, String password, String name, String email, String insuranceCompany) throws MyEntityNotFoundException {
+    public Expert update(String username, String name, String email, String insuranceCompany) throws MyEntityNotFoundException {
         try {
             // Find company
             String company = MockAPIBean.getInsuranceCompany(insuranceCompany);
@@ -58,7 +60,6 @@ public class ExpertBean {
             validateExpertExists(expert);
 
             // Update
-            expert.setPassword(password);
             expert.setName(name);
             expert.setEmail(email);
             expert.setInsuranceCompany(company);
@@ -359,4 +360,13 @@ public class ExpertBean {
         }
     }
 
+    public Expert updatePassword(String username, String password) {
+        Expert expert = find(username);
+        if (expert == null) {
+            throw new MyEntityNotFoundException("Expert not found");
+        }
+        em.lock(expert, LockModeType.OPTIMISTIC);
+        expert.setPassword(hasher.hash(password));
+        return expert;
+    }
 }

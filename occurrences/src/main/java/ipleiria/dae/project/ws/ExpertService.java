@@ -2,12 +2,14 @@ package ipleiria.dae.project.ws;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ipleiria.dae.project.dtos.ClientDTO;
 import ipleiria.dae.project.dtos.EmailDTO;
 import ipleiria.dae.project.dtos.ExpertDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.dtos.create.ExpertCreateDTO;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.ejbs.ExpertBean;
+import ipleiria.dae.project.entities.Client;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
@@ -262,7 +264,7 @@ public class ExpertService {
     @Authenticated
     @RolesAllowed({"Administrator", "Expert"})
     @Path("/{username}")
-    public Response update(@PathParam("username") String username, ExpertCreateDTO expertDTO) throws MyEntityNotFoundException {
+    public Response update(@PathParam("username") String username, ExpertDTO expertDTO) throws MyEntityNotFoundException {
         try {
             if (!securityContext.getUserPrincipal().getName().equals(username)) {
                 throw new ForbiddenException(username + ", You are not allowed to access this resource");
@@ -270,7 +272,6 @@ public class ExpertService {
 
             Expert expert = expertBean.update(
                     username,
-                    expertDTO.getPassword(),
                     expertDTO.getName(),
                     expertDTO.getEmail(),
                     expertDTO.getCompany_username()
@@ -286,6 +287,25 @@ public class ExpertService {
         } catch (Exception e) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
+    }
+
+    @PATCH
+    @Authenticated
+    @RolesAllowed({"Expert"})
+    @Path("/{username}/password")
+    public Response updatePassword(@PathParam("username") String username, String password) {
+        if(!securityContext.getUserPrincipal().getName().equals(username)) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+
+        Expert expert = expertBean.updatePassword(username, password);
+
+        if (expert == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        return Response.status(Response.Status.OK)
+                .entity(ExpertDTO.from(expert))
+                .build();
     }
 
     @DELETE
