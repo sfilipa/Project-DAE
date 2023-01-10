@@ -1,19 +1,28 @@
 <template>
   <div class="occurrences-div">
-    <p style="font-size: 20px; margin-bottom: 1rem"><b>{{occurrence.objectInsured}}
+    <p style="font-size: 20px; margin-bottom: 1rem; color: red"><b>{{occurrence.objectInsured}}
       ({{ occurrence.coverageType.charAt(0).toUpperCase() + occurrence.coverageType.split('_').join(' ').slice(1).toLowerCase() }})
       - <span>{{occurrence.insuranceCode}}</span></b></p>
     <div class="occurrences-item" >
       <div class="occurrences-item-row" style="width: 30%;">
-        <span>Occurrence {{ occurrence.id }}</span>
-        <span>Repairer: {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</span>
-        <span>Entry Date: {{occurrence.entryDate}} &nbsp; Final Date: {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</span>
+        <span><b>Occurrence</b> {{ occurrence.id }}</span>
+        <span><b>Repairer:</b> {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</span>
+        <p style="white-space: pre;"><b>Description:</b> <br>{{ occurrence.description }}</p>
       </div>
 
-      <div class="occurrences-item-row" style="align-self: flex-end;">
+      <div class="occurrences-item-row" style="align-self: flex-start;">
+        <p style="margin-bottom: 0;"><b>Entry Date:</b> {{occurrence.entryDate}} &nbsp; </p>
+        <p><b>Final Date:</b> {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</p>
+      </div>
 
-        <p style="white-space: pre;">Description: <br>{{ occurrence.description }}</p>
-        <!--        <p>Documents: <span v-for="document in occurrence.documents"> {{ document.filename }};</span></p>-->
+      <div class="occurrences-item-row" style="align-self: flex-start; margin-left: 2rem;">
+        <div v-if="occurrence.expertsDTO.length !== 0">
+          <p style="margin-bottom: 0"><b>Experts Associated:</b></p>
+          <p v-for="expert in occurrence.expertsDTO">-- {{expert.name}}</p>
+        </div>
+        <div v-else>
+          No experts associated
+        </div>
       </div>
 
       <div class="occurrences-item-row flex-grow-1" :class="{'occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end; width: 10rem;">
