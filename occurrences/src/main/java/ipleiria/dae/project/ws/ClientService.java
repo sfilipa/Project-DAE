@@ -83,8 +83,8 @@ public class ClientService {
     }
 
     @PUT
-   /* @Authenticated
-    @RolesAllowed({"Client"})*/
+   /* @Authenticated*/
+   // @RolesAllowed({"Client"})
     @Path("/{username}")
     public Response updateClient(@PathParam("username") String username, ClientCreateDTO clientDTO) {
         Client client = clientBean.update(
@@ -123,10 +123,10 @@ public class ClientService {
     }
 
     @DELETE
-   /* @Authenticated
-    @RolesAllowed({"Client"})*/
+    @Authenticated
+    @RolesAllowed({"Client", "Administrator"})
     @Path("/{username}")
-    public Response deleteOccurrence(@PathParam("username") String username) {
+    public Response delete(@PathParam("username") String username) {
         clientBean.delete(username);
 
         return Response.noContent().build();
