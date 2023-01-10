@@ -46,4 +46,13 @@ public class DocumentBean {
     public List<Document> getOccurenceDocuments(long occurenceId) {
         return em.createNamedQuery("getOccurenceDocuments", Document.class).setParameter("id", occurenceId).getResultList();
     }
+
+    public Boolean seeIfOccurrencyHasDocuments(long occurenceId) {
+        var occurence = occurrenceBean.find(occurenceId);
+        if (occurence == null) {
+            throw new MyEntityNotFoundException("Occurrence not found");
+        }
+
+        return occurence.getDocuments().size() > 0;
+    }
 }
