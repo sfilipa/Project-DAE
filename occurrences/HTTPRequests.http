@@ -23,11 +23,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyO
 Content-Type: application/json
 
 {
-  "usernameClient": "client2",
+  "usernameClient": "client1",
   "entryDate": "10/1/2023",
   "state": "PENDING",
   "insuranceCode": "ALL-1298389",
-  "coverageType": "WATER_DAMAGE",
+  "coverageType": "ACCIDENTAL_DAMAGE",
   "description": "ola"
 }
 
@@ -79,27 +79,13 @@ GET http://localhost:8080/occurrences/api/clients/client2/occurrences
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE5ODQ0LCJleHAiOjE2NzI5MjM0NDR9.gM59HTRpfwRboS8N-Dmc3CwFmXRQqd-gbxXmYBOYTfM
 Accept: application/json
 
-### Create Company
-POST http://localhost:8080/occurrences/api/companies
-Content-Type: application/json
-
-{
-  "username": "company1",
-  "password": "123",
-  "name": "Company 1",
-  "email": "company@mail.pt",
-  "address": "Rua 1",
-  "phoneNumber": 987654321,
-  "nipc": 123456
-}
-
 ### Create Expert
 POST http://localhost:8080/occurrences/api/experts
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEiLCJpYXQiOjE2NzI5MzI4NjAsImV4cCI6MTY3MjkzNjQ2MH0.JJ0dY59TH0yug6muh2DfZseYr-oW0PE2MFJF7gRjT4o
 Content-Type: application/json
 
 {
-  "username": "expert3",
+  "username": "expert2",
   "password": "123",
   "name": "Expert 3",
   "email": "expert3@mail.pt",
@@ -147,12 +133,12 @@ Content-Type: application/json
 GET http://localhost:8080/occurrences/api/experts
 Accept: application/json
 
-### GET specific Experts
+### GET specific Expert
 GET http://localhost:8080/occurrences/api/experts/expert2
 Accept: application/json
 
 ### Assign expert to occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/1/assign
+PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/2/assign
 Content-Type: application/json
 
 ### Unassign expert from occurrence
@@ -168,19 +154,31 @@ Content-Type: application/json
 }
 
 ### Expert Approve Occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/1/approve
+PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/2/approve
 Content-Type: application/json
 
 {
   "description": "The problem seems to be with..."
 }
 
+### Client assigns Repairer to Occurrence
+PATCH http://localhost:8080/occurrences/api/clients/client1/occurrences/2/repairer1/assign
+Content-Type: application/json
+
+### Expert Approves Repairer
+PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/2/acceptRepairer
+Content-Type: application/json
+
+### Expert Disapproves Repairer
+PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/2/rejectRepairer
+Content-Type: application/json
+
 ### Get All Repairers
 GET http://localhost:8080/occurrences/api/repairers
 Content-Type: application/json
 
 ### Repairer Starts Occurrence
-PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/1/start
+PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/2/start
 Content-Type: application/json
 
 ### Repairer Fails Occurrence
@@ -276,31 +274,6 @@ Accept: application/json
 GET http://localhost:8080/occurrences/api/insured-asset-type
 Accept: application/json
 
-###MOCKAPI
-###Get All Policies from MockApi
-GET https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=FIDEL-1298302
-Accept: application/json
-
-###Get All Insurances from MockApi
-GET http://localhost:8080/occurrences/api/mock/insurances
-Accept: application/json
-
-###Get All Insurance Companies from MockApi
-GET http://localhost:8080/occurrences/api/mock/insuranceCompanies
-Accept: application/json
-
-###Get Insurance with specific code from MockApi
-GET http://localhost:8080/occurrences/api/mock/insurances/code/FIDEL-1298302
-Accept: application/json
-
-###Get Insurance Company with specific code from MockApi
-GET http://localhost:8080/occurrences/api/mock/insuranceCompanies/name/Fidelidade
-Accept: application/json
-
-###Get All repairers from a specific insurance company
-GET http://localhost:8080/occurrences/api/mock/insuranceCompanies/name/Fidelidade/repairers
-Accept: application/json
-
 ###Client Send Email
 POST http://localhost:8080/occurrences/api/clients/client2/email/send
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTE1NDM2LCJleHAiOjE2NzI5MTkwMzZ9.pF3kxBuD_lZSVuGYNOlxGLAjVMjVWlifTcMSNTbnK94
@@ -358,130 +331,4 @@ Content-Type: application/json
 
 {
   "password": "BomDiaaaaaa"
-}
-
-### HAPPY PATH
-### Login
-POST http://localhost:8080/occurrences/api/auth/login
-Content-Type: application/json
-Accept: application/json
-
-{
-  "username": "repairer1",
-  "password": "123"
-}
-
-### Login
-POST http://localhost:8080/occurrences/api/auth/login/admin
-Content-Type: application/json
-Accept: application/json
-
-{
-  "username": "admin1",
-  "password": "123"
-}
-
-### Create Ocurrence
-POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczMDQzODcwLCJleHAiOjE2NzMwNDc0NzB9.zI8_EthirXaeQcZRjnhdJRfYqlzfNiI0n0REvAy3is8
-Content-Type: application/json
-
-{
-  "usernameClient": "client1",
-  "entryDate": "10/1/2023",
-  "state": "PENDING",
-  "insuranceCode": "ALL-1298389",
-  "coverageType": "ACCIDENTAL_DAMAGE",
-  "description": "Iphone dropped in the toilet"
-}
-
-### Create Expert
-POST http://localhost:8080/occurrences/api/experts
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEiLCJpYXQiOjE2NzMwNDU2NjYsImV4cCI6MTY3MzA0OTI2Nn0.webTm6wXu7RZeKlckMZ_DOrpFPapmXAZI4qRhQvStK8
-Content-Type: application/json
-
-{
-  "username": "expert3",
-  "password": "123",
-  "name": "Expert 3",
-  "email": "expert3@mail.pt",
-  "company_username": "Allianz"
-}
-
-### Assign expert to occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert3/occurrences/2/assign
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczMDQzOTYzLCJleHAiOjE2NzMwNDc1NjN9.r1acxhf59SXjGSTGoz0M3isWrQgLBPm0mSsQDxzDWPY
-Content-Type: application/json
-
-##### Get Occurrence Details
-GET http://localhost:8080/occurrences/api/occurrences/2
-Accept: application/json
-
-### Expert Approve Occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert3/occurrences/2/approve
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczMDQzOTYzLCJleHAiOjE2NzMwNDc1NjN9.r1acxhf59SXjGSTGoz0M3isWrQgLBPm0mSsQDxzDWPY
-Content-Type: application/json
-
-{
-  "description": "The only damage seems to be with the screen. The phone is working fine"
-}
-
-### Client Adds Repairer to Occurrence
-PATCH http://localhost:8080/occurrences/api/clients/client1/occurrences/1/repairers/repairer1/assign
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzMwNDQ4MDcsImV4cCI6MTY3MzA0ODQwN30.Omk4HoqxuCLw7ayZ7A321r2VVoXZRb3NDemi7g8XAfs
-Content-Type: application/json
-
-### Expert Approves Repairer
-PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/2/acceptRepairer
-Content-Type: application/json
-
-### Repairer Starts Repair
-PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/2/start
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzMwNDQ4MDcsImV4cCI6MTY3MzA0ODQwN30.Omk4HoqxuCLw7ayZ7A321r2VVoXZRb3NDemi7g8XAfs
-Content-Type: application/json
-
-### Repairer Finishes the Repair
-PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/2/finish
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzMwNDQ4MDcsImV4cCI6MTY3MzA0ODQwN30.Omk4HoqxuCLw7ayZ7A321r2VVoXZRb3NDemi7g8XAfs
-Content-Type: application/json
-
-{
-  "description": "Changed the Screen"
-}
-
-### SAD PATH
-### Login
-POST http://localhost:8080/occurrences/api/auth/login
-Content-Type: application/json
-Accept: application/json
-
-{
-  "username": "client1",
-  "password": "123"
-}
-
-### Create Ocurrence
-POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTMzNDQ1LCJleHAiOjE2NzI5MzcwNDV9.nhKcDTIvRqZsAsFIlTjWuSr70ZLc8yc31YG8AUP3fPU
-Content-Type: application/json
-
-{
-  "usernameClient": "client1",
-  "entryDate": "10/1/2023",
-  "state": "PENDING",
-  "insuranceCode": "ALL-1298389",
-  "coverageType": "WATER_DAMAGE",
-  "description": "Iphone dropped in the toilet"
-}
-
-### Assign expert to occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/1/assign
-Content-Type: application/json
-
-### Expert Disapprove Occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/disapprove
-Content-Type: application/json
-
-{
-  "description": "Insurance does not cover this type of damage"
 }

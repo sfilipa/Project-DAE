@@ -333,7 +333,6 @@ public class ExpertBean {
         try {
             validateOccurrenceExists(occurrence);
             validateExpertIsAssignedToOccurrence(expert, occurrence);
-            validateOccurrenceState(occurrence, State.PENDING);
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
         } catch (NotAuthorizedException e) {
