@@ -49,12 +49,8 @@ public class ExpertBean {
         return newExpert;
     }
 
-    public Expert update(String username, String name, String email, String insuranceCompany) throws MyEntityNotFoundException {
+    public Expert update(String username, String name, String email) throws MyEntityNotFoundException {
         try {
-            // Find company
-            String company = MockAPIBean.getInsuranceCompany(insuranceCompany);
-            validateCompanyExists(company);
-
             // Find Expert
             Expert expert = em.find(Expert.class, username);
             validateExpertExists(expert);
@@ -62,7 +58,6 @@ public class ExpertBean {
             // Update
             expert.setName(name);
             expert.setEmail(email);
-            expert.setInsuranceCompany(company);
 
             // To ensure the changes are persisted to the database
             em.merge(expert);

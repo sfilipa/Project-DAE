@@ -273,19 +273,18 @@ public class ExpertService {
             Expert expert = expertBean.update(
                     username,
                     expertDTO.getName(),
-                    expertDTO.getEmail(),
-                    expertDTO.getCompany_username()
+                    expertDTO.getEmail()
             );
 
             return Response.status(Response.Status.OK)
                     .entity(ExpertDTO.from(expert))
                     .build();
         } catch (MyEntityNotFoundException e) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         } catch (ForbiddenException e) {
-            return Response.status(Response.Status.FORBIDDEN).build();
+            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
         }
     }
 
