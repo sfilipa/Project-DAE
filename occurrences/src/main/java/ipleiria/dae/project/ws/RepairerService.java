@@ -219,7 +219,7 @@ public class RepairerService {
             }
 
         Repairer repairer = repairerBean.update(
-                repairerDTO.getUsername(),
+                username,
                 repairerDTO.getName(),
                 repairerDTO.getEmail(),
                 repairerDTO.getAddress()

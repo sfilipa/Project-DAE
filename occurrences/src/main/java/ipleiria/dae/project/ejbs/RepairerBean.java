@@ -70,17 +70,16 @@ public class RepairerBean {
 
     public Repairer update(String username, String name, String email, String address) throws MyEntityNotFoundException {
         try {
-
             // Find the repairer
             Repairer repairer = find(username);
-            if (repairer == null) {
-                throw new MyEntityNotFoundException(username + ", Repairer not found");
-            }
 
+            validateRepairer(repairer);
             // Update the repairer
             repairer.setName(name);
             repairer.setEmail(email);
             repairer.setAddress(address);
+
+            em.merge(repairer);
             return repairer;
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
@@ -128,12 +127,12 @@ public class RepairerBean {
             validateOccurrenceState(occurrence, State.APPROVED);
 
             //Check if repairer is in insurance companies' experts. If so, then we don't need experts' approval
-            if(checkIfRepairerIsInInsuranceCompanyRepairers(repairer.getUsername(), occurrence.getInsurance().getInsuranceCompany())){
+            if (checkIfRepairerIsInInsuranceCompanyRepairers(repairer.getUsername(), occurrence.getInsurance().getInsuranceCompany())) {
                 occurrence.setState(State.REPAIRER_WAITING_LIST);
                 // Send email to the repairer that the occurrence was assigned
                 emailBean.send(repairer.getEmail(), "Occurrence " + occurrence.getId() + " assigned to you",
                         "A new occurrence has been assigned to you by " + occurrence.getClient().getUsername() + ".\n\n" + occurrence.getDescription());
-            }else{
+            } else {
                 occurrence.setState(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
                 // Send email to Experts to approve the repairer
                 List<Expert> experts = expertBean.getAllExperts();
@@ -163,7 +162,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(repairer,occurrence, null);
+            validateOccurrence(repairer, occurrence, null);
 //            if(occurrence.getState() != State.REPAIRER_WAITING_LIST && occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){
 //                return -3; //devolver exception (pois se estiver no .ACTIVE, não posso fazer unassign de um repairer que já está mesmo a reparar)
 //            }
@@ -174,7 +173,7 @@ public class RepairerBean {
             occurrence.setRepairer(null);
             repairer.removeOccurrence(occurrence);
 
-        }catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
@@ -187,7 +186,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(repairer,occurrence, State.REPAIRER_WAITING_LIST);
+            validateOccurrence(repairer, occurrence, State.REPAIRER_WAITING_LIST);
 
             // Start Occurrence
             occurrence.setState(State.ACTIVE);
@@ -208,7 +207,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(repairer,occurrence, State.ACTIVE);
+            validateOccurrence(repairer, occurrence, State.ACTIVE);
 
             // Fail Occurrence
             occurrence.setState(State.FAILED);
@@ -228,7 +227,7 @@ public class RepairerBean {
         }
     }
 
-    public void finishOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException{
+    public void finishOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -236,7 +235,7 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(repairer,occurrence, State.ACTIVE);
+            validateOccurrence(repairer, occurrence, State.ACTIVE);
 
             // Approve Occurrence
             occurrence.setState(State.RESOLVED);
@@ -267,19 +266,19 @@ public class RepairerBean {
         }
     }
 
-    private void validateRepairer(Repairer repairer) throws MyEntityNotFoundException{
-        if (repairer == null){
+    private void validateRepairer(Repairer repairer) throws MyEntityNotFoundException {
+        if (repairer == null) {
             throw new MyEntityNotFoundException("Repairer not found");
         }
     }
 
     private void validateOccurrenceExists(Occurrence occurrence) {
-        if(occurrence == null) {
+        if (occurrence == null) {
             throw new IllegalArgumentException("Occurrence not found");
         }
     }
 
-    private void validateOccurrence(Repairer repairer,Occurrence occurrence, State state) throws MyEntityNotFoundException, NotAuthorizedException {
+    private void validateOccurrence(Repairer repairer, Occurrence occurrence, State state) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             validateOccurrenceExists(occurrence);
             validateRepairerIsAssignedToOccurrence(repairer, occurrence);
@@ -293,14 +292,14 @@ public class RepairerBean {
 
     private void validateRepairerIsAssignedToOccurrence(Repairer repairer, Occurrence occurrence) throws NotAuthorizedException, MyEntityNotFoundException {
         // Check if Repairer is assigned to Occurrence
-        if(!occurrence.getRepairer().getUsername().equals(repairer.getUsername())) {
+        if (!occurrence.getRepairer().getUsername().equals(repairer.getUsername())) {
             throw new NotAuthorizedException("Repairer " + repairer.getUsername() + " is not assigned to this occurrence " + occurrence.getId());
         }
     }
 
     private void validateOccurrenceState(Occurrence occurrence, State state) throws NotAuthorizedException {
         // Check if Occurrence is in the correct state
-        if(occurrence.getState() != state) {
+        if (occurrence.getState() != state) {
             throw new NotAuthorizedException("Occurrence is not in the correct state, current state is " + occurrence.getState());
         }
     }
@@ -320,7 +319,7 @@ public class RepairerBean {
         try {
             // Find Repairer
             Repairer repairer = find(username);
-            if (repairer == null){
+            if (repairer == null) {
                 throw new MyEntityNotFoundException("Repairer not found");
             }
 

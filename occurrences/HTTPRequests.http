@@ -5,7 +5,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "expert1",
+  "username": "repairer1",
   "password": "123"
 }
 
@@ -120,7 +120,7 @@ Content-Type: application/json
 
 ### Update Expert
 PUT http://localhost:8080/occurrences/api/experts/expert1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczMzUxNjA3LCJleHAiOjE2NzMzNTUyMDd9.SaPOS8FXX6hhHIBPvy3V6d6Hm7g5JhcXE70EFTrIhDI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzMzNjMyMzUsImV4cCI6MTY3MzM2NjgzNH0.GHvy2leP4I5ml9tY0g2vJL8FR3tznGY4npmBFL47A4I
 Content-Type: application/json
 
 {
@@ -130,6 +130,7 @@ Content-Type: application/json
 
 ### Update Repairer
 PUT http://localhost:8080/occurrences/api/repairers/repairer1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzMzNjMyMzUsImV4cCI6MTY3MzM2NjgzNH0.GHvy2leP4I5ml9tY0g2vJL8FR3tznGY4npmBFL47A4I
 Content-Type: application/json
 
 {
