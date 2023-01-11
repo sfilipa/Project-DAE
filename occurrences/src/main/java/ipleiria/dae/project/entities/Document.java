@@ -29,6 +29,12 @@ public class Document {
         this.occurrence = occurrence;
     }
 
+    public Document(String filepath, String filename) {
+        this.filepath = filepath;
+        this.filename = filename;
+    }
+
+
     public Long getId() {
         return id;
     }
