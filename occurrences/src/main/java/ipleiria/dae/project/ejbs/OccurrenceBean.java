@@ -17,6 +17,9 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Stateless
@@ -67,11 +70,13 @@ public class OccurrenceBean {
             throw new NotAuthorizedException("Client is not the owner of the insurance");
         }
 
-        Date initialDate_formatDate = new Date(initialDateAPI);
-        Date validUntil_formatDate = new Date(validUntilAPI);
-        Date entryDate_formatDate = new Date(entryDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        if ((entryDate_formatDate.before(initialDate_formatDate) || entryDate_formatDate.after(validUntil_formatDate))) {
+        LocalDate initialDateLocal = LocalDate.parse(initialDateAPI, formatter);
+        LocalDate validDateLocal = LocalDate.parse(validUntilAPI, formatter);
+        LocalDate entryDateLocal = LocalDate.parse(entryDate, formatter);
+
+        if (!(entryDateLocal.isAfter(initialDateLocal) && entryDateLocal.isBefore(validDateLocal) || entryDateLocal.equals(initialDateLocal) || entryDateLocal.equals(validDateLocal))) {
             throw new DateOutsideRangeException("Entry date is not between the initial date and the valid until date");
         }
 
@@ -159,13 +164,16 @@ public class OccurrenceBean {
             throw new MyEntityNotFoundException("Insurance type not found");
         }
 
-        Date initialDate_formatDate = new Date(initialDateAPI);
-        Date validUntil_formatDate = new Date(validUntilAPI);
-        Date entryDate_formatDate = new Date(entryDate);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        if ((entryDate_formatDate.before(initialDate_formatDate) || entryDate_formatDate.after(validUntil_formatDate))) {
+        LocalDate initialDateLocal = LocalDate.parse(initialDateAPI, formatter);
+        LocalDate validDateLocal = LocalDate.parse(validUntilAPI, formatter);
+        LocalDate entryDateLocal = LocalDate.parse(entryDate, formatter);
+
+        if (!(entryDateLocal.isAfter(initialDateLocal) && entryDateLocal.isBefore(validDateLocal) || entryDateLocal.equals(initialDateLocal) || entryDateLocal.equals(validDateLocal))) {
             throw new DateOutsideRangeException("Entry date is not between the initial date and the valid until date");
         }
+
         occurrence.setEntryDate(entryDate);
         occurrence.setState(state);
         occurrence.setInsurance(insurance);

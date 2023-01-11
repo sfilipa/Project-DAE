@@ -33,6 +33,14 @@ public class DocumentBean {
         return document;
     }
 
+    public Document createWithoutOccurrence(String filepath, String filename) {
+        var document = new Document(filepath, filename);
+
+        em.persist(document);
+
+        return document;
+    }
+
     public Document find(Long id) {
         return em.find(Document.class, id);
     }
