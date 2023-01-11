@@ -169,14 +169,18 @@ public class OccurrenceBean {
             throw new MyEntityNotFoundException("Insurance type not found");
         }
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        LocalDate initialDateLocal = LocalDate.parse(initialDateAPI, formatter);
-        LocalDate validDateLocal = LocalDate.parse(validUntilAPI, formatter);
-        LocalDate entryDateLocal = LocalDate.parse(entryDate, formatter);
+            LocalDate initialDateLocal = LocalDate.parse(initialDateAPI, formatter);
+            LocalDate validDateLocal = LocalDate.parse(validUntilAPI, formatter);
+            LocalDate entryDateLocal = LocalDate.parse(entryDate, formatter);
 
-        if (!(entryDateLocal.isAfter(initialDateLocal) && entryDateLocal.isBefore(validDateLocal) || entryDateLocal.equals(initialDateLocal) || entryDateLocal.equals(validDateLocal))) {
-            throw new DateOutsideRangeException("Entry date is not between the initial date and the valid until date");
+            if (!(entryDateLocal.isAfter(initialDateLocal) && entryDateLocal.isBefore(validDateLocal) || entryDateLocal.equals(initialDateLocal) || entryDateLocal.equals(validDateLocal))) {
+                throw new DateOutsideRangeException("Entry date is not between the initial date and the valid until date");
+            }
+        } catch (Exception e) {
+            throw new NifNotValidException("Invalid date format must be dd/MM/yyyy");
         }
 
         occurrence.setEntryDate(entryDate);
