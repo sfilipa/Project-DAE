@@ -5,9 +5,6 @@ import ipleiria.dae.project.enumerators.CoverageType;
 import ipleiria.dae.project.enumerators.InsuredAssetType;
 import ipleiria.dae.project.enumerators.State;
 import ipleiria.dae.project.exceptions.*;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hibernate.Hibernate;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,8 +13,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.io.*;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -80,7 +75,7 @@ public class OccurrenceBean {
                 throw new DateOutsideRangeException("Entry date is not between the initial date and the valid until date");
             }
         } catch (Exception e) {
-            throw new NifNotValidException("Invalid date format must be dd/MM/yyyy");
+            throw new ArgumentNotValidException("Invalid date format must be dd/MM/yyyy");
         }
 
         InsuredAssetType insuredAssetType = null;
@@ -180,7 +175,7 @@ public class OccurrenceBean {
                 throw new DateOutsideRangeException("Entry date is not between the initial date and the valid until date");
             }
         } catch (Exception e) {
-            throw new NifNotValidException("Invalid date format must be dd/MM/yyyy");
+            throw new ArgumentNotValidException("Invalid date format must be dd/MM/yyyy");
         }
 
         occurrence.setEntryDate(entryDate);
