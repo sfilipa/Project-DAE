@@ -53,25 +53,13 @@
 <script>
 export default {
   name: "Occurrence",
-  props: ['occurrence', 'isAssigned', 'waitingRefresh'],
+  props: ['occurrence', 'isAssigned', 'waitingRefresh', 'documents'],
   emits: ['updateOccurrences'],
   data(){
     return {
       approveOrDisapprove: "",
       descriptionApprovePending: null,
-      documents: []
     }
-  },
-  created() {
-    this.$axios.$get(`api/documents/${this.occurrence.id}/exists`)
-      .then((response)=> {
-        if (response) {
-          this.$axios.$get(`api/documents/${this.occurrence.id}`)
-            .then((response) => {
-              this.documents = response
-            })
-        }
-      })
   },
   computed: {
     invalidDescriptionFeedback () {
@@ -137,6 +125,18 @@ export default {
           this.$emit('updateOccurrences')
         })
     },
+    downloadDocument(documentToDownload){
+      this.$axios.$get(`api/documents/download/${documentToDownload.id}`, { responseType:
+          'arraybuffer'})
+        .then(file => {
+          const url = window.URL.createObjectURL(new Blob([file]))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', documentToDownload.filename)
+          document.body.appendChild(link)
+          link.click()
+        })
+    }
   }
 }
 </script>

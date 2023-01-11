@@ -78,30 +78,19 @@
 <script>
 export default {
   name: "Occurrence",
-  props: ['occurrence', 'isAssigned', 'waitingRefresh'],
+  props: ['occurrence', 'isAssigned', 'waitingRefresh', 'documents'],
   emits: ['updateOccurrences'],
   data(){
     return {
       descriptionApprovePending: null,
       approveOrDisapprove: "",
       company_username: null,
-      documents: []
     }
   },
   created() {
     this.$axios.$get(`/api/experts/${this.$auth.user.username}`)
       .then((response) => {
         this.company_username = response.company_username;
-      })
-
-    this.$axios.$get(`api/documents/${this.occurrence.id}/exists`)
-      .then((response)=> {
-        if (response) {
-          this.$axios.$get(`api/documents/${this.occurrence.id}`)
-            .then((response) => {
-              this.documents = response
-            })
-        }
       })
   },
   computed: {
@@ -194,6 +183,18 @@ export default {
       this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/unassign`)
         .then(()=> {
           this.$emit('updateOccurrences')
+        })
+    },
+    downloadDocument(documentToDownload){
+      this.$axios.$get(`api/documents/download/${documentToDownload.id}`, { responseType:
+          'arraybuffer'})
+        .then(file => {
+          const url = window.URL.createObjectURL(new Blob([file]))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', documentToDownload.filename)
+          document.body.appendChild(link)
+          link.click()
         })
     }
   }

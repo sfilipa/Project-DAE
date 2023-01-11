@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <div v-if="documents.length !== 0">
+    <div v-if="this.documents.length !== 0">
       <hr>
       <div class="repair-row" style="flex-wrap: wrap">
         <span class="fw-bold me-4">Documents: </span>
@@ -83,7 +83,7 @@
 <script>
 export default {
   name: "Occurrence",
-  props: ['occurrence'],
+  props: ['occurrence', 'documents'],
   data(){
     return {
       entrustedRepairers: null,
@@ -93,7 +93,6 @@ export default {
       solicitedRepairer: "",
       waitingResponse: false,
       errorMsg: null,
-      documents: []
     }
   },
   created () {
@@ -111,16 +110,6 @@ export default {
             })
         })
     }
-
-    this.$axios.$get(`api/documents/${this.occurrence.id}/exists`)
-      .then((response)=> {
-        if (response) {
-          this.$axios.$get(`api/documents/${this.occurrence.id}`)
-            .then((response) => {
-              this.documents = response
-            })
-        }
-      })
   },
   methods: {
     associateRepairer(){

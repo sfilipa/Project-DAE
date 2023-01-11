@@ -160,7 +160,7 @@
             </b-select>
           </div>
           <div v-for="occurrence in getOnGoingOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
-            <Occurrence :occurrence="occurrence"></Occurrence>
+            <Occurrence :occurrence="occurrence" :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"></Occurrence>
           </div>
         </div>
       </div>
@@ -188,7 +188,7 @@
             </b-select>
           </div>
           <div v-for="occurrence in getCompletedOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
-            <Occurrence :occurrence="occurrence"></Occurrence>
+            <Occurrence :occurrence="occurrence" :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"></Occurrence>
           </div>
         </div>
       </div>
@@ -343,8 +343,8 @@ export default {
                 }
               })
         })
-        console.log(this.occurrenceStates)
       })
+
   },
   methods: {
     getOnGoingOccurrences(){
