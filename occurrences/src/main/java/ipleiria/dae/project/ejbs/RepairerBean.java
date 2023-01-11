@@ -340,13 +340,17 @@ public class RepairerBean {
         }
     }
 
-    public Repairer updatePassword(String username, String password) {
+    public void updatePassword(String username, String password, String oldPassword) {
         Repairer repairer = find(username);
         if (repairer == null) {
             throw new MyEntityNotFoundException("Repairer not found");
         }
+
+        if(!hasher.hash(oldPassword).equals(repairer.getPassword())){
+            throw new NotAuthorizedException("Old password is incorrect");
+        }
+
         em.lock(repairer, LockModeType.OPTIMISTIC);
         repairer.setPassword(hasher.hash(password));
-        return repairer;
     }
 }

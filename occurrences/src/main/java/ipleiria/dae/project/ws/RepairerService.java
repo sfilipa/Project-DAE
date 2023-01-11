@@ -6,6 +6,7 @@ import ipleiria.dae.project.dtos.ExpertDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.dtos.create.RepairerCreateDTO;
 import ipleiria.dae.project.dtos.RepairerDTO;
+import ipleiria.dae.project.dtos.create.UpdatePasswordDTO;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.ejbs.RepairerBean;
 import ipleiria.dae.project.entities.Expert;
@@ -241,18 +242,15 @@ public class RepairerService {
     @Authenticated
     @RolesAllowed({"Repairer"})
     @Path("/{username}/password")
-    public Response updatePassword(@PathParam("username") String username, RepairerCreateDTO repairerDTO) {
+    public Response updatePassword(@PathParam("username") String username, UpdatePasswordDTO repairerDTO) {
         if(!securityContext.getUserPrincipal().getName().equals(username)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        Repairer repairer = repairerBean.updatePassword(username, repairerDTO.getPassword());
+        repairerBean.updatePassword(username, repairerDTO.getPassword(), repairerDTO.getOldPassword());
 
-        if (repairer == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
         return Response.status(Response.Status.OK)
-                .entity(RepairerDTO.from(repairer))
+                .entity("Password updated")
                 .build();
     }
 

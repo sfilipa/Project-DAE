@@ -5,7 +5,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "client2",
+  "username": "client1",
   "password": "123"
 }
 
@@ -330,10 +330,11 @@ Content-Type: application/json
 }
 
 ###Update Password
-PATCH http://localhost:8080/occurrences/api/clients/client2/password
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzYyMDI5LCJleHAiOjE2NzMzNjU2Mjl9.lhczuP6NiUeisJ_W4qk2J08oxJECeAlJkepqtSFICxo
+PATCH http://localhost:8080/occurrences/api/clients/client1/password
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNDQzNTU4LCJleHAiOjE2NzM0NDcxNTh9.eBRSqsXxjVsjAOlZUy9JAqIQ9u98roDfixr6bwBJSAY
 Content-Type: application/json
 
 {
-  "password": "BomDiaaaaaa"
+  "oldPassword": "123",
+  "password": "456"
 }
