@@ -363,14 +363,18 @@ public class ExpertBean {
         }
     }
 
-    public Expert updatePassword(String username, String password) {
+    public void updatePassword(String username, String password, String oldPassword) {
         Expert expert = find(username);
         if (expert == null) {
             throw new MyEntityNotFoundException("Expert not found");
         }
+
+        if(!hasher.hash(oldPassword).equals(expert.getPassword())){
+            throw new NotAuthorizedException("Old password is incorrect");
+        }
+
         em.lock(expert, LockModeType.OPTIMISTIC);
         expert.setPassword(hasher.hash(password));
-        return expert;
     }
 
     public void updateInsuranceCompany(String username, String insuranceCompany) {

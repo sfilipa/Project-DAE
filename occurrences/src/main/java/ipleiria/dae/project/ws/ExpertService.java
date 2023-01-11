@@ -7,6 +7,7 @@ import ipleiria.dae.project.dtos.EmailDTO;
 import ipleiria.dae.project.dtos.ExpertDTO;
 import ipleiria.dae.project.dtos.OccurrenceDTO;
 import ipleiria.dae.project.dtos.create.ExpertCreateDTO;
+import ipleiria.dae.project.dtos.create.UpdatePasswordDTO;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.ejbs.ExpertBean;
 import ipleiria.dae.project.entities.Client;
@@ -292,18 +293,15 @@ public class ExpertService {
     @Authenticated
     @RolesAllowed({"Expert"})
     @Path("/{username}/password")
-    public Response updatePassword(@PathParam("username") String username, ExpertCreateDTO expertDTO) {
+    public Response updatePassword(@PathParam("username") String username, UpdatePasswordDTO expertDTO) {
         if(!securityContext.getUserPrincipal().getName().equals(username)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        Expert expert = expertBean.updatePassword(username, expertDTO.getPassword());
+        expertBean.updatePassword(username, expertDTO.getPassword(), expertDTO.getOldPassword());
 
-        if (expert == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
         return Response.status(Response.Status.OK)
-                .entity(ExpertDTO.from(expert))
+                .entity("Password updated")
                 .build();
     }
 

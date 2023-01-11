@@ -2,6 +2,7 @@ package ipleiria.dae.project.ws;
 
 import ipleiria.dae.project.dtos.*;
 import ipleiria.dae.project.dtos.create.ClientCreateDTO;
+import ipleiria.dae.project.dtos.create.UpdatePasswordDTO;
 import ipleiria.dae.project.ejbs.ClientBean;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.ejbs.RepairerBean;
@@ -108,18 +109,15 @@ public class ClientService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("/{username}/password")
-    public Response updatePassword(@PathParam("username") String username, ClientCreateDTO clientDTO) {
+    public Response updatePassword(@PathParam("username") String username, UpdatePasswordDTO clientDTO) {
         if(!securityContext.getUserPrincipal().getName().equals(username)) {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
 
-        Client client = clientBean.updatePassword(username, clientDTO.getPassword());
+        clientBean.updatePassword(username, clientDTO.getPassword(), clientDTO.getOldPassword());
 
-        if (client == null) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        }
         return Response.status(Response.Status.OK)
-                .entity(ClientDTO.from(client))
+                .entity("Password updated")
                 .build();
     }
 
