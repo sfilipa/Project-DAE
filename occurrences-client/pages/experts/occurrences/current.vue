@@ -53,6 +53,11 @@
 <script>
 import Occurrence from "~/pages/experts/components/Occurrence.vue";
 export default {
+  mounted() {
+    this.$socket.on('update', () => {
+      this.updateOccurrences()
+      this.$toast.info('Occurrences as been updated!').goAway(3000)
+  })},
   components: {
     Occurrence
   },

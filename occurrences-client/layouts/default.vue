@@ -105,6 +105,9 @@
 
 <script>
 export default {
+  mounted() {
+    this.$socket.emit('loggedIn', this.$auth.user)
+  },
   methods: {
     logout() {
       this.$auth.logout()
