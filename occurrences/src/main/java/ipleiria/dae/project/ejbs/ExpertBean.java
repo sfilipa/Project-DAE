@@ -16,6 +16,9 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Stateless
@@ -110,6 +113,13 @@ public class ExpertBean {
         // Disapprove Occurrence
         occurrence.setState(State.DISAPPROVED);
 
+        //Update final date occurrence
+        Date finalDate = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        String finalDateStr = formatter.format(finalDate);
+
+        occurrence.setFinalDate(finalDateStr);
+
         // Get Occurrence Description
         String occurrenceDescription = occurrence.getDescription();
 
@@ -187,8 +197,12 @@ public class ExpertBean {
             // Validate Occurrence
             validateOccurrenceExists(occurrence);
 
-            // Validate if the occurrence is PENDING
-            validateOccurrenceState(occurrence, State.PENDING);
+            // Validate if the occurrence is in correct state
+            List<State> validStates = new ArrayList<>();
+            validStates.add(State.PENDING);
+            validStates.add(State.APPROVED);
+            validStates.add(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
+            validateOccurrenceState(occurrence, validStates);
 
             expert.addOccurrence(occurrence);
             occurrence.addExpert(expert);
@@ -354,14 +368,25 @@ public class ExpertBean {
         }
     }
 
-    public Expert updatePassword(String username, String password) {
+    private void validateOccurrenceState(Occurrence occurrence, List<State> state) throws NotAuthorizedException {
+        // Check if Occurrence is in the correct state
+        if (!state.contains(occurrence.getState())) {
+            throw new NotAuthorizedException("Occurrence " + occurrence.getId() + " is not in the correct state. Current state is " + occurrence.getState());
+        }
+    }
+
+    public void updatePassword(String username, String password, String oldPassword) {
         Expert expert = find(username);
         if (expert == null) {
             throw new MyEntityNotFoundException("Expert not found");
         }
+
+        if(!hasher.hash(oldPassword).equals(expert.getPassword())){
+            throw new NotAuthorizedException("Old password is incorrect");
+        }
+
         em.lock(expert, LockModeType.OPTIMISTIC);
         expert.setPassword(hasher.hash(password));
-        return expert;
     }
 
     public void updateInsuranceCompany(String username, String insuranceCompany) {

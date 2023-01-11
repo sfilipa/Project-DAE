@@ -32,10 +32,8 @@ import java.util.List;
 public class RepairerBean {
     @PersistenceContext
     EntityManager em;
-
     @Inject // import javax.inject.Inject;
     private Hasher hasher;
-
     @EJB
     private MockAPIBean mockAPIBean;
     @EJB
@@ -92,25 +90,16 @@ public class RepairerBean {
         return em.find(Repairer.class, username);
     }
 
-    public Repairer findOrFail(String username) throws MyEntityNotFoundException {
-        try {
-            Repairer repairer = em.find(Repairer.class, username);
-            if (repairer == null) {
-                throw new MyEntityNotFoundException("Repairer not found");
-            }
-            return repairer;
-        } catch (MyEntityNotFoundException e) {
-            throw new MyEntityNotFoundException(e.getMessage());
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+    public Repairer findRepairerOrThrow(String username) throws MyEntityNotFoundException {
+        Repairer repairer = em.find(Repairer.class, username);
+        if (repairer == null) {
+            throw new MyEntityNotFoundException("Repairer " + username + " not found");
         }
+        return repairer;
     }
 
     public void delete(String username) throws MyEntityNotFoundException {
-        Repairer repairer = find(username);
-        if (repairer == null) {
-            throw new MyEntityNotFoundException("Repairer not found");
-        }
+        Repairer repairer = findRepairerOrThrow(username);
         em.remove(repairer);
     }
 
@@ -212,11 +201,18 @@ public class RepairerBean {
             // Fail Occurrence
             occurrence.setState(State.FAILED);
 
+            //Update final date occurrence
+            Date finalDate = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            String finalDateStr = formatter.format(finalDate);
+
+            occurrence.setFinalDate(finalDateStr);
+
             // Get Occurrence Description
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n- " + repairer.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + repairer.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send email to the client that the occurrence was failed
@@ -251,7 +247,7 @@ public class RepairerBean {
             String occurrenceDescription = occurrence.getDescription();
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n- " + repairer.getUsername() + ": " + description;
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + repairer.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send email to the client that the occurrence was finished
@@ -333,13 +329,17 @@ public class RepairerBean {
         }
     }
 
-    public Repairer updatePassword(String username, String password) {
+    public void updatePassword(String username, String password, String oldPassword) {
         Repairer repairer = find(username);
         if (repairer == null) {
             throw new MyEntityNotFoundException("Repairer not found");
         }
+
+        if(!hasher.hash(oldPassword).equals(repairer.getPassword())){
+            throw new NotAuthorizedException("Old password is incorrect");
+        }
+
         em.lock(repairer, LockModeType.OPTIMISTIC);
         repairer.setPassword(hasher.hash(password));
-        return repairer;
     }
 }

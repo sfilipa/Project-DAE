@@ -12,9 +12,31 @@
         <span>No occurrences registered yet</span>
       </div>
 
-      <div v-else v-for="occurrence in occurrences" >
-        <Occurrence :occurrence="occurrence" :isAssigned="isAssigned(occurrence.id)" :waitingRefresh="waitingRefresh" @updateOccurrences="updateOccurrences"></Occurrence>
+      <div v-else>
+        <div class="filters-div">
+          <span class="me-4 ms-4">Filter by State:</span>
+          <b-select class="form-select filter-select" v-model="stateToFilter">
+            <option value="">Select a State</option>
+            <option v-for="state in occurrenceStates"
+                    :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
+          </b-select>
+
+          <span class="me-4 ms-5">Filter by Coverage Type</span>
+          <b-select class="form-select filter-select" v-model="coverageToFilter">
+            <option value="">Select a Coverage Type</option>
+            <option v-for="coverage in occurrenceCoverages" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
+          </b-select>
+        </div>
+
+        <div v-for="occurrence in occurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
+          <Occurrence :occurrence="occurrence"
+                      :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
+                      :isAssigned="isAssigned(occurrence.id)"
+                      :waitingRefresh="waitingRefresh"
+                      @updateOccurrences="updateOccurrences"></Occurrence>
+        </div>
       </div>
+
     </div>
   </b-container>
 </template>
@@ -29,7 +51,12 @@ export default {
     return {
       occurrences: null,
       occurrencesAssigned: [],
-      waitingRefresh: false
+      waitingRefresh: false,
+      stateToFilter: "",
+      coverageToFilter: "",
+      occurrenceStates: [],
+      occurrenceCoverages: [],
+      allDocuments: []
     }
   },
   created () {
@@ -41,6 +68,8 @@ export default {
     },
     updateOccurrences(){
       this.waitingRefresh = true
+      this.occurrenceStates = []
+      this.occurrenceCoverages = []
       this.$axios.$get(`/api/occurrences/`)
         .then((occurrences) => {
           this.occurrences = occurrences
@@ -49,13 +78,53 @@ export default {
               this.occurrencesAssigned = occurrencesAssigned
               this.waitingRefresh = false
             })
+
+          this.occurrences.forEach(occurrence => {
+            if(this.occurrenceStates.indexOf(occurrence.state) === -1){
+              this.occurrenceStates.push(occurrence.state)
+            }
+
+            if(this.occurrenceCoverages.indexOf(occurrence.coverageType) === -1){
+              this.occurrenceCoverages.push(occurrence.coverageType)
+            }
+
+            this.$axios.$get(`api/documents/${occurrence.id}/exists`)
+              .then((response)=> {
+                if (response) {
+                  this.allDocuments = []
+                  this.$axios.$get(`api/documents/${occurrence.id}`)
+                    .then((response) => {
+                      this.allDocuments.push(
+                        {
+                          occurrence_id: occurrence.id,
+                          documents: response
+                        }
+                      )
+                    })
+                }
+              })
+          })
         })
+    },
+    hasDocuments(occurrence_id){
+      return this.allDocuments.map(oc => oc.occurrence_id).indexOf(occurrence_id) !== -1
     },
   }
 }
 </script>
 
 <style scoped>
+
+.filter-select{
+  width: 27%;
+  display: inline-block;
+}
+
+.filters-div{
+  background-color: #313030;
+  padding: 14px;
+  color: white;
+}
 
 .index-header{
   margin-bottom: 3rem;

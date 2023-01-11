@@ -150,14 +150,18 @@ public class ClientBean {
         }
     }
 
-    public Client updatePassword(String username, String password) {
+    public void updatePassword(String username, String password, String oldPassword) {
         Client client = find(username);
         if (client == null) {
             throw new MyEntityNotFoundException("Client not found");
         }
+
+        if(!hasher.hash(oldPassword).equals(client.getPassword())){
+            throw new NotAuthorizedException("Old password is incorrect");
+        }
+
         em.lock(client, LockModeType.OPTIMISTIC);
         client.setPassword(hasher.hash(password));
-        return client;
     }
 
     public List<Client> getAllClients() {
