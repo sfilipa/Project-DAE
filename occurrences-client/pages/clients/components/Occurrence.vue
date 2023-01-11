@@ -10,7 +10,7 @@
         <p style="white-space: pre;"><b>Description:</b> <br>{{ occurrence.description }}</p>
       </div>
 
-      <div class="occurrences-item-row" style="align-self: flex-start;">
+      <div class="occurrences-item-row" style="align-self: flex-start; margin: 0 2rem;">
         <p style="margin-bottom: 0;"><b>Entry Date:</b> {{occurrence.entryDate}} &nbsp; </p>
         <p><b>Final Date:</b> {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</p>
       </div>

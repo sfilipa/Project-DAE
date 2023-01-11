@@ -70,11 +70,11 @@
           Report An Occurrence</a>
         <a class="btn insurance-occurrences-btn"
            :class="{'insurance-occurrences-btn-active': ongoingOccurrences}"
-           @click="ongoingOccurrences = !ongoingOccurrences; reportOccurrence = false; completedOccurrences = false;">
+           @click="ongoingOccurrences = !ongoingOccurrences; reportOccurrence = false; completedOccurrences = false; stateToFilter=''; coverageToFilter='';">
           Ongoing Occurrences</a>
         <a class="btn insurance-occurrences-btn"
            :class="{'insurance-occurrences-btn-active': completedOccurrences}"
-           @click="completedOccurrences = !completedOccurrences; reportOccurrence = false; ongoingOccurrences = false;">
+           @click="completedOccurrences = !completedOccurrences; reportOccurrence = false; ongoingOccurrences = false; stateToFilter=''; coverageToFilter='';">
           Completed Occurrences</a>
       </div>
 
@@ -142,8 +142,26 @@
         <div v-if="getOnGoingOccurrences().length==0" class="text-center">
           No occurrences ongoing
         </div>
-        <div v-else v-for="occurrence in getOnGoingOccurrences()" >
-          <Occurrence :occurrence="occurrence"></Occurrence>
+        <div v-else>
+          <div class="filters-div">
+            <span class="me-4 ms-4">Filter by State:</span>
+            <b-select class="form-select filter-select" v-model="stateToFilter">
+              <option value="">Select a State</option>
+              <option v-for="state in occurrenceStates.filter(stat => stat !== 'RESOLVED' &&
+                                                                      stat !== 'DISAPPROVED' &&
+                                                                      stat !== 'FAILED')"
+                      :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
+            </b-select>
+
+            <span class="me-4 ms-5">Filter by Coverage Type</span>
+            <b-select class="form-select filter-select" v-model="coverageToFilter">
+              <option value="">Select a Coverage Type</option>
+              <option v-for="coverage in this.$route.params.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
+            </b-select>
+          </div>
+          <div v-for="occurrence in getOnGoingOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
+            <Occurrence :occurrence="occurrence"></Occurrence>
+          </div>
         </div>
       </div>
 
@@ -152,17 +170,35 @@
         <div v-if="getCompletedOccurrences().length==0" class="text-center">
           No occurrences completed
         </div>
-        <div v-else v-for="occurrence in getCompletedOccurrences()">
-          <Occurrence :occurrence="occurrence"></Occurrence>
+        <div v-else>
+          <div class="filters-div">
+            <span class="me-4 ms-4">Filter by State:</span>
+            <b-select class="form-select filter-select" v-model="stateToFilter">
+              <option value="">Select a State</option>
+              <option v-for="state in occurrenceStates.filter(stat => stat === 'RESOLVED' ||
+                                                                      stat === 'DISAPPROVED' ||
+                                                                      stat === 'FAILED')"
+                      :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
+            </b-select>
+
+            <span class="me-4 ms-5">Filter by Coverage Type:</span>
+            <b-select class="form-select filter-select" v-model="coverageToFilter">
+              <option value="">Select a Coverage Type</option>
+              <option v-for="coverage in this.$route.params.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
+            </b-select>
+          </div>
+          <div v-for="occurrence in getCompletedOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
+            <Occurrence :occurrence="occurrence"></Occurrence>
+          </div>
         </div>
       </div>
     </div>
 
     <!--    Documents-->
     <div v-if="DocumentsBtn">
-      <span v-if="allDocuments.length === 0">
-        <span class="text-center">No documents registered</span>
-      </span>
+      <div v-if="allDocuments.length === 0" class="text-center" style="margin-top: 2rem">
+        <span >No documents registered</span>
+      </div>
 
       <div v-for="occurrence in occurrences">
         <div v-if="hasDocuments(occurrence.id)" class="documents-content">
@@ -210,7 +246,10 @@ export default {
       documents: [],
       errorMsg: null,
       waitingResponse: false,
-      allDocuments: []
+      allDocuments: [],
+      stateToFilter: "",
+      coverageToFilter: "",
+      occurrenceStates: []
     }
   },
   computed: {
@@ -285,6 +324,9 @@ export default {
         })
 
         this.occurrences.forEach((occurrence)=>{
+          if(this.occurrenceStates.indexOf(occurrence.state) === -1){
+            this.occurrenceStates.push(occurrence.state)
+          }
           this.$axios.$get(`api/documents/${occurrence.id}/exists`)
             .then((response)=> {
                 if (response) {
@@ -300,6 +342,7 @@ export default {
                 }
               })
         })
+        console.log(this.occurrenceStates)
       })
   },
   methods: {
@@ -401,6 +444,17 @@ export default {
 </script>
 
 <style scoped>
+
+.filter-select{
+  width: 27%;
+  display: inline-block;
+}
+
+.filters-div{
+  background-color: #313030;
+  padding: 14px;
+  color: white;
+}
 
 .document-link:hover{
   color: red !important;
