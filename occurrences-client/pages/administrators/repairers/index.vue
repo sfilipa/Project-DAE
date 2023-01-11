@@ -16,7 +16,7 @@
     <div class="administrator-row" style="margin-top: 1.5rem;">
       <div style="margin: auto;">
         <nuxt-link to="/administrators/repairers/create" class="btn administrator-regist-btn">
-          Regist a Repairer
+          Register a Repairer
         </nuxt-link>
       </div>
     </div>

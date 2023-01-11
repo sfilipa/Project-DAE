@@ -55,8 +55,10 @@ export default {
       promise.catch((response) => {
         this.$auth.logout()
         let promiseAdmin = this.$auth.loginWith('admin', {
+          data: {
             username: this.username,
             password: this.password
+          }
         })
         promiseAdmin.then(() => {
           this.$toast.success('You are logged in!').goAway(3000)

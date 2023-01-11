@@ -11,7 +11,7 @@
       </div>
     </nuxt-link>
 
-    <h3 class="text-center index-header">Experts Management</h3>
+    <h3 class="text-center index-header">Clients Management</h3>
 
     <div v-if="clients == null" class="spinner-div" style="margin-top: 2rem">
       <div class="spinner-border"></div>

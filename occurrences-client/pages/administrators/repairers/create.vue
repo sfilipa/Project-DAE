@@ -89,6 +89,11 @@ export default {
       if (usernameLen < 3 || usernameLen > 15) {
         return 'The username must be between [3, 15] characters.'
       }
+
+      if(this.username.indexOf(' ') >= 0){
+        return 'The username can\'t have spaces.'
+      }
+      
       return ''
     },
     isUsernameValid () {

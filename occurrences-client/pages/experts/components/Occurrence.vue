@@ -45,14 +45,17 @@
                     occurrence.state!=='ACTIVE' &&
                     occurrence.state!=='FAILED' &&
                     occurrence.state!=='RESOLVED' &&
-                    occurrence.state!=='DISAPPROVED' && occurrence.insuranceCompanyName === this.company_username">
+                    occurrence.state!=='DISAPPROVED' &&
+                    occurrence.insuranceCompanyName === this.company_username">
           <button  class="btn btn-associate-repairers" @click.prevent="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>
         </div>
-        <div v-else-if="occurrence.state!=='REPAIRER_WAITING_LIST' &&
+        <div v-else-if="!isAssigned &&
+                        occurrence.state!=='REPAIRER_WAITING_LIST' &&
                         occurrence.state!=='ACTIVE' &&
                         occurrence.state!=='FAILED' &&
                         occurrence.state!=='RESOLVED' &&
-                        occurrence.state!=='DISAPPROVED' && occurrence.insuranceCompanyName === this.company_username">
+                        occurrence.state!=='DISAPPROVED' &&
+                        occurrence.insuranceCompanyName === this.company_username">
           <button class="btn btn-associate-repairers" @click.prevent="unassign(occurrence.id)" :disabled="waitingRefresh">Unassign</button>
         </div>
       </div>
