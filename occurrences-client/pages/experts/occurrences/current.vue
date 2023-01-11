@@ -40,7 +40,11 @@
       </div>
 
       <div v-for="occurrence in occurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
-        <Occurrence :occurrence="occurrence" :isAssigned="isAssigned(occurrence.id)" :waitingRefresh="waitingRefresh" @updateOccurrences="updateOccurrences"></Occurrence>
+        <Occurrence :occurrence="occurrence"
+                    :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
+                    :isAssigned="isAssigned(occurrence.id)"
+                    :waitingRefresh="waitingRefresh"
+                    @updateOccurrences="updateOccurrences"></Occurrence>
       </div>
     </div>
 
@@ -49,6 +53,11 @@
 <script>
 import Occurrence from "~/pages/experts/components/Occurrence.vue";
 export default {
+  mounted() {
+    this.$socket.on('update', () => {
+      this.updateOccurrences()
+      this.$toast.info('Occurrences as been updated!').goAway(3000)
+  })},
   components: {
     Occurrence
   },
@@ -60,7 +69,8 @@ export default {
       stateToFilter: "",
       coverageToFilter: "",
       occurrenceStates: [],
-      occurrenceCoverages: []
+      occurrenceCoverages: [],
+      allDocuments: []
     }
   },
   created () {
@@ -87,11 +97,31 @@ export default {
             if(this.occurrenceStates.indexOf(occurrence.state) === -1){
               this.occurrenceStates.push(occurrence.state)
             }
+
             if(this.occurrenceCoverages.indexOf(occurrence.coverageType) === -1){
               this.occurrenceCoverages.push(occurrence.coverageType)
             }
+
+            this.$axios.$get(`api/documents/${occurrence.id}/exists`)
+              .then((response)=> {
+                if (response) {
+                  this.allDocuments = []
+                  this.$axios.$get(`api/documents/${occurrence.id}`)
+                    .then((response) => {
+                      this.allDocuments.push(
+                        {
+                          occurrence_id: occurrence.id,
+                          documents: response
+                        }
+                      )
+                    })
+                }
+              })
           })
         })
+    },
+    hasDocuments(occurrence_id){
+      return this.allDocuments.map(oc => oc.occurrence_id).indexOf(occurrence_id) !== -1
     },
   }
 }

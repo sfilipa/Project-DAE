@@ -41,7 +41,10 @@
 
 
       <div v-for="occurrence in assignedOccurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
-        <Occurrence :occurrence="occurrence" :isAssigned="true" :waitingRefresh="waitingRefresh" @updateOccurrences="updateOccurrences"></Occurrence>
+        <Occurrence :occurrence="occurrence"
+                    :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
+                    :isAssigned="true" :waitingRefresh="waitingRefresh"
+                    @updateOccurrences="updateOccurrences"></Occurrence>
       </div>
     </div>
 
@@ -61,7 +64,8 @@ export default {
       stateToFilter: "",
       coverageToFilter: "",
       occurrenceStates: [],
-      occurrenceCoverages: []
+      occurrenceCoverages: [],
+      allDocuments: []
     }
   },
   created () {
@@ -81,11 +85,31 @@ export default {
             if(this.occurrenceStates.indexOf(occurrence.state) === -1){
               this.occurrenceStates.push(occurrence.state)
             }
+
             if(this.occurrenceCoverages.indexOf(occurrence.coverageType) === -1){
               this.occurrenceCoverages.push(occurrence.coverageType)
             }
+
+            this.$axios.$get(`api/documents/${occurrence.id}/exists`)
+              .then((response)=> {
+                if (response) {
+                  this.allDocuments = []
+                  this.$axios.$get(`api/documents/${occurrence.id}`)
+                    .then((response) => {
+                      this.allDocuments.push(
+                        {
+                          occurrence_id: occurrence.id,
+                          documents: response
+                        }
+                      )
+                    })
+                }
+              })
           })
         })
+    },
+    hasDocuments(occurrence_id){
+      return this.allDocuments.map(oc => oc.occurrence_id).indexOf(occurrence_id) !== -1
     },
   }
 }
