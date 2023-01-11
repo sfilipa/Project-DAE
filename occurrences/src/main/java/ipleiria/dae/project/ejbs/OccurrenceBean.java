@@ -44,9 +44,9 @@ public class OccurrenceBean {
         return (List<Occurrence>) em.createNamedQuery("getAllOccurrences").getResultList();
     }
 
-    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws NotAuthorizedException{
+    public Occurrence create(String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws NotAuthorizedException {
         JSONArray jsonArray = mockAPIBean.getDataAPI("insurances", "code", insuranceCode);
-        if(jsonArray.length() == 0) {
+        if (jsonArray.length() == 0) {
             throw new MyEntityNotFoundException("Insurance not found");
         }
 
@@ -69,15 +69,18 @@ public class OccurrenceBean {
         if (clientNifAPI != client.getNif_nipc()) {
             throw new NotAuthorizedException("Client is not the owner of the insurance");
         }
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate initialDateLocal = LocalDate.parse(initialDateAPI, formatter);
+            LocalDate validDateLocal = LocalDate.parse(validUntilAPI, formatter);
+            LocalDate entryDateLocal = LocalDate.parse(entryDate, formatter);
 
-        LocalDate initialDateLocal = LocalDate.parse(initialDateAPI, formatter);
-        LocalDate validDateLocal = LocalDate.parse(validUntilAPI, formatter);
-        LocalDate entryDateLocal = LocalDate.parse(entryDate, formatter);
-
-        if (!(entryDateLocal.isAfter(initialDateLocal) && entryDateLocal.isBefore(validDateLocal) || entryDateLocal.equals(initialDateLocal) || entryDateLocal.equals(validDateLocal))) {
-            throw new DateOutsideRangeException("Entry date is not between the initial date and the valid until date");
+            if (!(entryDateLocal.isAfter(initialDateLocal) && entryDateLocal.isBefore(validDateLocal) || entryDateLocal.equals(initialDateLocal) || entryDateLocal.equals(validDateLocal))) {
+                throw new DateOutsideRangeException("Entry date is not between the initial date and the valid until date");
+            }
+        } catch (Exception e) {
+            throw new NifNotValidException("Invalid date format must be dd/MM/yyyy");
         }
 
         InsuredAssetType insuredAssetType = null;
@@ -112,14 +115,16 @@ public class OccurrenceBean {
         em.remove(occurrence);
     }
 
-    public Occurrence update(long id, String usernameClient, String entryDate, State state, String insuranceCode, CoverageType coverageType, String description) throws MyEntityNotFoundException, NotAuthorizedException {
+    public Occurrence update(long id, String usernameClient, String entryDate, State state, String
+            insuranceCode, CoverageType coverageType, String description) throws
+            MyEntityNotFoundException, NotAuthorizedException {
         Occurrence occurrence = em.find(Occurrence.class, id);
         if (occurrence == null) {
             throw new MyEntityNotFoundException("Occurrence not found");
         }
 
         JSONArray jsonArray = mockAPIBean.getDataAPI("insurances", "code", insuranceCode);
-        if(jsonArray.length() == 0) {
+        if (jsonArray.length() == 0) {
             throw new MyEntityNotFoundException("Insurance not found");
         }
         JSONObject jsonObject = jsonArray.getJSONObject(0);

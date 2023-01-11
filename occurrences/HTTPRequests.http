@@ -24,7 +24,7 @@ Content-Type: application/json
 
 {
   "usernameClient": "client1",
-  "entryDate": "22/01/2023",
+  "entryDate": "01/21/2023",
   "state": "PENDING",
   "insuranceCode": "ALL-1298389",
   "coverageType": "ACCIDENTAL_DAMAGE",
