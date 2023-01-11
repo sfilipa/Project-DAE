@@ -225,6 +225,11 @@ public class ExpertBean {
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
             validateOccurrence(expert, occurrence);
 
+            // Validate if expert has made an action
+            if(occurrence.getDescription().contains(expert.getUsername())){
+                throw new NotAuthorizedException("Expert has already made an action. Can't unassign this occurrence");
+            }
+
             expert.removeOccurrence(occurrence);
             occurrence.removeExpert(expert);
         } catch (MyEntityNotFoundException e) {
@@ -252,7 +257,7 @@ public class ExpertBean {
         }
     }
 
-    public void acceptRepairer(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException {
+    public void acceptRepairer(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             // Find Expert
             Expert expert = find(username);
@@ -267,6 +272,13 @@ public class ExpertBean {
             validateOccurrenceState(occurrence, State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
 
             occurrence.setState(State.REPAIRER_WAITING_LIST);
+
+            // Get Occurrence Description
+            String occurrenceDescription = occurrence.getDescription();
+
+            // Build Occurrence Description
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
+            occurrence.setDescription(newOccurrenceDescription);
 
             // Send Email to Repairer about being accepted to repair the occurrence
             emailBean.send(occurrence.getRepairer().getEmail(), "Occurrence " + occurrence.getId() + " accepted",
@@ -310,6 +322,10 @@ public class ExpertBean {
             // Build Occurrence Description
             String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
+
+            // Send Email to Client about the Repairer of the occurrence being rejected by the Expert
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " repairer service rejected",
+                    "The repairer " + occurrence.getRepairer().getUsername() + " was rejected to repair the occurrence " + occurrence.getId() + " by " + expert.getUsername() + ".\n\n" + occurrence.getDescription());
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
         } catch (NotAuthorizedException e) {

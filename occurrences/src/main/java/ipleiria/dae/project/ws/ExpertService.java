@@ -50,9 +50,19 @@ public class ExpertService {
     @Authenticated
     @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/{occurrence_id}/acceptRepairer")
-    public Response acceptRepairer(@PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) throws MyEntityNotFoundException, NotAuthorizedException {
+    public Response acceptRepairer(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
-            expertBean.acceptRepairer(username, occurrence_id);
+            // Get the input stream from the request
+            InputStream inputStream = request.getInputStream();
+
+            // Read the message body from the input stream
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(inputStream);
+
+            // Extract the values from the JSON object
+            String description = rootNode.get("description").asText();
+
+            expertBean.acceptRepairer(username, occurrence_id, description);
             return Response.status(Response.Status.OK).build();
         } catch (MyEntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)
