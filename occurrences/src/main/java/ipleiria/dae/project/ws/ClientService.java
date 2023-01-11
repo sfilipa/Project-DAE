@@ -7,16 +7,12 @@ import ipleiria.dae.project.ejbs.ClientBean;
 import ipleiria.dae.project.ejbs.EmailBean;
 import ipleiria.dae.project.ejbs.RepairerBean;
 import ipleiria.dae.project.entities.Client;
-import ipleiria.dae.project.exceptions.APIBadResponseException;
-import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
-import ipleiria.dae.project.exceptions.NifNotValidException;
 import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Authenticated;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
