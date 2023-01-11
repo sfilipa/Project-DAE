@@ -70,11 +70,11 @@
           Report An Occurrence</a>
         <a class="btn insurance-occurrences-btn"
            :class="{'insurance-occurrences-btn-active': ongoingOccurrences}"
-           @click="ongoingOccurrences = !ongoingOccurrences; reportOccurrence = false; completedOccurrences = false;">
+           @click="ongoingOccurrences = !ongoingOccurrences; reportOccurrence = false; completedOccurrences = false; stateToFilter=''; coverageToFilter='';">
           Ongoing Occurrences</a>
         <a class="btn insurance-occurrences-btn"
            :class="{'insurance-occurrences-btn-active': completedOccurrences}"
-           @click="completedOccurrences = !completedOccurrences; reportOccurrence = false; ongoingOccurrences = false;">
+           @click="completedOccurrences = !completedOccurrences; reportOccurrence = false; ongoingOccurrences = false; stateToFilter=''; coverageToFilter='';">
           Completed Occurrences</a>
       </div>
 
@@ -111,7 +111,18 @@
         <p><b>4. Documents</b></p>
         <div class="report-an-occurrence-div">
           <div class="report-an-occurrence-div">
-            <input type="file" multiple="multiple">
+            <input type="file" ref="documents" multiple="multiple" @change="inputDocumentsChanged">
+          </div>
+          <div v-if="documents.length">
+            <span class="fw-bold ms-4 me-3">All files:</span>
+            <span v-for="document in documents" class="document-name">
+              <span>{{ document.name }}</span>
+              <button class="btn" style="height: 31px; width: 31px;" @click.prevent="removeDocument(document)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x cross-bi" viewBox="0 0 16 16">
+                  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+              </button>
+            </span>
           </div>
         </div>
 
@@ -131,8 +142,26 @@
         <div v-if="getOnGoingOccurrences().length==0" class="text-center">
           No occurrences ongoing
         </div>
-        <div v-else v-for="occurrence in getOnGoingOccurrences()" >
-          <Occurrence :occurrence="occurrence"></Occurrence>
+        <div v-else>
+          <div class="filters-div">
+            <span class="me-4 ms-4">Filter by State:</span>
+            <b-select class="form-select filter-select" v-model="stateToFilter">
+              <option value="">Select a State</option>
+              <option v-for="state in occurrenceStates.filter(stat => stat !== 'RESOLVED' &&
+                                                                      stat !== 'DISAPPROVED' &&
+                                                                      stat !== 'FAILED')"
+                      :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
+            </b-select>
+
+            <span class="me-4 ms-5">Filter by Coverage Type</span>
+            <b-select class="form-select filter-select" v-model="coverageToFilter">
+              <option value="">Select a Coverage Type</option>
+              <option v-for="coverage in this.$route.params.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
+            </b-select>
+          </div>
+          <div v-for="occurrence in getOnGoingOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
+            <Occurrence :occurrence="occurrence"></Occurrence>
+          </div>
         </div>
       </div>
 
@@ -141,16 +170,53 @@
         <div v-if="getCompletedOccurrences().length==0" class="text-center">
           No occurrences completed
         </div>
-        <div v-else v-for="occurrence in getCompletedOccurrences()">
-          <Occurrence :occurrence="occurrence"></Occurrence>
+        <div v-else>
+          <div class="filters-div">
+            <span class="me-4 ms-4">Filter by State:</span>
+            <b-select class="form-select filter-select" v-model="stateToFilter">
+              <option value="">Select a State</option>
+              <option v-for="state in occurrenceStates.filter(stat => stat === 'RESOLVED' ||
+                                                                      stat === 'DISAPPROVED' ||
+                                                                      stat === 'FAILED')"
+                      :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
+            </b-select>
+
+            <span class="me-4 ms-5">Filter by Coverage Type:</span>
+            <b-select class="form-select filter-select" v-model="coverageToFilter">
+              <option value="">Select a Coverage Type</option>
+              <option v-for="coverage in this.$route.params.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
+            </b-select>
+          </div>
+          <div v-for="occurrence in getCompletedOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
+            <Occurrence :occurrence="occurrence"></Occurrence>
+          </div>
         </div>
       </div>
     </div>
 
     <!--    Documents-->
-    <div v-if="DocumentsBtn" class="documents-content">
-      <div v-for="document in documents" class="documents-content-list">
-        <span>{{ document.name }}</span>
+    <div v-if="DocumentsBtn">
+      <div v-if="allDocuments.length === 0" class="text-center" style="margin-top: 2rem">
+        <span >No documents registered</span>
+      </div>
+
+      <div v-for="occurrence in occurrences">
+        <div v-if="hasDocuments(occurrence.id)" class="documents-content">
+          <p style="font-size: 20px; color: red"><b>{{occurrence.objectInsured}}
+            ({{ occurrence.coverageType.charAt(0).toUpperCase() + occurrence.coverageType.split('_').join(' ').slice(1).toLowerCase() }})
+            - <span>{{occurrence.insuranceCode}}</span></b></p>
+          <p class="fw-bold" style="margin-bottom: 0">Occurence {{occurrence.id}} - Documents</p>
+          <div class="documents-content-list">
+            <a @click.prevent="downloadDocument(document)" class="document-link" v-for="document in allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents">
+              {{ document.filename }}
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+              </svg>
+            </a>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -177,16 +243,16 @@ export default {
       description: null,
       date: null,
       expertName: "",
+      documents: [],
       errorMsg: null,
-      waitingResponse: false
+      waitingResponse: false,
+      allDocuments: [],
+      stateToFilter: "",
+      coverageToFilter: "",
+      occurrenceStates: []
     }
   },
   computed: {
-    documents(){ return [
-      {
-        "name": "Verde"
-      }
-    ]},
     invalidCoverageTypeFeedback () {
       if (!this.selectedCoverageType) {
         return null
@@ -238,7 +304,7 @@ export default {
         return false
       }
       return true
-    }
+    },
   },
   created () {
     if(!this.$route.params.insurance){
@@ -256,6 +322,27 @@ export default {
         this.occurrences = occurrences.filter(function(oc){
           return oc.insuranceCode === codeParams
         })
+
+        this.occurrences.forEach((occurrence)=>{
+          if(this.occurrenceStates.indexOf(occurrence.state) === -1){
+            this.occurrenceStates.push(occurrence.state)
+          }
+          this.$axios.$get(`api/documents/${occurrence.id}/exists`)
+            .then((response)=> {
+                if (response) {
+                  this.$axios.$get(`api/documents/${occurrence.id}`)
+                    .then((response) => {
+                      this.allDocuments.push(
+                        {
+                          occurrence_id: occurrence.id,
+                          documents: response
+                        }
+                      )
+                    })
+                }
+              })
+        })
+        console.log(this.occurrenceStates)
       })
   },
   methods: {
@@ -270,6 +357,11 @@ export default {
                                                           oc.state === 'FAILED')})
     },
     onSubmit() {
+      if(this.documents == null){
+        this.errorMsg = "Please select a coverage type first"
+        return
+      }
+
       this.waitingResponse = true
       if(this.date) {
         const [year, month, day] = this.date.split('-');
@@ -281,17 +373,70 @@ export default {
         insuranceCode: this.$route.params.code,
         state: 'PENDING',
         description: this.description,
-        coverageType: this.selectedCoverageType
+        coverageType: this.selectedCoverageType,
       })
-        .then(() => {
-          this.$router.push('/clients/occurrences')
+        .then((response) => {
           this.$toast.success('Your occurrence has been registered!').goAway(3000)
-          this.waitingResponse = false
+
+          if(this.documents.length === 0) {
+            this.waitingResponse = false
+            return
+          }
+
+          // Upload documents
+          this.$axios.post(`/api/documents/${response.id}`, this.formData(), {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+            .then(() => {
+              this.$router.push('/clients/occurrences')
+              this.waitingResponse = false
+            })
+            .catch(({response: err}) => {
+              this.errorMsg = err.data
+              this.$toast.error('Documents couldn\'t be uploaded').goAway(3000)
+              this.waitingResponse = false
+            })
         })
         .catch(({ response: err }) => {
-          this.errorMsg = err.data
+          if(err) {
+            this.errorMsg = err
+          }
           this.$toast.error('Occurrence couldn\'t be created, please check the errors').goAway(3000)
           this.waitingResponse = false
+        })
+    },
+    inputDocumentsChanged() {
+      this.documents = [...this.$refs.documents.files]
+      console.log(this.documents)
+    },
+    removeDocument(document){
+      const index = this.documents.indexOf(document)
+      if(index !== -1)
+        this.documents.splice(index,1)
+    },
+    formData() {
+      let formData = new FormData()
+      formData.append('username', this.$auth.user.username)
+      this.documents.forEach((document)=>{
+        formData.append("file",document, document.name)
+      })
+      return formData
+    },
+    hasDocuments(occurrence_id){
+      return this.allDocuments.map(oc => oc.occurrence_id).indexOf(occurrence_id) !== -1
+    },
+    downloadDocument(documentToDownload){
+      this.$axios.$get(`api/documents/download/${documentToDownload.id}`, { responseType:
+          'arraybuffer'})
+        .then(file => {
+          const url = window.URL.createObjectURL(new Blob([file]))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', documentToDownload.filename)
+          document.body.appendChild(link)
+          link.click()
         })
     }
   }
@@ -299,6 +444,50 @@ export default {
 </script>
 
 <style scoped>
+
+.filter-select{
+  width: 27%;
+  display: inline-block;
+}
+
+.filters-div{
+  background-color: #313030;
+  padding: 14px;
+  color: white;
+}
+
+.document-link:hover{
+  color: red !important;
+}
+
+.document-link{
+  cursor: pointer;
+  margin: 0.7rem 0;
+  width: 25%;
+  overflow: auto;
+  height: 3rem;
+  max-height: 3rem;
+  overflow: auto;
+}
+
+.cross-bi{
+  position: relative;
+  top: -0.46rem;
+  right: 0.3rem;
+}
+
+.document-name:hover{
+  background-color: #cbcbcb;
+}
+
+.document-name{
+  background-color: #e0e0e0;
+  padding: 1px 3px 0px 16px;
+  border-radius: 25px;
+  font-size: 15px;
+  margin: 4px 5px;
+  display: inline-block;
+}
 
 .register-occurrence-btn:hover{
   background-color: red !important;
@@ -351,13 +540,19 @@ export default {
 
 .documents-content-list{
   padding: 20px;
-  background-color: white;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-height: 12rem;
+  overflow: auto;
 }
 
 .documents-content{
   padding: 20px;
   display: flex;
   flex-direction: column;
+  background-color: white;
+  margin: 40px 20px;
 }
 
 .overall-data-detail{

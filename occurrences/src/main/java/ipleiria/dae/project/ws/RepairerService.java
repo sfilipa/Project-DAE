@@ -173,7 +173,7 @@ public class RepairerService {
                 throw new ForbiddenException(username + ", You are not allowed to access this resource");
             }
 
-            Repairer repairer = repairerBean.findOrFail(username);
+            Repairer repairer = repairerBean.findRepairerOrThrow(username);
 
             return Response.ok(RepairerDTO.from(repairer)).build();
         } catch (MyEntityNotFoundException e) {

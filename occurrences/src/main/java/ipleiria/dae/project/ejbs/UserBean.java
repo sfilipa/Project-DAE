@@ -20,20 +20,28 @@ public class UserBean {
     private Hasher hasher;
 
     public User find(String username) {
-        return em.find(User.class, username);
+        User user = em.find(User.class, username);
+        if (user == null) {
+            throw new MyEntityNotFoundException(username + ", User not found");
+        }
+
+        return user;
     }
 
     public User findOrFail(String username) {
         User user = em.getReference(User.class, username);
         Hibernate.initialize(user);
+        if (user == null) {
+            throw new MyEntityNotFoundException(username + ", User not found");
+        }
+
         return user;
     }
 
-    public boolean canLogin(String username, String password) {
+    public boolean canLogin(String username, String password) throws MyEntityNotFoundException {
         User user = find(username);
-        if (user == null) {
-            throw new MyEntityNotFoundException("User not found");
-        }
+
+        // if the received password is the same as the one stored in the database
         return user.getPassword().equals(hasher.hash(password));
     }
 

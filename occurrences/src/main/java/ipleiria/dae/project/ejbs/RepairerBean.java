@@ -32,10 +32,8 @@ import java.util.List;
 public class RepairerBean {
     @PersistenceContext
     EntityManager em;
-
     @Inject // import javax.inject.Inject;
     private Hasher hasher;
-
     @EJB
     private MockAPIBean mockAPIBean;
     @EJB
@@ -92,25 +90,16 @@ public class RepairerBean {
         return em.find(Repairer.class, username);
     }
 
-    public Repairer findOrFail(String username) throws MyEntityNotFoundException {
-        try {
-            Repairer repairer = em.find(Repairer.class, username);
-            if (repairer == null) {
-                throw new MyEntityNotFoundException("Repairer not found");
-            }
-            return repairer;
-        } catch (MyEntityNotFoundException e) {
-            throw new MyEntityNotFoundException(e.getMessage());
-        } catch (Exception e) {
-            throw new IllegalArgumentException(e.getMessage());
+    public Repairer findRepairerOrThrow(String username) throws MyEntityNotFoundException {
+        Repairer repairer = em.find(Repairer.class, username);
+        if (repairer == null) {
+            throw new MyEntityNotFoundException("Repairer " + username + " not found");
         }
+        return repairer;
     }
 
     public void delete(String username) throws MyEntityNotFoundException {
-        Repairer repairer = find(username);
-        if (repairer == null) {
-            throw new MyEntityNotFoundException("Repairer not found");
-        }
+        Repairer repairer = findRepairerOrThrow(username);
         em.remove(repairer);
     }
 

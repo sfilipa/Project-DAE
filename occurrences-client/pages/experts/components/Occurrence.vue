@@ -1,6 +1,8 @@
 <template>
   <div class="all-occurrences">
-    <p style="font-size: 20px; color: red"><b>{{occurrence.objectInsured}} - <span>{{occurrence.insuranceCompanyName}} ({{occurrence.insuranceCode}})</span></b></p>
+    <p style="font-size: 20px; color: red"><b>{{occurrence.objectInsured}}
+      ({{ occurrence.coverageType.charAt(0).toUpperCase() + occurrence.coverageType.split('_').join(' ').slice(1).toLowerCase() }})
+      - <span>{{occurrence.insuranceCompanyName}} ({{occurrence.insuranceCode}})</span></b></p>
     <div class="all-occurrences-item">
       <div class="all-occurrences-item-row" style="width: 30%;">
         <p><b>Occurrence {{ occurrence.id }} - Client {{occurrence.usernameClient}}</b></p>

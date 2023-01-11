@@ -1,6 +1,8 @@
 <template>
   <div class="all-occurrences">
-    <p style="font-size: 20px; color: red"><b>{{occurrence.objectInsured}} - <span>{{occurrence.insuranceCompanyName}} ({{occurrence.insuranceCode}})</span></b></p>
+    <p style="font-size: 20px; color: red"><b>{{occurrence.objectInsured}}
+      ({{ occurrence.coverageType.charAt(0).toUpperCase() + occurrence.coverageType.split('_').join(' ').slice(1).toLowerCase() }})
+      - <span>{{occurrence.insuranceCompanyName}} ({{occurrence.insuranceCode}})</span></b></p>
     <div class="all-occurrences-item">
       <div class="all-occurrences-item-row" style="width: 30%;">
         <p><b>Occurrence {{ occurrence.id }} - Client {{occurrence.usernameClient}}</b></p>
@@ -28,21 +30,6 @@
                         occurrence.state==='REPAIRER_WAITING_LIST'">
               <button  class="btn btn-repairer-button" @click.prevent="start(occurrence.id)" :disabled="waitingRefresh">Start</button>
             </div>
-<!--        <div v-if="!isAssigned &&-->
-<!--                    occurrence.state!=='PENDING' &&-->
-<!--                    occurrence.state!=='APPROVED' &&-->
-<!--                    occurrence.state!=='FAILED' &&-->
-<!--                    occurrence.state!=='RESOLVED' &&-->
-<!--                    occurrence.state!=='DISAPPROVED'">-->
-<!--          <button  class="btn btn-associate-repairers" @click.prevent="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>-->
-<!--        </div>-->
-<!--        <div v-else-if="occurrence.state!=='PENDING' &&-->
-<!--                    occurrence.state!=='APPROVED' &&-->
-<!--                    occurrence.state!=='FAILED' &&-->
-<!--                    occurrence.state!=='RESOLVED' &&-->
-<!--                    occurrence.state!=='DISAPPROVED'">-->
-<!--          <button class="btn btn-associate-repairers" @click.prevent="unassign(occurrence.id)" :disabled="waitingRefresh">Unassign</button>-->
-<!--        </div>-->
       </div>
     </div>
   </div>
