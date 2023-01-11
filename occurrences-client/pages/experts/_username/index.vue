@@ -16,13 +16,16 @@
         <div class="spinner-border"></div>
       </div>
 
-      <div v-else v-show="!editing" class="profile-body-div">
+      <div v-else v-show="!editing && !editPassword" class="profile-body-div">
         <p class="profile-field"><span class="profile-label">Username:</span> <span> {{this.username}} </span></p>
         <p class="profile-field"><span class="profile-label">Name:</span> {{ this.name }}</p>
         <p class="profile-field"><span class="profile-label">Email:</span> {{this.email}}</p>
         <p class="profile-field"><span class="profile-label">Insurance Company:</span> {{this.company_username}}</p>
         <div class="btn-edit-profile-div">
-          <button @click.prevent="editing = true" class="btn btn-edit-profile">Edit</button>
+          <div>
+            <button @click.prevent="editPassword = true" class="btn btn-profile-button">Change Password</button>
+            <button @click.prevent="editing = true" class="btn btn-profile-button">Edit</button>
+          </div>
         </div>
       </div>
 
@@ -49,14 +52,44 @@
         <p class="text-danger text-center" v-show="errorMsg">{{ errorMsg }}</p>
 
         <div class="edit-profile-buttons">
-          <div style="margin: auto">
-            <button @click.prevent="onReset" class="btn btn-edit-profile btn-edit-profile-reset">Reset</button>
-            <button type="submit" class="btn btn-edit-profile">Save</button>
+          <div style="margin: auto; margin-top: 1rem;">
+            <button @click.prevent="onReset" class="btn btn-profile-button btn-edit-profile-reset">Reset</button>
+            <button type="submit" class="btn btn-profile-button">Save</button>
           </div>
         </div>
 
         <div class="btn-edit-profile-div">
-          <button @click.prevent="editing = false; onReset();" class="btn btn-edit-profile">Cancel</button>
+          <button @click.prevent="editing = false; onReset();" class="btn btn-profile-button">Cancel</button>
+        </div>
+      </b-form>
+
+      <b-form v-show="editPassword" @submit.prevent="onSubmitPassword" :disabled="!isPasswordFormValid" class="profile-body-div">
+        <b-form-group class="mb-3" :invalid-feedback="invalidOldPasswordFeedback" :state="isOldPasswordValid">
+          <span class="profile-label">Old Password:</span>
+          <b-input class="form-control edit-input" type="password" :state="isOldPasswordValid" v-model.trim="oldPassword" required/>
+        </b-form-group>
+
+        <b-form-group class="mb-3" :invalid-feedback="invalidNewPasswordFeedback" :state="isNewPasswordValid">
+          <span class="profile-label">New Password:</span>
+          <b-input class="form-control edit-input" type="password" :state="isNewPasswordValid" v-model.trim="newPassword" required/>
+        </b-form-group>
+
+        <b-form-group class="mb-3" :invalid-feedback="invalidConfirmationPasswordFeedback" :state="isConfirmationPasswordValid">
+          <span class="profile-label">Confirm Password:</span>
+          <b-input class="form-control edit-input" type="password" :state="isConfirmationPasswordValid" v-model.trim="confirmationPassword" required/>
+        </b-form-group>
+
+        <p class="text-danger text-center" v-show="errorMsg">{{ errorMsg }}</p>
+
+        <div class="edit-profile-buttons">
+          <div style="margin: auto; margin-top: 4rem">
+            <button @click.prevent="onResetPassword" class="btn btn-profile-button btn-edit-profile-reset">Reset</button>
+            <button type="submit" class="btn btn-profile-button">Change</button>
+          </div>
+        </div>
+
+        <div class="btn-edit-profile-div">
+          <button @click.prevent="editPassword = false; onResetPassword()" class="btn btn-profile-button">Cancel</button>
         </div>
       </b-form>
     </div>
@@ -75,7 +108,11 @@ export default {
       newName: null,
       newEmail: null,
       errorMsg: null,
-      editing: false
+      editing: false,
+      editPassword: false,
+      oldPassword: null,
+      newPassword: null,
+      confirmationPassword: null
     }
   },
   created () {
@@ -95,7 +132,7 @@ export default {
       }
       let nameLen = this.newName.length
       if (nameLen < 3 || nameLen > 25) {
-        return 'The password must be between [3, 25] characters.'
+        return 'The name must be between [3, 25] characters.'
       }
       return ''
     },
@@ -144,7 +181,71 @@ export default {
         return false
       }
       return true
-    }
+    },
+    invalidOldPasswordFeedback () {
+      if (!this.oldPassword) {
+        return null
+      }
+      let passwordLen = this.oldPassword.length
+      if (passwordLen < 3 || passwordLen > 25) {
+        return 'The password must be between [3, 25] characters.'
+      }
+      return ''
+    },
+    isOldPasswordValid () {
+      if (this.invalidOldPasswordFeedback === null) {
+        return null
+      }
+      return this.invalidOldPasswordFeedback === ''
+    },
+    invalidNewPasswordFeedback () {
+      if (!this.newPassword) {
+        return null
+      }
+      let passwordLen = this.newPassword.length
+      if (passwordLen < 3 || passwordLen > 25) {
+        return 'The password must be between [3, 25] characters.'
+      }
+      return ''
+    },
+    isNewPasswordValid () {
+      if (this.invalidNewPasswordFeedback === null) {
+        return null
+      }
+      return this.invalidNewPasswordFeedback === ''
+    },
+    invalidConfirmationPasswordFeedback () {
+      if (!this.confirmationPassword) {
+        return null
+      }
+      let passwordLen = this.confirmationPassword.length
+      if (passwordLen < 3 || passwordLen > 25) {
+        return 'The password must be between [3, 25] characters.'
+      }
+
+      if (this.confirmationPassword !== this.newPassword) {
+        return 'Passwords don\'t match.'
+      }
+      return ''
+    },
+    isConfirmationPasswordValid () {
+      if (this.invalidConfirmationPasswordFeedback === null) {
+        return null
+      }
+      return this.invalidConfirmationPasswordFeedback === ''
+    },
+    isPasswordFormValid () {
+      if (! this.isOldPasswordValid) {
+        return false
+      }
+      if (! this.isNewPasswordValid) {
+        return false
+      }
+      if (! this.isConfirmationPasswordValid) {
+        return false
+      }
+      return true
+    },
   },
   methods:{
     onReset(){
@@ -175,7 +276,26 @@ export default {
     },
     validEmail(email) {
       return /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/.test(email);
-    }
+    },
+    onResetPassword(){
+      this.oldPassword = null;
+      this.newPassword = null;
+      this.confirmationPassword = null;
+    },
+    onSubmitPassword(){
+      this.$axios.patch(`/api/experts/${this.$auth.user.username}/password`, {
+        oldPassword: this.oldPassword,
+        password: this.newPassword,
+      })
+        .then(() => {
+          this.$toast.success(`Password updated!`).goAway(3000)
+          this.editPassword = false
+        })
+        .catch(({ response: err }) => {
+          this.errorMsg = err.data
+          this.$toast.error('Sorry, password couldn\'t be updated. Ensure you don\'t have any errors').goAway(3000)
+        })
+    },
   }
 }
 </script>
@@ -196,16 +316,16 @@ export default {
   flex-direction: row;
 }
 
-.btn-edit-profile:hover{
+.btn-profile-button:hover{
   background-color: red !important;
   color: white !important;
   border: 1px solid red !important;
 }
 
-.btn-edit-profile{
+.btn-profile-button{
   border: 1px solid black;
   height: 3rem;
-  width: 9rem;
+  width: 12rem;
   background-color: white;
   margin: 0 1rem;
 }

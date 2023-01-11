@@ -57,6 +57,21 @@
         </div>
       </div>
     </div>
+
+    <div v-if="documents.length !== 0">
+      <hr>
+      <div class="repair-row" style="flex-wrap: wrap">
+        <span class="fw-bold me-4">Documents: </span>
+        <a @click.prevent="downloadDocument(document)" class="document-link" v-for="document in this.documents">
+          {{ document.filename.length > 25 ? document.filename.substring(0, 20)+"..." : document.filename }}
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          </svg>
+          <div class="tooltiptext" v-if="document.filename.length > 20">{{document.filename}}</div>
+        </a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -69,13 +84,24 @@ export default {
     return {
       descriptionApprovePending: null,
       approveOrDisapprove: "",
-      company_username: null
+      company_username: null,
+      documents: []
     }
   },
   created() {
     this.$axios.$get(`/api/experts/${this.$auth.user.username}`)
       .then((response) => {
         this.company_username = response.company_username;
+      })
+
+    this.$axios.$get(`api/documents/${this.occurrence.id}/exists`)
+      .then((response)=> {
+        if (response) {
+          this.$axios.$get(`api/documents/${this.occurrence.id}`)
+            .then((response) => {
+              this.documents = response
+            })
+        }
       })
   },
   computed: {
@@ -175,6 +201,51 @@ export default {
 </script>
 
 <style scoped>
+
+.document-link{
+  cursor: pointer;
+  width: fit-content;
+  position: relative;
+  margin-right: 2rem;
+  margin-top: 0.1rem;
+}
+
+.document-link .tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  color: white !important;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: 1.8rem;
+  font-size: 14px;
+  width: 20rem;
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.document-link .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5rem;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
+}
+
+.document-link:hover{
+  color: red !important;
+}
+
+.document-link:hover .tooltiptext {
+  visibility: visible !important;
+  opacity: 1;
+}
+
 
 .all-occurrences-item-last{
   text-align: end;
