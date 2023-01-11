@@ -111,7 +111,7 @@
         <p class="text-danger text-center" v-show="errorMsg">{{ errorMsg }}</p>
 
         <div class="edit-profile-buttons">
-          <div style="margin: auto; margin-top: 10rem">
+          <div style="margin: auto; margin-top: 8rem">
             <button @click.prevent="onResetPassword" class="btn btn-profile-button btn-edit-profile-reset">Reset</button>
             <button type="submit" class="btn btn-profile-button">Change</button>
           </div>

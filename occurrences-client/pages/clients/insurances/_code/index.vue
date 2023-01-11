@@ -98,26 +98,30 @@
         <p><b>2. What Happened</b></p>
         <div :invalid-feedback="invalidDescriptionFeedback" :state="isDescriptionValid"  class="report-an-occurrence-div">
           <b-textarea :state="isDescriptionValid" class="form-control report-an-occurrence-text" placeholder="Describe here what happened"
-                      v-model="description" required></b-textarea>
+                      v-model="description"
+                      :disabled="waitingResponse"
+                      required></b-textarea>
         </div>
 
         <p><b>3. Date of the Occurrence</b></p>
         <div class="report-an-occurrence-div">
           <div :invalid-feedback="invalidDateFeedback" :state="isDateValid"  class="report-an-occurrence-div">
-            <b-input :state="isDateValid" class="form-control" type="date" required  v-model="date"/>
+            <b-input :state="isDateValid"
+                     :disabled="waitingResponse"
+                     class="form-control" type="date" required  v-model="date"/>
           </div>
         </div>
 
         <p><b>4. Documents</b></p>
         <div class="report-an-occurrence-div">
           <div class="report-an-occurrence-div">
-            <input type="file" ref="documents" multiple="multiple" @change="inputDocumentsChanged">
+            <input type="file" ref="documents" multiple="multiple" @change="inputDocumentsChanged" :disabled="waitingResponse">
           </div>
           <div v-if="documents.length">
             <span class="fw-bold ms-4 me-3">All files:</span>
             <span v-for="document in documents" class="document-name">
               <span>{{ document.name }}</span>
-              <button class="btn" style="height: 31px; width: 31px;" @click.prevent="removeDocument(document)">
+              <button class="btn btn-remove-file" style="height: 31px; width: 31px;" @click.prevent="removeDocument(document)" :disabled="waitingResponse">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x cross-bi" viewBox="0 0 16 16">
                   <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
                 </svg>
@@ -131,7 +135,13 @@
         <div style="display: flex;">
           <div class="register-occurrence-btn-div" >
             <button type="submit" class="btn register-occurrence-btn" :disabled="waitingResponse">
-              Register Occurrence
+              <div style="display: flex">
+                  <div class="me-3 ms-3" v-if="waitingResponse">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  </div>
+                  <div class="text-center" style="width: 100%"><span>Register Occurrence</span></div>
+
+              </div>
             </button>
           </div>
         </div>
@@ -402,7 +412,7 @@ export default {
         })
         .catch(({ response: err }) => {
           if(err) {
-            this.errorMsg = err
+            this.errorMsg = err.data
           }
           this.$toast.error('Occurrence couldn\'t be created, please check the errors').goAway(3000)
           this.waitingResponse = false
@@ -446,6 +456,13 @@ export default {
 
 <style scoped>
 
+.btn-remove-file:disabled{
+  border: 0;
+}
+
+.btn-remove-file{
+  border: 0
+}
 
 .filter-select{
   width: 27%;
