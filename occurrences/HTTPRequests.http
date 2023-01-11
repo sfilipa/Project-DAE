@@ -5,7 +5,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "client2",
+  "username": "client1",
   "password": "123"
 }
 
@@ -19,12 +19,12 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjcyOTMzNDQ1LCJleHAiOjE2NzI5MzcwNDV9.nhKcDTIvRqZsAsFIlTjWuSr70ZLc8yc31YG8AUP3fPU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNDcyNjU3LCJleHAiOjE2NzM0NzYyNTd9.GNnsYm59Y5GhkRiYbRzQc6G8xR4kt4v3OeZ4sqCf8lw
 Content-Type: application/json
 
 {
   "usernameClient": "client1",
-  "entryDate": "10/1/2023",
+  "entryDate": "22/01/2023",
   "state": "PENDING",
   "insuranceCode": "ALL-1298389",
   "coverageType": "ACCIDENTAL_DAMAGE",
@@ -51,27 +51,36 @@ Content-Type: application/json
 ###DOCUMENTS
 ### Add Documents to occurrency
 POST http://localhost:8080/occurrences/api/documents/1 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzY3NjIzLCJleHAiOjE2NzMzNzEyMjN9.4G4h_l14WhJdVWOMgDqANLBKhE7qXGfKD09fof1eizk
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNDcwODMwLCJleHAiOjE2NzM0NzQ0MzB9.1m64jE-1zb1cgN06eUCb-dlmgfshEStnGuQdMw-_q_E
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="file"; filename="<C:\popo\statistics.txt"
+Content-Disposition: form-data; name="file"; filename="occurrences.csv"
+
+< C:\Users\sfili\Desktop\occurrences.csv
 
 --boundary
 
+### Excell
+POST http://localhost:8080/occurrences/api/documents/uploadOccurrences HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNDcwODMwLCJleHAiOjE2NzM0NzQ0MzB9.1m64jE-1zb1cgN06eUCb-dlmgfshEStnGuQdMw-_q_E
+Content-Type: multipart/form-data; boundary=boundary
+
 --boundary
-Content-Disposition: form-data; name="file"; filename="<C:\popo\alalal.txt"
+Content-Disposition: form-data; name="file"; filename="occurrences.csv"
+
+< C:\Users\sfili\Desktop\occurrences.csv
 
 --boundary
 
 ### Gets documents of occurrency with id = 2
 GET http://localhost:8080/occurrences/api/documents/1 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzY2NTY4LCJleHAiOjE2NzMzNzAxNjh9.WpGtJPDJLEUEGlmsuL3sGlaZ_obvmmIfHL228fvU8Hk
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNDMyMzU0LCJleHAiOjE2NzM0MzU5NTR9.4jC7QZ0QTYxFkg5iMQ4Yw76uipTTkCEAVnhgSjoZ7Sg
 Content-Type: application/x-www-form-urlencoded
 
 ###Download documents with id=1
-GET http://localhost:8080/occurrences/api/documents/download/2 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzY2NTY4LCJleHAiOjE2NzMzNzAxNjh9.WpGtJPDJLEUEGlmsuL3sGlaZ_obvmmIfHL228fvU8Hk
+GET http://localhost:8080/occurrences/api/documents/download/12 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNDMyMzU0LCJleHAiOjE2NzM0MzU5NTR9.4jC7QZ0QTYxFkg5iMQ4Yw76uipTTkCEAVnhgSjoZ7Sg
 Content-Type: application/x-www-form-urlencoded
 
 ###See if occurrency with id = 2 has documents
@@ -295,7 +304,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "expert2",
+  "username": "client2",
   "password": "exp"
 }
 
