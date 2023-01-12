@@ -131,6 +131,7 @@ export default {
       }).then(()=> {
         this.descriptionApprovePending = "";
         this.$emit('updateOccurrences')
+        this.$socket.emit('occurrenceApproved', this.occurrence.usernameClient);
       })
 
     },
@@ -144,6 +145,7 @@ export default {
       ).then(()=> {
         this.descriptionApprovePending = "";
         this.$emit('updateOccurrences')
+        this.$socket.emit('occurrenceDisapproved', this.occurrence.usernameClient);
       })
     },
     acceptRepairer(occurence_id)

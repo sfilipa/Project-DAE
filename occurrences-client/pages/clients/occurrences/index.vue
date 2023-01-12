@@ -45,6 +45,16 @@
 <script>
 import Occurrence from "~/pages/clients/components/Occurrence.vue";
 export default {
+  mounted() {
+    this.$socket.on('occurrenceApproved', () => {
+      this.fetchOccurrences()
+      this.$toast.success('Occurrences as been Approved!').goAway(3000)
+    }),
+    this.$socket.on('occurrenceDisapproved', () => {
+      this.fetchOccurrences()
+      this.$toast.error('Occurrences as been Disapproved!').goAway(3000)
+    })
+  },
   components: {
     Occurrence
   },
@@ -59,7 +69,14 @@ export default {
     }
   },
   created () {
-    this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences`)
+    this.fetchOccurrences()
+  },
+  methods: {
+    hasDocuments(occurrence_id){
+      return this.allDocuments.map(oc => oc.occurrence_id).indexOf(occurrence_id) !== -1
+    },
+    fetchOccurrences() {
+      this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences`)
       .then((occurrences) => {
         this.occurrences = occurrences
 
@@ -89,11 +106,7 @@ export default {
             })
         })
       })
-  },
-  methods: {
-    hasDocuments(occurrence_id){
-      return this.allDocuments.map(oc => oc.occurrence_id).indexOf(occurrence_id) !== -1
-    },
+    }
   }
 }
 </script>

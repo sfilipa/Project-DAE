@@ -19,7 +19,6 @@ io.on("connection", (socket) => {
 	console.log(`client ${socket.id} has connected`);
 
 	// Join Rooms
-	console.log("Joining Rooms");
 	socket.on("loggedIn", function (user) {
 		joinRoom(socket, user);
 	});
@@ -33,6 +32,16 @@ io.on("connection", (socket) => {
 	socket.on("occurrenceCreated", function () {
 		updateOccurrencesOnExperts(socket);
 	});
+
+	// Occurrence Approved
+	socket.on("occurrenceApproved", function (clientUsername) {
+		occurrenceApproved(socket, clientUsername)
+	});
+
+	// Occurrence Disapproved
+	socket.on("occurrenceDisapproved", function (clientUsername) {
+		occurrenceDisapproved(socket, clientUsername)
+	});
 });
 
 function update(socket) {
@@ -43,10 +52,19 @@ function updateOccurrencesOnExperts(socket) {
 	socket.to("experts").emit("update");
 }
 
+function occurrenceApproved(socket, clientUsername) {
+	socket.to(clientUsername).emit("occurrenceApproved");
+}
+
+function occurrenceDisapproved(socket, clientUsername) {
+	socket.to(clientUsername).emit("occurrenceDisapproved");
+}
+
 function joinRoom(socket, user) {
-	// Personal Room
-	socket.join(user.id);
-	
+	// Join Personal Room
+	socket.join(user.username);
+	console.log(`client has joined room ${user.username}`);
+
 	// Joins user to room of specific role
 	if (user.role == "Client") {
 		socket.join("clients");
@@ -61,7 +79,7 @@ function joinRoom(socket, user) {
 
 function leaveRoom(socket, user) {
 	// User Logs Out
-	socket.leave(user.id);
+	socket.leave(user.username);
 	socket.leave("clients");
 	socket.leave("chefs");
 	socket.leave("deliverers");
