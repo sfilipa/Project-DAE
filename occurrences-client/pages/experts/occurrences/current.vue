@@ -46,6 +46,8 @@
                     :waitingRefresh="waitingRefresh"
                     @updateOccurrences="updateOccurrences"></Occurrence>
       </div>
+
+      <Paginate :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
     </div>
   </div>
 
@@ -56,6 +58,7 @@
 <script>
 import Occurrence from "~/pages/experts/components/Occurrence.vue";
 import Unauthorized from "@/pages/components/Unauthorized";
+import Paginate from "@/pages/components/Paginate";
 export default {
   mounted() {
     this.$socket.on('update', () => {
@@ -63,6 +66,7 @@ export default {
       this.$toast.info('Occurrences as been updated!').goAway(3000)
   })},
   components: {
+    Paginate,
     Unauthorized,
     Occurrence
   },
@@ -75,22 +79,44 @@ export default {
       coverageToFilter: "",
       occurrenceStates: [],
       occurrenceCoverages: [],
-      allDocuments: []
+      allDocuments: [],
+      currentPage: 1,
+      totalCount: 1,
+      perPage: 10,
+      pageCount: 1
     }
   },
   created () {
-    this.updateOccurrences()
+    this.updateOccurrences(1)
+  },
+  watch: {
+    currentPage(newPage) {
+      this.updateOccurrences(newPage)
+    }
   },
   methods: {
+    updateCurrentPage(currentPage){
+      if(currentPage!=null) {
+        this.currentPage = currentPage
+      }
+    },
     isAssigned(occurrence_id){
       return this.occurrencesAssigned.map(object => object.id).indexOf(occurrence_id) !== -1
     },
-    updateOccurrences(){
+    updateOccurrences(currentPage){
       this.waitingRefresh = true
       this.occurrenceStates = []
       this.occurrenceCoverages = []
-      this.$axios.$get(`/api/occurrences/`)
+
+      if(!currentPage){
+        currentPage = 1
+      }
+
+      this.$axios.$get(`/api/occurrences?page=${currentPage}`)
         .then((occurrences) => {
+          this.totalCount = occurrences.metadata.totalCount
+          this.perPage = occurrences.metadata.count
+          this.pageCount = occurrences.metadata.pageCount
           this.occurrences = occurrences.data
           this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
             .then((occurrencesAssigned) => {

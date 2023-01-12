@@ -36,16 +36,7 @@
                       @updateOccurrences="updateOccurrences"></Occurrence>
         </div>
 
-
-<!--        <ul v-for="page in pageCount">-->
-<!--          <li>{{page}}</li>-->
-<!--        </ul>-->
-
-<!--        <b-pagination-->
-<!--          v-model="currentPage"-->
-<!--          :total-rows="rows"-->
-<!--          :per-page="perPage"-->
-<!--        ></b-pagination>-->
+        <Paginate :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
       </div>
     </div>
   </b-container>
@@ -58,6 +49,7 @@
 <script>
 import Occurrence from "~/pages/experts/components/Occurrence.vue";
 import Unauthorized from "@/pages/components/Unauthorized";
+import Paginate from "@/pages/components/Paginate";
 export default {
   mounted() {
     this.$socket.on('update', () => {
@@ -70,6 +62,7 @@ export default {
   })
   },
   components: {
+    Paginate,
     Unauthorized,
     Occurrence
   },
@@ -89,36 +82,37 @@ export default {
       pageCount: 1
     }
   },
-  created () {
-    this.updateOccurrences()
-  },
-  computed: {
-    occurrencesPaginate(){
-      this.$axios.$get(`/api/occurrences?page=${this.currentPage}`)
-        .then((occurrences) => {
-          console.log(occurrences)
-          this.totalCount = occurrences.metadata.totalCount
-          this.perPage = occurrences.metadata.count
-          this.pageCount = occurrences.metadata.pageCount
-          this.occurrences = occurrences.data
-        })
-
-      return this.occurrences
+  watch: {
+    currentPage(newPage) {
+      this.updateOccurrences(newPage)
     }
   },
+  created () {
+    this.updateOccurrences(1)
+  },
   methods: {
+    updateCurrentPage(currentPage){
+      if(currentPage!=null) {
+        this.currentPage = currentPage
+      }
+    },
     isAssigned(occurrence_id){
       return this.occurrencesAssigned.map(object => object.id).indexOf(occurrence_id) !== -1
     },
-    updateOccurrences(){
+    updateOccurrences(currentPage){
       this.waitingRefresh = true
       this.occurrenceStates = []
       this.occurrenceCoverages = []
-      this.$axios.$get(`/api/occurrences?page=${this.currentPage}`)
+
+      if(!currentPage){
+        currentPage = 1
+      }
+
+      this.$axios.$get(`/api/occurrences?page=${currentPage}`)
         .then((occurrences) => {
-          console.log(occurrences)
-          this.rows = occurrences.metadata.totalCount
+          this.totalCount = occurrences.metadata.totalCount
           this.perPage = occurrences.metadata.count
+          this.pageCount = occurrences.metadata.pageCount
           this.occurrences = occurrences.data
           this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
             .then((occurrencesAssigned) => {
