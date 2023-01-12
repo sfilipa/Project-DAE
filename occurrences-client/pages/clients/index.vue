@@ -1,5 +1,5 @@
 <template>
-  <b-container v-if="this.$auth.user">
+  <b-container v-if="this.$auth.user && this.$auth.user.role.toLowerCase() === 'client'">
     <h3 class="text-center index-header">Welcome to your occurrence management platform</h3>
     <p>&nbsp; My Insurances</p>
 
@@ -15,12 +15,18 @@
       <insurance :insurance="insurance"></insurance>
     </div>
   </b-container>
+
+  <div v-else>
+    <Unauthorized></Unauthorized>
+  </div>
 </template>
 
 <script>
 import Insurance from "~/pages/clients/components/Insurance.vue";
+import Unauthorized from "@/pages/components/Unauthorized";
 export default {
   components: {
+    Unauthorized,
     Insurance
   },
   name: "index.vue",

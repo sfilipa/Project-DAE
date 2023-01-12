@@ -66,7 +66,7 @@ export default {
         })
         promiseAdmin.catch(({ response: err }) => {
           this.errorMsg = err.data
-          this.$toast.error('Sorry, you cant login. Ensure your credentials are correct').goAway(3000)
+          this.$toast.error('Sorry, you can\'t login. Ensure your credentials are correct').goAway(3000)
         })
       })
     },
@@ -79,37 +79,37 @@ export default {
 </script>
 
 <style scoped>
-  .btn-reset:hover{
-    background-color: #dcdcdc;
-  }
+.btn-reset:hover{
+  background-color: #dcdcdc;
+}
 
-  .btn-reset{
-    width: 45%;
-    background-color: #eaeaea;
-    border: 1px solid black;
-    margin-right: auto;
-  }
+.btn-reset{
+  width: 45%;
+  background-color: #eaeaea;
+  border: 1px solid black;
+  margin-right: auto;
+}
 
-  .btn-submit:hover{
-    background-color: red !important;
-    color: white !important;
-  }
+.btn-submit:hover{
+  background-color: red !important;
+  color: white !important;
+}
 
-  .btn-submit{
-    width: 45%;
-    background-color: white;
-    border: 1px solid black;
-  }
+.btn-submit{
+  width: 45%;
+  background-color: white;
+  border: 1px solid black;
+}
 
-  .login-buttons{
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-  }
+.login-buttons{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
 
-  .login-page{
-    padding: 80px 320px;
-  }
+.login-page{
+  padding: 80px 320px;
+}
 
 
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <b-container v-if="this.$auth.user">
+  <b-container v-if="this.$auth.user && this.$auth.user.role.toLowerCase() === 'expert'">
     <h3 class="text-center index-header">Welcome to your occurrence management platform</h3>
     <p>&nbsp; Current Occurrences</p>
 
@@ -38,10 +38,15 @@
       </div>
     </div>
   </b-container>
+
+  <div v-else>
+    <Unauthorized></Unauthorized>
+  </div>
 </template>
 
 <script>
 import Occurrence from "~/pages/experts/components/Occurrence.vue";
+import Unauthorized from "@/pages/components/Unauthorized";
 export default {
   mounted() {
     this.$socket.on('update', () => {
@@ -49,6 +54,7 @@ export default {
       this.$toast.info('Occurrences as been updated!').goAway(3000)
   })},
   components: {
+    Unauthorized,
     Occurrence
   },
   data () {
