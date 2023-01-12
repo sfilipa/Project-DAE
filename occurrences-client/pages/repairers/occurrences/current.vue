@@ -86,7 +86,7 @@ export default {
       this.occurrenceCoverages = []
       this.$axios.$get(`/api/occurrences/`)
         .then((occurrences) => {
-          this.occurrences = occurrences
+          this.occurrences = occurrences.data
           this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
             .then((occurrencesAssigned) => {
               this.occurrencesAssigned = occurrencesAssigned

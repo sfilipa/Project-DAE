@@ -278,7 +278,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.$route.params.code)
     this.$axios.get(`https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=${this.$route.params.code}`)
       .then((response)=>{
         this.insurance = response.data[0]

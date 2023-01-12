@@ -28,13 +28,24 @@
           </b-select>
         </div>
 
-        <div v-for="occurrence in occurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
+        <div v-for="occurrence in occurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
           <Occurrence :occurrence="occurrence"
                       :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
                       :isAssigned="isAssigned(occurrence.id)"
                       :waitingRefresh="waitingRefresh"
                       @updateOccurrences="updateOccurrences"></Occurrence>
         </div>
+
+
+<!--        <ul v-for="page in pageCount">-->
+<!--          <li>{{page}}</li>-->
+<!--        </ul>-->
+
+<!--        <b-pagination-->
+<!--          v-model="currentPage"-->
+<!--          :total-rows="rows"-->
+<!--          :per-page="perPage"-->
+<!--        ></b-pagination>-->
       </div>
     </div>
   </b-container>
@@ -71,11 +82,29 @@ export default {
       coverageToFilter: "",
       occurrenceStates: [],
       occurrenceCoverages: [],
-      allDocuments: []
+      allDocuments: [],
+      currentPage: 1,
+      totalCount: 1,
+      perPage: 10,
+      pageCount: 1
     }
   },
   created () {
     this.updateOccurrences()
+  },
+  computed: {
+    occurrencesPaginate(){
+      this.$axios.$get(`/api/occurrences?page=${this.currentPage}`)
+        .then((occurrences) => {
+          console.log(occurrences)
+          this.totalCount = occurrences.metadata.totalCount
+          this.perPage = occurrences.metadata.count
+          this.pageCount = occurrences.metadata.pageCount
+          this.occurrences = occurrences.data
+        })
+
+      return this.occurrences
+    }
   },
   methods: {
     isAssigned(occurrence_id){
@@ -85,9 +114,12 @@ export default {
       this.waitingRefresh = true
       this.occurrenceStates = []
       this.occurrenceCoverages = []
-      this.$axios.$get(`/api/occurrences/`)
+      this.$axios.$get(`/api/occurrences?page=${this.currentPage}`)
         .then((occurrences) => {
-          this.occurrences = occurrences
+          console.log(occurrences)
+          this.rows = occurrences.metadata.totalCount
+          this.perPage = occurrences.metadata.count
+          this.occurrences = occurrences.data
           this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
             .then((occurrencesAssigned) => {
               this.occurrencesAssigned = occurrencesAssigned
