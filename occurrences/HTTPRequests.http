@@ -10,7 +10,7 @@ Accept: application/json
 }
 
 ##### Get Occurrences
-GET http://localhost:8080/occurrences/api/occurrences
+GET http://localhost:8080/occurrences/api/occurrences?limit=5
 Accept: application/json
 
 ##### Get Occurrence Details
