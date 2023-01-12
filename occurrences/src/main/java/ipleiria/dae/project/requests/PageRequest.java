@@ -1,5 +1,6 @@
 package ipleiria.dae.project.requests;
 
+import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
@@ -10,10 +11,23 @@ public class PageRequest {
     @PositiveOrZero
     private int offset;
 
+    @QueryParam("page")
+    @DefaultValue("1")
+    @Positive
+    private int page;
+
     @QueryParam("limit")
     @DefaultValue("10")
     @PositiveOrZero
     private int limit;
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
 
     public int getOffset() {
         return offset;

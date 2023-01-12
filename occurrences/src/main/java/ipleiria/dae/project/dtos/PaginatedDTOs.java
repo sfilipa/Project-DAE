@@ -10,13 +10,16 @@ public class PaginatedDTOs<DTO> implements Serializable {
         private final Long count;
         private final Long totalCount;
 
-        public Metadata(Long count, Long totalCount) {
+        private final Long pageCount;
+
+        public Metadata(Long count, Long totalCount, Long pageCount) {
             this.count = count;
             this.totalCount = totalCount;
+            this.pageCount = pageCount;
         }
 
         public Metadata(Long totalCount) {
-            this(0L, totalCount);
+            this(0L, totalCount, 1L);
         }
 
         public Long getCount() {
@@ -26,6 +29,10 @@ public class PaginatedDTOs<DTO> implements Serializable {
         public Long getTotalCount() {
             return totalCount;
         }
+
+        public Long getPageCount() {
+            return pageCount;
+        }
     }
 
     private final List<DTO> data;
@@ -34,12 +41,12 @@ public class PaginatedDTOs<DTO> implements Serializable {
 
     public PaginatedDTOs(long totalCount) {
         this.data = Collections.emptyList();
-        this.metadata = new Metadata(0L, totalCount);
+        this.metadata = new Metadata(0L, totalCount, 1L);
     }
 
-    public PaginatedDTOs(List<DTO> data, long totalCount, int offset) {
+    public PaginatedDTOs(List<DTO> data, long totalCount, int offset, int limit) {
         this.data = data;
-        this.metadata = data.isEmpty() ? new Metadata(0L, totalCount) : new Metadata((long) (offset + data.size()), totalCount);
+        this.metadata = data.isEmpty() ? new Metadata(0L, totalCount, 1L) : new Metadata((long) (offset + data.size()), totalCount, (long) Math.ceil((double) totalCount / limit));
     }
 
     public List<DTO> getData() {

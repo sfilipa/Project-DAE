@@ -192,9 +192,9 @@ public class OccurrenceBean {
         return em.createQuery("SELECT COUNT(*) FROM " + Occurrence.class.getSimpleName(), Long.class).getSingleResult();
     }
 
-    public List<Occurrence> getAll(int offset, int limit) {
+    public List<Occurrence> getAll(int limit, int pageNumber) {
         return em.createNamedQuery("getAllOccurrences", Occurrence.class)
-                .setFirstResult(offset)
+                .setFirstResult((pageNumber - 1) * limit)
                 .setMaxResults(limit)
                 .getResultList();
     }

@@ -35,13 +35,14 @@ public class OccurrenceService {
     public Response getAllOccurrences(@BeanParam @Valid PageRequest pageRequest) {
         var count = occurrenceBean.count();
         var offset = pageRequest.getOffset();
+        var limit = pageRequest.getLimit();
 
         if (offset > count) {
             return Response.ok(new PaginatedDTOs<>(count)).build();
         }
-        
-        var students = occurrenceBean.getAll(offset, pageRequest.getLimit());
-        var paginatedDTO = new PaginatedDTOs<>(OccurrenceDTO.from(students), count, offset);
+
+        var students = occurrenceBean.getAll(limit, pageRequest.getPage());
+        var paginatedDTO = new PaginatedDTOs<>(OccurrenceDTO.from(students), count, offset, limit);
 
         return Response.ok(paginatedDTO).build();
     }
