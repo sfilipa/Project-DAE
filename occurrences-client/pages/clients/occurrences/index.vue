@@ -53,6 +53,18 @@ export default {
     this.$socket.on('occurrenceDisapproved', () => {
       this.fetchOccurrences()
       this.$toast.error('Occurrences as been Disapproved!').goAway(3000)
+    }),
+    this.$socket.on('repairerStartedOccurrence', () => {
+      this.fetchOccurrences()
+      this.$toast.info('Occurrences as Started by Repairer!').goAway(3000)
+    }),
+    this.$socket.on('repairerFailedOccurrence', () => {
+      this.fetchOccurrences()
+      this.$toast.error('Occurrences as been Failed by Repairer!').goAway(3000)
+    }),
+    this.$socket.on('repairerFinishedOccurrence', () => {
+      this.fetchOccurrences()
+      this.$toast.success('Occurrences as been Finished by Repairer!').goAway(3000)
     })
   },
   components: {
