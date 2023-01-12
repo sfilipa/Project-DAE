@@ -42,10 +42,34 @@ io.on("connection", (socket) => {
 	socket.on("occurrenceDisapproved", function (clientUsername) {
 		occurrenceDisapproved(socket, clientUsername)
 	});
+
+	// Assigned Repairer Without Approval
+	socket.on("repairerAssignedWithoutNeedForApproval", function (repairerUsername) {
+		repairerAssignedWithoutNeedForApproval(socket, repairerUsername)
+	});
+
+	// Assigned Repairer Needs Approval
+	socket.on("repairerAssignedNeedsApproval", function () {
+		repairerAssignedNeedsApproval(socket)
+	});
+
+	// Expert Approved Repairer
+	socket.on("expertApprovedRepairer", function (users) {
+		repairerAssignedWithoutNeedForApproval(socket, users.repairerUsername)
+		occurrenceApproved(socket, users.clientUsername)
+	});
+
+	socket.on("occurrenceRepairerDisapproved", function (clientUsername) {
+		occurrenceDisapproved(socket, clientUsername)
+	});
 });
 
-function update(socket) {
-	socket.broadcast.emit("update");
+function repairerAssignedWithoutNeedForApproval(socket, repairer) {
+	socket.to(repairer).emit("occurrenceAssigned");
+}
+
+function repairerAssignedNeedsApproval(socket) {
+	socket.to("experts").emit("repairerAssignedNeedsApproval");
 }
 
 function updateOccurrencesOnExperts(socket) {
