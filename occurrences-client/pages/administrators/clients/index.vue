@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="this.$auth.user && this.$auth.user.role.toLowerCase() === 'administrator'">
     <nuxt-link
       class="btn pb-3 pr-5 text-uppercase"
       :to="`/`">
@@ -11,7 +11,7 @@
       </div>
     </nuxt-link>
 
-    <h3 class="text-center index-header">Experts Management</h3>
+    <h3 class="text-center index-header">Clients Management</h3>
 
     <div v-if="clients == null" class="spinner-div" style="margin-top: 2rem">
       <div class="spinner-border"></div>
@@ -24,11 +24,17 @@
       </div>
     </div>
   </div>
+
+  <div v-else>
+    <Unauthorized></Unauthorized>
+  </div>
 </template>
 <script>
 import ClientBody from "~/pages/administrators/components/ClientBody.vue";
+import Unauthorized from "@/pages/components/Unauthorized";
 export default {
   components: {
+    Unauthorized,
     ClientBody
   },
   methods: {

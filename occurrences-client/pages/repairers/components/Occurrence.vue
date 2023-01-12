@@ -95,6 +95,7 @@ export default {
         .then(()=> {
           this.$toast.success('Occurrence started!').goAway(3000)
           this.$emit('updateOccurrences')
+          this.$socket.emit('repairerStartedOccurrence', this.occurrence.usernameClient);
       })
     },
     fail(occurence_id)
@@ -109,6 +110,7 @@ export default {
         .then(()=> {
           this.$toast.success('Occurrence failed!').goAway(3000)
           this.$emit('updateOccurrences')
+          this.$socket.emit('repairerFailedOccurrence', this.occurrence.usernameClient);
         })
     },
     finish(occurence_id)
@@ -123,6 +125,7 @@ export default {
         .then(()=> {
           this.$toast.success('Occurrence finished!').goAway(3000)
           this.$emit('updateOccurrences')
+          this.$socket.emit('repairerFinishedOccurrence', this.occurrence.usernameClient);
         })
     },
     downloadDocument(documentToDownload){

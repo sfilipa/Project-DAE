@@ -10,7 +10,7 @@ Accept: application/json
 }
 
 ##### Get Occurrences
-GET http://localhost:8080/occurrences/api/occurrences
+GET http://localhost:8080/occurrences/api/occurrences?limit=1&page=3
 Accept: application/json
 
 ##### Get Occurrence Details
@@ -19,7 +19,7 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNDcyNjU3LCJleHAiOjE2NzM0NzYyNTd9.GNnsYm59Y5GhkRiYbRzQc6G8xR4kt4v3OeZ4sqCf8lw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNTI3NDk2LCJleHAiOjE2NzM1MzEwOTZ9.oF2-netdn_1b3qCGPafUsQRNQsn9ezwpe4LUHwH2Fis
 Content-Type: application/json
 
 {

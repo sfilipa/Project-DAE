@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container v-if="this.$auth.user && this.$auth.user.role.toLowerCase() === 'client'">
     <nuxt-link
       class="btn pb-3 pr-5 text-uppercase"
       :to="`/`">
@@ -125,12 +125,18 @@
 
     <DeleteModal v-show="showModal" @close-modal="showModal = false" @delete="deleteClient" :message="'You sure you want to delete your account ?'"/>
   </b-container>
+
+  <div v-else>
+    <Unauthorized></Unauthorized>
+  </div>
 </template>
 
 <script>
 import DeleteModal from "~/pages/components/DeleteModal.vue"
+import Unauthorized from "@/pages/components/Unauthorized";
 export default {
   components: {
+    Unauthorized,
     DeleteModal
   },
   name: "index.vue",

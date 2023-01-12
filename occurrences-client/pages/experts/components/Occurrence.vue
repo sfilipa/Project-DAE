@@ -45,14 +45,17 @@
                     occurrence.state!=='ACTIVE' &&
                     occurrence.state!=='FAILED' &&
                     occurrence.state!=='RESOLVED' &&
-                    occurrence.state!=='DISAPPROVED' && occurrence.insuranceCompanyName === this.company_username">
+                    occurrence.state!=='DISAPPROVED' &&
+                    occurrence.insuranceCompanyName === this.company_username">
           <button  class="btn btn-associate-repairers" @click.prevent="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>
         </div>
-        <div v-else-if="occurrence.state!=='REPAIRER_WAITING_LIST' &&
+        <div v-else-if="!isAssigned &&
+                        occurrence.state!=='REPAIRER_WAITING_LIST' &&
                         occurrence.state!=='ACTIVE' &&
                         occurrence.state!=='FAILED' &&
                         occurrence.state!=='RESOLVED' &&
-                        occurrence.state!=='DISAPPROVED' && occurrence.insuranceCompanyName === this.company_username">
+                        occurrence.state!=='DISAPPROVED' &&
+                        occurrence.insuranceCompanyName === this.company_username">
           <button class="btn btn-associate-repairers" @click.prevent="unassign(occurrence.id)" :disabled="waitingRefresh">Unassign</button>
         </div>
       </div>
@@ -131,6 +134,7 @@ export default {
       }).then(()=> {
         this.descriptionApprovePending = "";
         this.$emit('updateOccurrences')
+        this.$socket.emit('occurrenceApproved', this.occurrence.usernameClient);
       })
 
     },
@@ -144,6 +148,7 @@ export default {
       ).then(()=> {
         this.descriptionApprovePending = "";
         this.$emit('updateOccurrences')
+        this.$socket.emit('occurrenceDisapproved', this.occurrence.usernameClient);
       })
     },
     acceptRepairer(occurence_id)
@@ -156,6 +161,11 @@ export default {
       }).then(()=> {
         this.descriptionApprovePending = "";
         this.$emit('updateOccurrences')
+        const users = {
+          usernameClient: this.occurrence.usernameClient,
+          usernameRepairer: this.occurrence.usernameRepairer
+        }
+        this.$socket.emit('occurrenceRepairerApproved', users);
       })
 
     },
@@ -169,6 +179,7 @@ export default {
       ).then(()=> {
         this.descriptionApprovePending = "";
         this.$emit('updateOccurrences')
+        this.$socket.emit('occurrenceRepairerDisapproved', this.occurrence.usernameClient);
       })
     },
     assign(occurence_id)

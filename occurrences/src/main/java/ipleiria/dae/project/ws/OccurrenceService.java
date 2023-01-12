@@ -1,14 +1,17 @@
 package ipleiria.dae.project.ws;
 
 import ipleiria.dae.project.dtos.OccurrenceDTO;
+import ipleiria.dae.project.dtos.PaginatedDTOs;
 import ipleiria.dae.project.ejbs.OccurrenceBean;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.exceptions.APIBadResponseException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NotAuthorizedException;
+import ipleiria.dae.project.requests.PageRequest;
 import ipleiria.dae.project.security.Authenticated;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ejb.EJB;
 import javax.ws.rs.core.Context;
@@ -29,8 +32,19 @@ public class OccurrenceService {
 
     @GET
     @Path("/")
-    public List<OccurrenceDTO> getAllOccurrences() {
-        return OccurrenceDTO.from(occurrenceBean.getAllOccurrences());
+    public Response getAllOccurrences(@BeanParam @Valid PageRequest pageRequest) {
+        var count = occurrenceBean.count();
+        var offset = pageRequest.getOffset();
+        var limit = pageRequest.getLimit();
+
+        if (offset > count) {
+            return Response.ok(new PaginatedDTOs<>(count)).build();
+        }
+
+        var students = occurrenceBean.getAll(limit, pageRequest.getPage());
+        var paginatedDTO = new PaginatedDTOs<>(OccurrenceDTO.from(students), count, offset, limit);
+
+        return Response.ok(paginatedDTO).build();
     }
 
     @GET

@@ -18,7 +18,7 @@
       <div class="occurrences-item-row" style="align-self: flex-start; margin-left: 2rem;">
         <div v-if="occurrence.expertsDTO.length !== 0">
           <p style="margin-bottom: 0"><b>Experts Associated:</b></p>
-          <p v-for="expert in occurrence.expertsDTO">-- {{expert.name}}</p>
+          <p v-for="expert in occurrence.expertsDTO" style="margin-bottom: 0px">-- {{expert.name}}</p>
         </div>
         <div v-else>
           No experts associated
@@ -127,6 +127,9 @@ export default {
             this.$router.push('/clients/insurances')
             this.$toast.success('Request made!').goAway(3000)
             this.waitingResponse = false
+
+            // Emit event to repairer
+            this.$socket.emit('repairerAssignedWithoutNeedForApproval', this.insuranceRepairer);
           })
           .catch(()=>{
             this.waitingResponse = false
@@ -143,6 +146,9 @@ export default {
             this.$router.push('/clients/insurances')
             this.$toast.success('Request made!').goAway(3000)
             this.waitingResponse = false
+
+            // Emit event to expert
+            this.$socket.emit('repairerAssignedNeedsApproval');
           })
           .catch(()=>{
             this.waitingResponse = false

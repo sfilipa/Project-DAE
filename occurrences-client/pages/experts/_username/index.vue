@@ -1,5 +1,5 @@
 <template>
-  <b-container>
+  <b-container v-if="this.$auth.user && this.$auth.user.role.toLowerCase() === 'expert'">
     <nuxt-link
       class="btn pb-3 pr-5 text-uppercase"
       :to="`/`">
@@ -94,11 +94,17 @@
       </b-form>
     </div>
   </b-container>
+
+  <div v-else>
+    <Unauthorized></Unauthorized>
+  </div>
 </template>
 
 <script>
+import Unauthorized from "@/pages/components/Unauthorized";
 export default {
   name: "index.vue",
+  components: {Unauthorized},
   data () {
     return {
       username: null,
