@@ -59,8 +59,6 @@ public class DocumentService {
 
             byte[] bytes = IOUtils.toByteArray(inputStream);
 
-            System.out.println("DEBUGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG" + new String(bytes));
-
             String homedir = System.getProperty("user.home");
             String dirpath = homedir + File.separator + "uploads" + File.separator + occurrenceId;
             mkdirIfNotExists(dirpath);
@@ -76,7 +74,7 @@ public class DocumentService {
     }
 
     @POST
-    @Path("/uploadOccurrences")
+    @Path("/uploadOccurrencesFromFile")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public Response uploadOccurrences(MultipartFormDataInput input) throws IOException {
@@ -102,93 +100,14 @@ public class DocumentService {
 
         String filepath = dirpath + File.separator + filename;
         writeFile(bytes, filepath);
-
+        int occurrencesCreated = 0;
         if (filename != null && filename.endsWith(".xlsx") || filename.endsWith(".xls")) {
-
-            FileInputStream file = new FileInputStream(new File(filepath));
-            Workbook workbook = new XSSFWorkbook(file);
-
-            Sheet sheet = workbook.getSheetAt(0);
-
-            Map<Integer, List<String>> data = new HashMap<>();
-            int i = 0;
-            for (Row row : sheet) {
-                data.put(i, new ArrayList<String>());
-                for (Cell cell : row) {
-                    switch (cell.getCellType()) {
-                        case STRING:
-                            data.get(i).add(cell.getStringCellValue());
-                            break;
-                        case NUMERIC:
-                            data.get(i).add(String.valueOf(cell.getNumericCellValue()));
-                            break;
-                        case BOOLEAN:
-                            data.get(i).add(String.valueOf(cell.getBooleanCellValue()));
-                            break;
-                        case FORMULA:
-                            break;
-                        default:
-                            data.get(i).add(" ");
-                    }
-                }
-                i++;
-            }
-            System.out.println("DATAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA EXELLLLLLLLLLLLLLLLLLLLLLLLLLLLL ------------" + data);
+            occurrencesCreated = documentBean.readExcel(filepath);
         } else if (filename != null && filename.endsWith(".csv")) {
-            List<List<String>> records = new ArrayList<>();
-
-            if (bytes.length < 1) {
-                throw new NullPointerException("File is empty");
-            }
-            try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
-                String line;
-                boolean firstLine = true;
-                while ((line = br.readLine()) != null) {
-                    if (firstLine) {
-                        firstLine = false;
-                        continue;
-                    }
-                    String[] values = line.split(";");
-                    records.add(Arrays.asList(values));
-                }
-                if (!records.isEmpty()) {
-                    for (List<String> string : records) {
-                        String username = string.get(0);
-                        String entryDate = string.get(1);
-                        String finalDate = string.get(2);
-                        String stateString = string.get(3);
-                        String insuranceCode = string.get(4);
-                        String coverageTypeString = string.get(5);
-                        String description = string.get(6);
-                        CoverageType coverageType = null;
-                        State state = null;
-                        System.out.println("SAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"+stateString);
-                        System.out.println("COOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"+coverageTypeString);
-                        try {
-                            state = State.valueOf(stateString);
-                        } catch (IllegalArgumentException e) {
-                            throw new MyEntityNotFoundException("State sent in the file not found.");
-                        }
-                        try {
-                            coverageType = CoverageType.valueOf(coverageTypeString);
-                        } catch (IllegalArgumentException e) {
-                            throw new MyEntityNotFoundException("Coverage Type sent in the file not found.");
-                        }
-                        Occurrence occurrence = occurrenceBean.create(username, entryDate, state, insuranceCode, coverageType, description);
-
-                        if (finalDate.trim() != null) {
-                            System.out.println("ENTROUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU" +finalDate);
-                            occurrence.setFinalDate(finalDate);
-                        }
-
-                        System.out.println("COOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO"+string.get(2));
-                    }
-                }
-            }
-
+            occurrencesCreated = documentBean.readCSVFile(filepath);
         }
 
-        return Response.ok(DocumentDTO.from(documents)).build();
+        return Response.ok(occurrencesCreated + " occurrences were created").build();
 
     }
 
