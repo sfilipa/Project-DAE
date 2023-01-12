@@ -42,10 +42,13 @@ export default {
 <style scoped>
 .btn-register-occurrence-right{
   height: 80%;
-  width: 20%;
+  width: 25%;
   border-radius: 10px;
   background-color: #e8e8e8;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .btn-check-details:active, .btn-check-details:hover{
@@ -73,7 +76,7 @@ export default {
 .details-left{
   display: flex;
   flex-direction: column;
-  width: 30%;
+  width: 32%;
   height: 100%;
   align-items: center;
   border-top: 1px solid;
@@ -92,7 +95,10 @@ export default {
   margin-bottom: 3%;
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1000px) {
+  .btn-register-occurrence-right{
+    width: 9rem;
+  }
 
   .insurance-box{
     flex-direction: column;
@@ -111,7 +117,7 @@ export default {
   }
 
   .details-right{
-    display: block;
+    display: flex;
     width: 100%;
     border-radius: 0 0 25px 25px;
   }

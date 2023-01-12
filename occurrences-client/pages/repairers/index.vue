@@ -14,18 +14,22 @@
 
       <div v-else>
         <div class="filters-div">
-          <span class="me-4 ms-4">Filter by State:</span>
-          <b-select class="form-select filter-select" v-model="stateToFilter">
-            <option value="">Select a State</option>
-            <option v-for="state in occurrenceStates"
-                    :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
-          </b-select>
+          <div style="display:inline;">
+            <span class="me-4 ms-4">Filter by State:</span>
+            <b-select class="form-select filter-select" v-model="stateToFilter">
+              <option value="">Select a State</option>
+              <option v-for="state in occurrenceStates"
+                      :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
+            </b-select>
+          </div>
 
-          <span class="me-4 ms-5">Filter by Coverage Type</span>
-          <b-select class="form-select filter-select" v-model="coverageToFilter">
-            <option value="">Select a Coverage Type</option>
-            <option v-for="coverage in occurrenceCoverages" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
-          </b-select>
+          <div style="display: inline">
+            <span class="me-4 ms-4">Filter by Coverage Type:</span>
+            <b-select class="form-select filter-select" v-model="coverageToFilter">
+              <option value="">Select a Coverage Type</option>
+              <option v-for="coverage in occurrenceCoverages" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
+            </b-select>
+          </div>
         </div>
 
         <div v-for="occurrence in occurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
@@ -153,6 +157,10 @@ export default {
 
 <style scoped>
 
+.index-header{
+  margin-bottom: 3rem;
+}
+
 .filter-select{
   width: 27%;
   display: inline-block;
@@ -164,8 +172,37 @@ export default {
   color: white;
 }
 
-.index-header{
-  margin-bottom: 3rem;
+@media only screen and (max-width: 1300px) {
+  .filter-select{
+    width: 24%;
+  }
+}
+
+@media only screen and (max-width: 1100px) {
+  .filter-select{
+    width: 22%;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .filters-div{
+    font-size: 14px;
+  }
+
+  .filters-div div{
+    display: block !important;
+  }
+
+  .filters-div span{
+    width: 25% !important;
+    display: inline-block;
+    margin: 1rem 0;
+  }
+
+  .filter-select{
+    width: 60%;
+    font-size: 14px;
+  }
 }
 
 </style>
