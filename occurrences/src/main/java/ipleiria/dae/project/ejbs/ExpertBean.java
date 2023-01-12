@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -196,8 +197,12 @@ public class ExpertBean {
             // Validate Occurrence
             validateOccurrenceExists(occurrence);
 
-            // Validate if the occurrence is PENDING
-            validateOccurrenceState(occurrence, State.PENDING);
+            // Validate if the occurrence is in correct state
+            List<State> validStates = new ArrayList<>();
+            validStates.add(State.PENDING);
+            validStates.add(State.APPROVED);
+            validStates.add(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
+            validateOccurrenceState(occurrence, validStates);
 
             expert.addOccurrence(occurrence);
             occurrence.addExpert(expert);
@@ -219,6 +224,11 @@ public class ExpertBean {
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
             validateOccurrence(expert, occurrence);
+
+            // Validate if expert has made an action
+            if(occurrence.getDescription().contains(expert.getUsername())){
+                throw new NotAuthorizedException("Expert has already made an action. Can't unassign this occurrence");
+            }
 
             expert.removeOccurrence(occurrence);
             occurrence.removeExpert(expert);
@@ -247,7 +257,7 @@ public class ExpertBean {
         }
     }
 
-    public void acceptRepairer(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException {
+    public void acceptRepairer(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             // Find Expert
             Expert expert = find(username);
@@ -262,6 +272,13 @@ public class ExpertBean {
             validateOccurrenceState(occurrence, State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
 
             occurrence.setState(State.REPAIRER_WAITING_LIST);
+
+            // Get Occurrence Description
+            String occurrenceDescription = occurrence.getDescription();
+
+            // Build Occurrence Description
+            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
+            occurrence.setDescription(newOccurrenceDescription);
 
             // Send Email to Repairer about being accepted to repair the occurrence
             emailBean.send(occurrence.getRepairer().getEmail(), "Occurrence " + occurrence.getId() + " accepted",
@@ -305,6 +322,10 @@ public class ExpertBean {
             // Build Occurrence Description
             String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
+
+            // Send Email to Client about the Repairer of the occurrence being rejected by the Expert
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " repairer service rejected",
+                    "The repairer " + occurrence.getRepairer().getUsername() + " was rejected to repair the occurrence " + occurrence.getId() + " by " + expert.getUsername() + ".\n\n" + occurrence.getDescription());
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
         } catch (NotAuthorizedException e) {
@@ -360,6 +381,13 @@ public class ExpertBean {
         // Check if Occurrence is in the correct state
         if (occurrence.getState() != state) {
             throw new NotAuthorizedException("Occurrence is not in the correct state, current state is " + occurrence.getState());
+        }
+    }
+
+    private void validateOccurrenceState(Occurrence occurrence, List<State> state) throws NotAuthorizedException {
+        // Check if Occurrence is in the correct state
+        if (!state.contains(occurrence.getState())) {
+            throw new NotAuthorizedException("Occurrence " + occurrence.getId() + " is not in the correct state. Current state is " + occurrence.getState());
         }
     }
 

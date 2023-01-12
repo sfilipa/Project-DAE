@@ -1,7 +1,6 @@
 package ipleiria.dae.project.ejbs;
 
 import ipleiria.dae.project.entities.Client;
-import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Insurance;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.exceptions.*;
@@ -35,7 +34,7 @@ public class ClientBean {
         }
         //see if nif_nipc is valid
         if (!validateNif(nif_nipc)) {
-            throw new NifNotValidException("Invalid NIF format");
+            throw new ArgumentNotValidException("Invalid NIF format");
         }
         if (nif_nipcAlreadyUsed(nif_nipc)) {
             throw new MyEntityExistsException("Client with NIF - " + nif_nipc + " already exists");
@@ -60,7 +59,7 @@ public class ClientBean {
         if (nif_nipc != client.getNif_nipc()) {
             //see if nif_nipc is valid
             if (!validateNif(nif_nipc)) {
-                throw new NifNotValidException("Invalid NIF format");
+                throw new ArgumentNotValidException("Invalid NIF format");
             }
             if (nif_nipcAlreadyUsed(nif_nipc)) {
                 throw new MyEntityNotFoundException("Client with NIF - " + nif_nipc + " already exists");

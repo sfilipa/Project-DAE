@@ -388,7 +388,7 @@ export default {
       })
         .then((response) => {
           this.$toast.success('Your occurrence has been registered!').goAway(3000)
-          
+
           // Socket Emit Occurrence Created
           this.$socket.emit('occurrenceCreated');
 
@@ -423,7 +423,6 @@ export default {
     },
     inputDocumentsChanged() {
       this.documents = [...this.$refs.documents.files]
-      console.log(this.documents)
     },
     removeDocument(document){
       const index = this.documents.indexOf(document)
