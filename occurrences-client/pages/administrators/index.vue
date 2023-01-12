@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="this.$auth.user && this.$auth.user.role.toLowerCase() === 'administrator'">
     <h3 class="text-center index-header">Welcome to your occurrence management platform</h3>
 
     <div v-if="experts == null || repairers == null || clients == null" class="spinner-div" style="margin-top: 2rem">
@@ -29,10 +29,10 @@
       <div class="administrator-row" style="margin-top: 1.5rem;">
         <div style="margin: auto;">
           <nuxt-link to="/administrators/experts/create" class="btn administrator-regist-btn">
-            Regist an Expert
+            Register an Expert
           </nuxt-link>
           <nuxt-link to="/administrators/repairers/create" class="btn administrator-regist-btn">
-            Regist a Repairer
+            Register a Repairer
           </nuxt-link>
         </div>
       </div>
@@ -54,13 +54,19 @@
       </div>
     </div>
   </div>
+
+  <div v-else>
+    <Unauthorized></Unauthorized>
+  </div>
 </template>
 <script>
 import ExpertBody from "~/pages/administrators/components/ExpertBody.vue";
 import RepairerBody from "~/pages/administrators/components/RepairerBody.vue";
 import ClientBody from "~/pages/administrators/components/ClientBody.vue";
+import Unauthorized from "@/pages/components/Unauthorized";
 export default {
   components: {
+    Unauthorized,
     ExpertBody,
     RepairerBody,
     ClientBody

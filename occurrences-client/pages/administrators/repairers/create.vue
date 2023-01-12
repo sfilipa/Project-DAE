@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="this.$auth.user && this.$auth.user.role.toLowerCase() === 'administrator'">
     <nuxt-link
       class="btn pb-3 pr-5 text-uppercase"
       :to="`/`">
@@ -65,11 +65,17 @@
       </div>
     </b-form>
   </div>
+
+  <div v-else>
+    <Unauthorized></Unauthorized>
+  </div>
 </template>
 
 <script>
+import Unauthorized from "@/pages/components/Unauthorized";
 export default {
   name: "create",
+  components: {Unauthorized},
   data() {
     return{
       username: null,
@@ -89,6 +95,11 @@ export default {
       if (usernameLen < 3 || usernameLen > 15) {
         return 'The username must be between [3, 15] characters.'
       }
+
+      if(this.username.indexOf(' ') >= 0){
+        return 'The username can\'t have spaces.'
+      }
+
       return ''
     },
     isUsernameValid () {

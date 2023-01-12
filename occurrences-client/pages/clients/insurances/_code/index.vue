@@ -1,5 +1,5 @@
 <template>
-  <div v-if="this.$route.params.insurance">
+  <div v-if="this.$auth.user && this.$auth.user.role.toLowerCase() === 'client'">
     <nuxt-link
       class="btn pb-3 pr-5 text-uppercase"
       :to="`/clients/insurances`">
@@ -11,238 +11,252 @@
       </div>
     </nuxt-link>
 
-    <!--    Header-->
-    <div class="header-info">
-      <span><b>{{this.$route.params.insurance.insuranceCompany}} ({{ this.$route.params.code }})</b></span>
-      <span class="policy-number-span">Policy number {{this.$route.params.insurance.policyNumber}}</span>
+    <div v-if="this.insurance === null" class="spinner-div">
+      <div class="spinner-border"></div>
     </div>
 
-    <!--    Navbar Buttons-->
-    <div class="insurance-details-navbar">
-      <a class="btn insurance-details-navbar-item"
-         :class="{'insurance-details-navbar-item-active': OverallDataBtn}"
-         @click="OverallDataBtn = true; OccurrencesBtn = false; DocumentsBtn = false;">
-        Overall Data</a>
-      <a class="btn insurance-details-navbar-item"
-         :class="{'insurance-details-navbar-item-active': OccurrencesBtn}"
-         @click="OverallDataBtn = false; OccurrencesBtn = true; DocumentsBtn = false;">
-        Occurrences</a>
-      <a class="btn insurance-details-navbar-item"
-         :class="{'insurance-details-navbar-item-active': DocumentsBtn}"
-         @click="OverallDataBtn = false; OccurrencesBtn = false; DocumentsBtn = true;">
-        Documents</a>
-    </div>
-
-    <!--    Overall Data-->
-    <div v-if="OverallDataBtn" class="overall-data">
-      <div class="overall-data-row">
-        <span class="overall-data-label">Insurance Holder</span>
-        <span class="overall-data-detail">{{this.$route.params.insurance.clientName}}</span>
-      </div>
-      <hr>
-      <div class="overall-data-row">
-        <span class="overall-data-label">NIF/NIPC</span>
-        <span class="overall-data-detail">{{this.$route.params.insurance.clientNif}}</span>
-      </div>
-      <hr>
-      <div class="overall-data-row">
-        <span class="overall-data-label">Initial Date</span>
-        <span class="overall-data-detail">{{this.$route.params.insurance.initialDate}}</span>
-      </div>
-      <hr>
-      <div class="overall-data-row">
-        <span class="overall-data-label">Valid Until</span>
-        <span class="overall-data-detail">{{this.$route.params.insurance.validUntil}}</span>
-      </div>
-      <hr>
-      <div class="overall-data-row">
-        <span class="overall-data-label">Insurance Period</span>
-        <span class="overall-data-detail">From {{this.$route.params.insurance.initialDate}} To {{this.$route.params.insurance.validUntil}}</span>
-      </div>
-    </div>
-
-    <!--    Occurrences-->
-    <div v-if="OccurrencesBtn">
-      <div class="insurance-details-content">
-        <a class="btn insurance-occurrences-btn"
-           :class="{'insurance-occurrences-btn-active': reportOccurrence}"
-           @click="reportOccurrence = !reportOccurrence; ongoingOccurrences = false; completedOccurrences = false;">
-          Report An Occurrence</a>
-        <a class="btn insurance-occurrences-btn"
-           :class="{'insurance-occurrences-btn-active': ongoingOccurrences}"
-           @click="ongoingOccurrences = !ongoingOccurrences; reportOccurrence = false; completedOccurrences = false; stateToFilter=''; coverageToFilter='';">
-          Ongoing Occurrences</a>
-        <a class="btn insurance-occurrences-btn"
-           :class="{'insurance-occurrences-btn-active': completedOccurrences}"
-           @click="completedOccurrences = !completedOccurrences; reportOccurrence = false; ongoingOccurrences = false; stateToFilter=''; coverageToFilter='';">
-          Completed Occurrences</a>
+    <div v-else>
+      <!--    Header-->
+      <div class="header-info">
+        <span><b>{{this.insurance.insuranceCompany}} ({{ this.insurance.code }})</b></span>
+        <span class="policy-number-span">Policy number {{this.insurance.policyNumber}}</span>
       </div>
 
-      <!--      Report an Occurrence-->
-      <b-form @submit.prevent="onSubmit" :disabled="!isFormValid" v-if="reportOccurrence" class="report-an-occurrence">
-        <p><b>The Affected Object:</b> &nbsp; {{this.$route.params.insurance.objectInsured}} - {{this.$route.params.insurance.insuredAssetType}}</p>
-        <p><b>1. Choose the Coverage Type:</b></p>
-        <div class="report-an-occurrence-div">
-          <div v-if="this.$route.params.insurance.covers.length==0">
-            No Coverages Registered
+      <!--    Navbar Buttons-->
+      <div class="insurance-details-navbar">
+        <a class="btn insurance-details-navbar-item"
+           :class="{'insurance-details-navbar-item-active': OverallDataBtn}"
+           @click="OverallDataBtn = true; OccurrencesBtn = false; DocumentsBtn = false;">
+          Overall Data</a>
+        <a class="btn insurance-details-navbar-item"
+           :class="{'insurance-details-navbar-item-active': OccurrencesBtn}"
+           @click="OverallDataBtn = false; OccurrencesBtn = true; DocumentsBtn = false;">
+          Occurrences</a>
+        <a class="btn insurance-details-navbar-item"
+           :class="{'insurance-details-navbar-item-active': DocumentsBtn}"
+           @click="OverallDataBtn = false; OccurrencesBtn = false; DocumentsBtn = true;">
+          Documents</a>
+      </div>
+
+      <!--    Overall Data-->
+      <div v-if="OverallDataBtn" class="overall-data">
+        <div class="overall-data-row">
+          <span class="overall-data-label">Insurance Holder</span>
+          <span class="overall-data-detail">{{this.insurance.clientName}}</span>
+        </div>
+        <hr>
+        <div class="overall-data-row">
+          <span class="overall-data-label">NIF/NIPC</span>
+          <span class="overall-data-detail">{{this.insurance.clientNif}}</span>
+        </div>
+        <hr>
+        <div class="overall-data-row">
+          <span class="overall-data-label">Initial Date</span>
+          <span class="overall-data-detail">{{this.insurance.initialDate}}</span>
+        </div>
+        <hr>
+        <div class="overall-data-row">
+          <span class="overall-data-label">Valid Until</span>
+          <span class="overall-data-detail">{{this.insurance.validUntil}}</span>
+        </div>
+        <hr>
+        <div class="overall-data-row">
+          <span class="overall-data-label">Insurance Period</span>
+          <span class="overall-data-detail">From {{this.insurance.initialDate}} To {{this.insurance.validUntil}}</span>
+        </div>
+      </div>
+
+      <!--    Occurrences-->
+      <div v-if="OccurrencesBtn">
+        <div class="insurance-details-content">
+          <a class="btn insurance-occurrences-btn"
+             :class="{'insurance-occurrences-btn-active': reportOccurrence}"
+             @click="reportOccurrence = !reportOccurrence; ongoingOccurrences = false; completedOccurrences = false;">
+            Report An Occurrence</a>
+          <a class="btn insurance-occurrences-btn"
+             :class="{'insurance-occurrences-btn-active': ongoingOccurrences}"
+             @click="ongoingOccurrences = !ongoingOccurrences; reportOccurrence = false; completedOccurrences = false; stateToFilter=''; coverageToFilter='';">
+            Ongoing Occurrences</a>
+          <a class="btn insurance-occurrences-btn"
+             :class="{'insurance-occurrences-btn-active': completedOccurrences}"
+             @click="completedOccurrences = !completedOccurrences; reportOccurrence = false; ongoingOccurrences = false; stateToFilter=''; coverageToFilter='';">
+            Completed Occurrences</a>
+        </div>
+
+        <!--      Report an Occurrence-->
+        <b-form @submit.prevent="onSubmit" :disabled="!isFormValid" v-if="reportOccurrence" class="report-an-occurrence">
+          <p><b>The Affected Object:</b> &nbsp; {{this.insurance.objectInsured}} - {{this.insurance.insuredAssetType}}</p>
+          <p><b>1. Choose the Coverage Type:</b></p>
+          <div class="report-an-occurrence-div">
+            <div v-if="this.insurance.covers.length==0">
+              No Coverages Registered
+            </div>
+            <div v-else class="items-grid" :invalid-feedback="invalidCoverageTypeFeedback" :state="isCoverageTypeValid">
+              <div :state="isCoverageTypeValid" v-for="coverageType in this.insurance.covers" class="item-grid-div" :class="{'grid-item-selected': selectedCoverageType == coverageType}"
+                   @click="selectedCoverageType = coverageType">
+                {{ coverageType.charAt(0).toUpperCase() +
+              coverageType.split('_').join(' ').slice(1).toLowerCase() }}
+              </div>
+            </div>
           </div>
-          <div v-else class="items-grid" :invalid-feedback="invalidCoverageTypeFeedback" :state="isCoverageTypeValid">
-            <div :state="isCoverageTypeValid" v-for="coverageType in this.$route.params.insurance.covers" class="item-grid-div" :class="{'grid-item-selected': selectedCoverageType == coverageType}"
-                 @click="selectedCoverageType = coverageType">
-              {{ coverageType.charAt(0).toUpperCase() +
-            coverageType.split('_').join(' ').slice(1).toLowerCase() }}
+
+          <p><b>2. What Happened</b></p>
+          <div :invalid-feedback="invalidDescriptionFeedback" :state="isDescriptionValid"  class="report-an-occurrence-div">
+            <b-textarea :state="isDescriptionValid" class="form-control report-an-occurrence-text" placeholder="Describe here what happened"
+                        v-model="description"
+                        :disabled="waitingResponse"
+                        required></b-textarea>
+          </div>
+
+          <p><b>3. Date of the Occurrence</b></p>
+          <div class="report-an-occurrence-div">
+            <div :invalid-feedback="invalidDateFeedback" :state="isDateValid"  class="report-an-occurrence-div">
+              <b-input :state="isDateValid"
+                       :disabled="waitingResponse"
+                       class="form-control" type="date" required  v-model="date"/>
+            </div>
+          </div>
+
+          <p><b>4. Documents</b></p>
+          <div class="report-an-occurrence-div">
+            <div class="report-an-occurrence-div">
+              <input type="file" ref="documents" multiple="multiple" @change="inputDocumentsChanged" :disabled="waitingResponse">
+            </div>
+            <div v-if="documents.length">
+              <span class="fw-bold ms-4 me-3">All files:</span>
+              <span v-for="document in documents" class="document-name">
+                <span>{{ document.name }}</span>
+                <button class="btn btn-remove-file" style="height: 31px; width: 31px;" @click.prevent="removeDocument(document)" :disabled="waitingResponse">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x cross-bi" viewBox="0 0 16 16">
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                  </svg>
+                </button>
+              </span>
+            </div>
+          </div>
+
+          <p class="text-danger text-center" v-show="errorMsg">{{ errorMsg }}</p>
+
+          <div style="display: flex;">
+            <div class="register-occurrence-btn-div" >
+              <button type="submit" class="btn register-occurrence-btn" :disabled="waitingResponse">
+                <div style="display: flex">
+                    <div class="me-3 ms-3" v-if="waitingResponse">
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    </div>
+                    <div class="text-center" style="width: 100%"><span>Register Occurrence</span></div>
+
+                </div>
+              </button>
+            </div>
+          </div>
+        </b-form>
+
+        <!--      Ongoing Occurrences-->
+        <div v-if="ongoingOccurrences" class="ongoing-occurrences">
+          <div v-if="getOnGoingOccurrences().length==0" class="text-center">
+            No occurrences ongoing
+          </div>
+          <div v-else>
+            <div class="filters-div">
+              <span class="me-4 ms-4">Filter by State:</span>
+              <b-select class="form-select filter-select" v-model="stateToFilter">
+                <option value="">Select a State</option>
+                <option v-for="state in occurrenceStates.filter(stat => stat !== 'RESOLVED' &&
+                                                                        stat !== 'DISAPPROVED' &&
+                                                                        stat !== 'FAILED')"
+                        :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
+              </b-select>
+
+              <span class="me-4 ms-5">Filter by Coverage Type</span>
+              <b-select class="form-select filter-select" v-model="coverageToFilter">
+                <option value="">Select a Coverage Type</option>
+                <option v-for="coverage in this.$route.params.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
+              </b-select>
+            </div>
+            <div v-for="occurrence in getOnGoingOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
+              <Occurrence :occurrence="occurrence" :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"></Occurrence>
             </div>
           </div>
         </div>
 
-        <p><b>2. What Happened</b></p>
-        <div :invalid-feedback="invalidDescriptionFeedback" :state="isDescriptionValid"  class="report-an-occurrence-div">
-          <b-textarea :state="isDescriptionValid" class="form-control report-an-occurrence-text" placeholder="Describe here what happened"
-                      v-model="description"
-                      :disabled="waitingResponse"
-                      required></b-textarea>
-        </div>
+        <!--      Completed Occurrences-->
+        <div v-if="completedOccurrences" class="completed-occurrences">
+          <div v-if="getCompletedOccurrences().length==0" class="text-center">
+            No occurrences completed
+          </div>
+          <div v-else>
+            <div class="filters-div">
+              <span class="me-4 ms-4">Filter by State:</span>
+              <b-select class="form-select filter-select" v-model="stateToFilter">
+                <option value="">Select a State</option>
+                <option v-for="state in occurrenceStates.filter(stat => stat === 'RESOLVED' ||
+                                                                        stat === 'DISAPPROVED' ||
+                                                                        stat === 'FAILED')"
+                        :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
+              </b-select>
 
-        <p><b>3. Date of the Occurrence</b></p>
-        <div class="report-an-occurrence-div">
-          <div :invalid-feedback="invalidDateFeedback" :state="isDateValid"  class="report-an-occurrence-div">
-            <b-input :state="isDateValid"
-                     :disabled="waitingResponse"
-                     class="form-control" type="date" required  v-model="date"/>
+              <span class="me-4 ms-5">Filter by Coverage Type:</span>
+              <b-select class="form-select filter-select" v-model="coverageToFilter">
+                <option value="">Select a Coverage Type</option>
+                <option v-for="coverage in this.$route.params.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
+              </b-select>
+            </div>
+            <div v-for="occurrence in getCompletedOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
+              <Occurrence :occurrence="occurrence" :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"></Occurrence>
+            </div>
           </div>
         </div>
+      </div>
 
-        <p><b>4. Documents</b></p>
-        <div class="report-an-occurrence-div">
-          <div class="report-an-occurrence-div">
-            <input type="file" ref="documents" multiple="multiple" @change="inputDocumentsChanged" :disabled="waitingResponse">
-          </div>
-          <div v-if="documents.length">
-            <span class="fw-bold ms-4 me-3">All files:</span>
-            <span v-for="document in documents" class="document-name">
-              <span>{{ document.name }}</span>
-              <button class="btn btn-remove-file" style="height: 31px; width: 31px;" @click.prevent="removeDocument(document)" :disabled="waitingResponse">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x cross-bi" viewBox="0 0 16 16">
-                  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+      <!--    Documents-->
+      <div v-if="DocumentsBtn">
+        <div v-if="allDocuments.length === 0" class="text-center" style="margin-top: 2rem">
+          <span >No documents registered</span>
+        </div>
+
+        <div v-for="occurrence in occurrences">
+          <div v-if="hasDocuments(occurrence.id)" class="documents-content">
+            <p style="font-size: 20px; color: red"><b>{{occurrence.objectInsured}}
+              ({{ occurrence.coverageType.charAt(0).toUpperCase() + occurrence.coverageType.split('_').join(' ').slice(1).toLowerCase() }})
+              - <span>{{occurrence.insuranceCode}}</span></b></p>
+            <p class="fw-bold" style="margin-bottom: 0">Occurence {{occurrence.id}} - Documents</p>
+            <div class="documents-content-list">
+              <a @click.prevent="downloadDocument(document)" class="document-link" v-for="document in allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents">
+                {{ document.filename.length > 25 ? document.filename.substring(0, 20)+"..." : document.filename }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
                 </svg>
-              </button>
-            </span>
-          </div>
-        </div>
+                <div class="tooltiptext" v-if="document.filename.length > 20">{{document.filename}}</div>
+              </a>
+            </div>
 
-        <p class="text-danger text-center" v-show="errorMsg">{{ errorMsg }}</p>
-
-        <div style="display: flex;">
-          <div class="register-occurrence-btn-div" >
-            <button type="submit" class="btn register-occurrence-btn" :disabled="waitingResponse">
-              <div style="display: flex">
-                  <div class="me-3 ms-3" v-if="waitingResponse">
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                  </div>
-                  <div class="text-center" style="width: 100%"><span>Register Occurrence</span></div>
-
-              </div>
-            </button>
-          </div>
-        </div>
-      </b-form>
-
-      <!--      Ongoing Occurrences-->
-      <div v-if="ongoingOccurrences" class="ongoing-occurrences">
-        <div v-if="getOnGoingOccurrences().length==0" class="text-center">
-          No occurrences ongoing
-        </div>
-        <div v-else>
-          <div class="filters-div">
-            <span class="me-4 ms-4">Filter by State:</span>
-            <b-select class="form-select filter-select" v-model="stateToFilter">
-              <option value="">Select a State</option>
-              <option v-for="state in occurrenceStates.filter(stat => stat !== 'RESOLVED' &&
-                                                                      stat !== 'DISAPPROVED' &&
-                                                                      stat !== 'FAILED')"
-                      :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
-            </b-select>
-
-            <span class="me-4 ms-5">Filter by Coverage Type</span>
-            <b-select class="form-select filter-select" v-model="coverageToFilter">
-              <option value="">Select a Coverage Type</option>
-              <option v-for="coverage in this.$route.params.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
-            </b-select>
-          </div>
-          <div v-for="occurrence in getOnGoingOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
-            <Occurrence :occurrence="occurrence" :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"></Occurrence>
-          </div>
-        </div>
-      </div>
-
-      <!--      Completed Occurrences-->
-      <div v-if="completedOccurrences" class="completed-occurrences">
-        <div v-if="getCompletedOccurrences().length==0" class="text-center">
-          No occurrences completed
-        </div>
-        <div v-else>
-          <div class="filters-div">
-            <span class="me-4 ms-4">Filter by State:</span>
-            <b-select class="form-select filter-select" v-model="stateToFilter">
-              <option value="">Select a State</option>
-              <option v-for="state in occurrenceStates.filter(stat => stat === 'RESOLVED' ||
-                                                                      stat === 'DISAPPROVED' ||
-                                                                      stat === 'FAILED')"
-                      :value="state"> {{ state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase() }} </option>
-            </b-select>
-
-            <span class="me-4 ms-5">Filter by Coverage Type:</span>
-            <b-select class="form-select filter-select" v-model="coverageToFilter">
-              <option value="">Select a Coverage Type</option>
-              <option v-for="coverage in this.$route.params.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
-            </b-select>
-          </div>
-          <div v-for="occurrence in getCompletedOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
-            <Occurrence :occurrence="occurrence" :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"></Occurrence>
           </div>
         </div>
       </div>
     </div>
 
-    <!--    Documents-->
-    <div v-if="DocumentsBtn">
-      <div v-if="allDocuments.length === 0" class="text-center" style="margin-top: 2rem">
-        <span >No documents registered</span>
-      </div>
+  </div>
 
-      <div v-for="occurrence in occurrences">
-        <div v-if="hasDocuments(occurrence.id)" class="documents-content">
-          <p style="font-size: 20px; color: red"><b>{{occurrence.objectInsured}}
-            ({{ occurrence.coverageType.charAt(0).toUpperCase() + occurrence.coverageType.split('_').join(' ').slice(1).toLowerCase() }})
-            - <span>{{occurrence.insuranceCode}}</span></b></p>
-          <p class="fw-bold" style="margin-bottom: 0">Occurence {{occurrence.id}} - Documents</p>
-          <div class="documents-content-list">
-            <a @click.prevent="downloadDocument(document)" class="document-link" v-for="document in allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents">
-              {{ document.filename.length > 25 ? document.filename.substring(0, 20)+"..." : document.filename }}
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
-                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-              </svg>
-              <div class="tooltiptext" v-if="document.filename.length > 20">{{document.filename}}</div>
-            </a>
-          </div>
-
-        </div>
-      </div>
-    </div>
+  <div v-else>
+    <Unauthorized></Unauthorized>
   </div>
 
 </template>
 
 <script>
 import Occurrence from "~/pages/clients/components/Occurrence.vue";
+import Unauthorized from "@/pages/components/Unauthorized";
 export default {
   components: {
+    Unauthorized,
     Occurrence
   },
   name: "index.vue",
   data() {
     return {
+      insurance: null,
       OverallDataBtn: !this.$route.params.OccurrencesBtn && !this.$route.params.DocumentsBtn,
       OccurrencesBtn:  this.$route.params.OccurrencesBtn,
       DocumentsBtn: this.$route.params.DocumentsBtn,
@@ -262,6 +276,13 @@ export default {
       coverageToFilter: "",
       occurrenceStates: []
     }
+  },
+  mounted() {
+    console.log(this.$route.params.code)
+    this.$axios.get(`https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances?code=${this.$route.params.code}`)
+      .then((response)=>{
+        this.insurance = response.data[0]
+      })
   },
   computed: {
     invalidCoverageTypeFeedback () {
@@ -318,10 +339,6 @@ export default {
     },
   },
   created () {
-    if(!this.$route.params.insurance){
-      this.$router.push('/clients/insurances')
-    }
-
     this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences`)
       .then((occurrences) => {
         if(!this.$route.params.code){
@@ -376,7 +393,7 @@ export default {
       this.waitingResponse = true
       if(this.date) {
         const [year, month, day] = this.date.split('-');
-        this.date = [month, day, year].join('/');
+        this.date = [day, month, year].join('/');
       }
       this.$axios.$post('/api/occurrences', {
         usernameClient: this.$auth.user.username,

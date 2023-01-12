@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="this.$auth.user && this.$auth.user.role.toLowerCase() === 'administrator'">
     <nuxt-link
       class="btn pb-3 pr-5 text-uppercase"
       :to="`/`">
@@ -16,7 +16,7 @@
     <div class="administrator-row" style="margin-top: 1.5rem;">
       <div style="margin: auto;">
         <nuxt-link to="/administrators/repairers/create" class="btn administrator-regist-btn">
-          Regist a Repairer
+          Register a Repairer
         </nuxt-link>
       </div>
     </div>
@@ -31,11 +31,17 @@
       </div>
     </div>
   </div>
+
+  <div v-else>
+    <Unauthorized></Unauthorized>
+  </div>
 </template>
 <script>
 import RepairerBody from "~/pages/administrators/components/RepairerBody.vue";
+import Unauthorized from "@/pages/components/Unauthorized";
 export default {
   components: {
+    Unauthorized,
     RepairerBody
   },
   methods: {
