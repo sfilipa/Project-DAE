@@ -17,7 +17,7 @@ public class PageRequest {
     private int page;
 
     @QueryParam("limit")
-    @DefaultValue("5")
+    @DefaultValue("10")
     @PositiveOrZero
     private int limit;
 
