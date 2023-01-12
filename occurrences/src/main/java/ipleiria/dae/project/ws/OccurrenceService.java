@@ -41,8 +41,8 @@ public class OccurrenceService {
             return Response.ok(new PaginatedDTOs<>(count)).build();
         }
 
-        var students = occurrenceBean.getAll(limit, pageRequest.getPage());
-        var paginatedDTO = new PaginatedDTOs<>(OccurrenceDTO.from(students), count, offset, limit);
+        var occurrences = occurrenceBean.getAll(limit, pageRequest.getPage());
+        var paginatedDTO = new PaginatedDTOs<>(OccurrenceDTO.from(occurrences), count, offset, limit);
 
         return Response.ok(paginatedDTO).build();
     }

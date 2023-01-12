@@ -2,10 +2,7 @@ package ipleiria.dae.project.ws;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ipleiria.dae.project.dtos.ClientDTO;
-import ipleiria.dae.project.dtos.EmailDTO;
-import ipleiria.dae.project.dtos.ExpertDTO;
-import ipleiria.dae.project.dtos.OccurrenceDTO;
+import ipleiria.dae.project.dtos.*;
 import ipleiria.dae.project.dtos.create.ExpertCreateDTO;
 import ipleiria.dae.project.dtos.create.UpdatePasswordDTO;
 import ipleiria.dae.project.ejbs.EmailBean;
@@ -15,11 +12,13 @@ import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NotAuthorizedException;
+import ipleiria.dae.project.requests.PageRequest;
 import ipleiria.dae.project.security.Authenticated;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -50,7 +49,7 @@ public class ExpertService {
     @Authenticated
     @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/{occurrence_id}/acceptRepairer")
-    public Response acceptRepairer(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) throws MyEntityNotFoundException, NotAuthorizedException {
+    public Response acceptRepairer(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_id") long occurrence_id) throws MyEntityNotFoundException, NotAuthorizedException, IllegalArgumentException {
         try {
             // Get the input stream from the request
             InputStream inputStream = request.getInputStream();
@@ -152,12 +151,24 @@ public class ExpertService {
     @Authenticated
     @RolesAllowed({"Expert"})
     @Path("/{username}/occurrences/assigned")
-    public Response getAssignedOccurrences(@PathParam("username") String username) throws MyEntityNotFoundException {
+    public Response getAssignedOccurrences(@PathParam("username") String username, @BeanParam @Valid PageRequest pageRequest) throws MyEntityNotFoundException {
         if (!securityContext.getUserPrincipal().getName().equals(username)) {
             throw new ForbiddenException(username + ", You are not allowed to access this resource");
         }
 
-        return Response.ok(OccurrenceDTO.from(expertBean.occurrences(username))).build();
+        var offset = pageRequest.getOffset();
+        var limit = pageRequest.getLimit();
+
+        var occurrences = expertBean.getExpertAssignedOccurrences(limit, pageRequest.getPage(), username);
+        var count = occurrences.size();
+
+        if (offset > count) {
+            return Response.ok(new PaginatedDTOs<>(count)).build();
+        }
+
+        var paginatedDTO = new PaginatedDTOs<>(OccurrenceDTO.from(occurrences), count, offset, limit);
+
+        return Response.ok(paginatedDTO).build();
     }
 
     @PATCH

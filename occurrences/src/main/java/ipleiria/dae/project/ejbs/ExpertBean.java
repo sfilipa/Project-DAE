@@ -257,7 +257,7 @@ public class ExpertBean {
         }
     }
 
-    public void acceptRepairer(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException {
+    public void acceptRepairer(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException, IllegalArgumentException {
         try {
             // Find Expert
             Expert expert = find(username);
@@ -274,7 +274,14 @@ public class ExpertBean {
             occurrence.setState(State.REPAIRER_WAITING_LIST);
 
             // Get Occurrence Description
-            String occurrenceDescription = occurrence.getDescription();
+            String[] descriptionReceived = occurrence.getDescription().split("&");
+
+            if(descriptionReceived.length != 2){
+                throw new IllegalArgumentException("Occurrence description is not valid");
+            }
+
+            String link = descriptionReceived[0];
+            String occurrenceDescription = descriptionReceived[1];
 
             // Build Occurrence Description
             String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
@@ -282,11 +289,13 @@ public class ExpertBean {
 
             // Send Email to Repairer about being accepted to repair the occurrence
             emailBean.send(occurrence.getRepairer().getEmail(), "Occurrence " + occurrence.getId() + " accepted",
-                    "You were accepted to repair the occurrence " + occurrence.getId() + " by " + expert.getUsername() + ".\n\n" + occurrence.getDescription());
+                    "You were accepted to repair the occurrence " + occurrence.getId() + " by " + expert.getUsername() + ".\n\n" + occurrence.getDescription()+ '\n'+
+                            "You can access the occurrence at " + link);
 
             // Send Email to Client about the Repairer of the occurrence being accepted by the Expert
             emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " accepted",
-                    "The repairer " + occurrence.getRepairer().getUsername() + " was accepted to repair the occurrence " + occurrence.getId() + " by " + expert.getUsername() + ".\n\n" + occurrence.getDescription());
+                    "The repairer " + occurrence.getRepairer().getUsername() + " was accepted to repair the occurrence " + occurrence.getId() + " by " + expert.getUsername() + ".\n\n" + occurrence.getDescription()+ '\n'+
+                            "You can access the occurrence at " + link);
 
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
@@ -431,5 +440,18 @@ public class ExpertBean {
             }
         }
         return false;
+    }
+
+    public List<Occurrence> getExpertAssignedOccurrences(int limit, int pageNumber, String username) {
+        Expert expert = find(username);
+        if(expert == null){
+            throw new MyEntityNotFoundException("Expert not found");
+        }
+
+        return em.createNamedQuery("getExpertOccurrences", Occurrence.class)
+                .setParameter("username", username)
+                .setFirstResult((pageNumber - 1) * limit)
+                .setMaxResults(limit)
+                .getResultList();
     }
 }

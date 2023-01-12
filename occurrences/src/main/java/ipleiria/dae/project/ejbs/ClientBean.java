@@ -170,4 +170,17 @@ public class ClientBean {
             throw new IllegalArgumentException("No clients found");
         }
     }
+
+    public List<Occurrence> getClientOccurrences(int limit, int pageNumber, String username) {
+        Client client = find(username);
+        if(client == null){
+            throw new MyEntityNotFoundException("Client not found");
+        }
+
+        return em.createNamedQuery("getClientOccurrences", Occurrence.class)
+                .setParameter("client", client)
+                .setFirstResult((pageNumber - 1) * limit)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
