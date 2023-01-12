@@ -52,7 +52,12 @@ export default {
     this.$socket.on('update', () => {
       this.updateOccurrences()
       this.$toast.info('Occurrences as been updated!').goAway(3000)
-  })},
+    }),
+    this.$socket.on('repairerAssignedNeedsApproval', () => {
+      this.updateOccurrences()
+      this.$toast.info('Repairer needs Approval!').goAway(3000)
+  })
+  },
   components: {
     Unauthorized,
     Occurrence

@@ -49,6 +49,12 @@
 import Occurrence from "~/pages/repairers/components/Occurrence.vue";
 import Unauthorized from "@/pages/components/Unauthorized";
 export default {
+  mounted() {
+    this.$socket.on('occurrenceAssigned', () => {
+      this.updateOccurrences()
+      this.$toast.success('New occurrence as been assigned!').goAway(3000)
+    })
+  },
   components: {
     Unauthorized,
     Occurrence

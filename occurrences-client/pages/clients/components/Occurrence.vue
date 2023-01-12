@@ -127,6 +127,9 @@ export default {
             this.$router.push('/clients/insurances')
             this.$toast.success('Request made!').goAway(3000)
             this.waitingResponse = false
+
+            // Emit event to repairer
+            this.$socket.emit('repairerAssignedWithoutNeedForApproval', this.insuranceRepairer);
           })
           .catch(()=>{
             this.waitingResponse = false
@@ -143,6 +146,9 @@ export default {
             this.$router.push('/clients/insurances')
             this.$toast.success('Request made!').goAway(3000)
             this.waitingResponse = false
+
+            // Emit event to expert
+            this.$socket.emit('repairerAssignedNeedsApproval');
           })
           .catch(()=>{
             this.waitingResponse = false
