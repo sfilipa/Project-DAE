@@ -1,0 +1,199 @@
+<template>
+  <div v-if="this.$auth.user && this.$auth.user.role.toLowerCase() === 'administrator'">
+    <nuxt-link
+      class="btn pb-3 pr-5 text-uppercase"
+      :to="`/`">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left"
+             viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+                d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        &nbsp; Back to HomePage
+      </div>
+    </nuxt-link>
+
+    <div style="padding: 10px; margin-bottom: 20px;">
+      <h4><b>Current Occurrences</b></h4>
+    </div>
+
+    <div v-if="occurrences == null" class="spinner-div">
+      <div class="spinner-border"></div>
+    </div>
+
+    <div v-else-if="occurrences.length == 0" class="text-center">
+      <span>No occurrences registered yet</span>
+    </div>
+
+    <div v-else>
+      <div class="filters-div">
+        <span class="me-4 ms-4">Filter by State:</span>
+        <b-select class="form-select filter-select" v-model="stateToFilter">
+          <option value="">Select a State</option>
+          <option v-for="state in occurrenceStates"
+                  :value="state"> {{
+              state.charAt(0).toUpperCase() + state.split('_').join(' ').slice(1).toLowerCase()
+            }}
+          </option>
+        </b-select>
+
+        <span class="me-4 ms-5">Filter by Coverage Type</span>
+        <b-select class="form-select filter-select" v-model="coverageToFilter">
+          <option value="">Select a Coverage Type</option>
+          <option v-for="coverage in occurrenceCoverages" :value="coverage">
+            {{ coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }}
+          </option>
+        </b-select>
+      </div>
+
+      <div class="administrator-row" style="margin-top: 1.5rem;">
+        <div style="margin: auto;" class="administrator-row">
+          <nuxt-link to="/administrators/occurrences/uploadOccurrences" class="btn administrator-regist-btn">
+            Upload Occurrences
+          </nuxt-link>
+        </div>
+      </div>
+      <div
+        v-for="occurrence in occurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
+        <Occurrence :occurrence="occurrence"
+                    :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
+                    :waitingRefresh="waitingRefresh"
+                    @updateOccurrences="updateOccurrences"></Occurrence>
+      </div>
+
+      <Paginate :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
+    </div>
+  </div>
+
+  <div v-else>
+    <Unauthorized></Unauthorized>
+  </div>
+</template>
+<script>
+import Occurrence from "@/pages/administrators/components/OccurrenceBody.vue";
+import Unauthorized from "@/pages/components/Unauthorized";
+import Paginate from "@/pages/components/Paginate";
+
+export default {
+  mounted() {
+    this.$socket.on('update', () => {
+      this.updateOccurrences()
+      this.$toast.info('Occurrences as been updated!').goAway(3000)
+    })
+  },
+  components: {
+    Paginate,
+    Unauthorized,
+    Occurrence
+  },
+  data() {
+    return {
+      occurrences: null,
+      waitingRefresh: false,
+      stateToFilter: "",
+      coverageToFilter: "",
+      occurrenceStates: [],
+      occurrenceCoverages: [],
+      allDocuments: [],
+      currentPage: 1,
+      totalCount: 1,
+      perPage: 10,
+      pageCount: 1
+    }
+  },
+  created() {
+    this.updateOccurrences(1)
+  },
+  watch: {
+    currentPage(newPage) {
+      this.updateOccurrences(newPage)
+    }
+  },
+  methods: {
+    updateCurrentPage(currentPage) {
+      if (currentPage != null) {
+        this.currentPage = currentPage
+      }
+    },
+    updateOccurrences(currentPage) {
+      this.waitingRefresh = true
+      this.occurrenceStates = []
+      this.occurrenceCoverages = []
+
+      if (!currentPage) {
+        currentPage = 1
+      }
+
+      this.$axios.$get(`/api/occurrences?page=${currentPage}`)
+        .then((occurrences) => {
+          this.totalCount = occurrences.metadata.totalCount
+          this.perPage = occurrences.metadata.count
+          this.pageCount = occurrences.metadata.pageCount
+          this.occurrences = occurrences.data
+
+          this.occurrences.forEach(occurrence => {
+            if (this.occurrenceStates.indexOf(occurrence.state) === -1) {
+              this.occurrenceStates.push(occurrence.state)
+            }
+
+            if (this.occurrenceCoverages.indexOf(occurrence.coverageType) === -1) {
+              this.occurrenceCoverages.push(occurrence.coverageType)
+            }
+
+            this.$axios.$get(`api/documents/${occurrence.id}/exists`)
+              .then((response) => {
+                if (response) {
+                  this.allDocuments = []
+                  this.$axios.$get(`api/documents/${occurrence.id}`)
+                    .then((response) => {
+                      this.allDocuments.push(
+                        {
+                          occurrence_id: occurrence.id,
+                          documents: response
+                        }
+                      )
+                    })
+                }
+              })
+          })
+        })
+    },
+    hasDocuments(occurrence_id) {
+      return this.allDocuments.map(oc => oc.occurrence_id).indexOf(occurrence_id) !== -1
+    },
+  }
+}
+</script>
+<style scoped>
+
+.filter-select {
+  width: 27%;
+  display: inline-block;
+}
+
+.filters-div {
+  background-color: #313030;
+  padding: 14px;
+  color: white;
+}
+
+.administrator-regist-btn:hover {
+  background-color: red !important;
+  color: white !important;
+  border: 1px solid red !important;
+}
+.administrator-row{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.administrator-regist-btn{
+  background-color: white;
+  margin: 10px 20px;
+  padding: 20px;
+  border: 1px solid black;
+  border-radius: 0px;
+  width: 14rem;
+}
+
+</style>

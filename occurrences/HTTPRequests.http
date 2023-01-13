@@ -62,7 +62,7 @@ Content-Disposition: form-data; name="file"; filename="occurrences.csv"
 --boundary
 
 ### Excell
-POST http://localhost:8080/occurrences/api/documents/uploadOccurrences HTTP/1.1
+POST http://localhost:8080/occurrences/api/documents/uploadOccurrencesFromFile HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNDcwODMwLCJleHAiOjE2NzM0NzQ0MzB9.1m64jE-1zb1cgN06eUCb-dlmgfshEStnGuQdMw-_q_E
 Content-Type: multipart/form-data; boundary=boundary
 

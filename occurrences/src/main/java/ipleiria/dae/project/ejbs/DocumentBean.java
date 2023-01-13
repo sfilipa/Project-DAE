@@ -160,9 +160,9 @@ public class DocumentBean {
             String username = string.get(0);
             String entryDate = string.get(1);
             String finalDate = string.get(2);
-            String stateString = string.get(3);
+            String stateString = string.get(3).toUpperCase();
             String insuranceCode = string.get(4);
-            String coverageTypeString = string.get(5);
+            String coverageTypeString = string.get(5).toUpperCase();
             String description = string.get(6);
             String usernameRepairer = string.get(7);
             String expertsList = string.get(8);
@@ -174,12 +174,12 @@ public class DocumentBean {
                 state = State.valueOf(stateString);
                 validateOccurrenceWithState(state, finalDate, usernameRepairer, expertsList, lineNumber);
             } catch (IllegalArgumentException e) {
-                throw new MyEntityNotFoundException("State sent in line " + lineNumber + " not found.");
+                throw new MyEntityNotFoundException("State in line " + lineNumber + " not found.");
             }
             try {
                 coverageType = CoverageType.valueOf(coverageTypeString);
             } catch (IllegalArgumentException e) {
-                throw new MyEntityNotFoundException("Coverage Type sent in line " + lineNumber + " not found.");
+                throw new MyEntityNotFoundException("Coverage Type in line " + lineNumber + " not found.");
             }
 
             Occurrence occurrence = occurrenceBean.create(username, entryDate, state, insuranceCode, coverageType, description);
@@ -196,10 +196,10 @@ public class DocumentBean {
             }
 
             if (!expertsList.trim().equals("-")) {
-                for (String expertUsername : expertsList.split(", ")) {
-                    Expert expert = expertBean.find(expertUsername);
+                for (String expertUsername : expertsList.split(",")) {
+                    Expert expert = expertBean.find(expertUsername.trim());
                     if (expert == null) {
-                        throw new MyEntityNotFoundException("Expert with username: " + expertUsername + " in line " + lineNumber + " not found");
+                        throw new MyEntityNotFoundException("Expert with username: " + expertUsername + "in line " + lineNumber + " not found");
                     }
                     if (!expert.getInsuranceCompany().equals(occurrence.getInsurance().getInsuranceCompany())) {
                         throw new MyEntityCreationViolationException("Expert and Occurrence are not from the same company");
@@ -227,30 +227,30 @@ public class DocumentBean {
                 throw new MyEntityCreationViolationException("Final Date in line " + lineNumber + " must be empty");
             }
             if (!usernameRepairer.trim().equals("-")) {
-                throw new MyEntityCreationViolationException("Repairer " + lineNumber + " must be empty");
+                throw new MyEntityCreationViolationException("Repairer in line " + lineNumber + " must be empty");
             }
             if (expertsList.trim().equals("-")) {
-                throw new MyEntityCreationViolationException("Experts " + lineNumber + " must not be empty");
+                throw new MyEntityCreationViolationException("Experts in line " + lineNumber + " must not be empty");
             }
         } else if (state.equals(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT) || state.equals(State.REPAIRER_WAITING_LIST) || state.equals(State.ACTIVE) || state.equals(State.FAILED)) {
             if (!finalDate.trim().equals("-")) {
-                throw new MyEntityCreationViolationException("Final Date " + lineNumber + " must be empty");
+                throw new MyEntityCreationViolationException("Final Date in line " + lineNumber + " must be empty");
             }
             if (usernameRepairer.trim().equals("-")) {
-                throw new MyEntityCreationViolationException("Repairer " + lineNumber + " must not be empty");
+                throw new MyEntityCreationViolationException("Repairer in line " + lineNumber + " must not be empty");
             }
             if (expertsList.trim().equals("-")) {
-                throw new MyEntityCreationViolationException("Experts " + lineNumber + " must not be empty");
+                throw new MyEntityCreationViolationException("Experts in line " + lineNumber + " must not be empty");
             }
         } else if (state.equals(State.RESOLVED)) {
             if (finalDate.trim().equals("-")) {
-                throw new MyEntityCreationViolationException("Final Date " + lineNumber + " must not be empty");
+                throw new MyEntityCreationViolationException("Final Date in line " + lineNumber + " must not be empty");
             }
             if (usernameRepairer.trim().equals("-")) {
-                throw new MyEntityCreationViolationException("Repairer " + lineNumber + " must not be empty");
+                throw new MyEntityCreationViolationException("Repairer in line " + lineNumber + " must not be empty");
             }
             if (expertsList.trim().equals("-")) {
-                throw new MyEntityCreationViolationException("Experts " + lineNumber + " must not be empty");
+                throw new MyEntityCreationViolationException("Experts in line " + lineNumber + " must not be empty");
             }
         }
     }
