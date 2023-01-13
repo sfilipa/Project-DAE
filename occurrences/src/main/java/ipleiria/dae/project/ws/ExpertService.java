@@ -156,11 +156,11 @@ public class ExpertService {
             throw new ForbiddenException(username + ", You are not allowed to access this resource");
         }
 
+        var count = expertBean.countAssignedOccurrences(username);
         var offset = pageRequest.getOffset();
         var limit = pageRequest.getLimit();
 
         var occurrences = expertBean.getExpertAssignedOccurrences(limit, pageRequest.getPage(), username);
-        var count = occurrences.size();
 
         if (offset > count) {
             return Response.ok(new PaginatedDTOs<>(count)).build();

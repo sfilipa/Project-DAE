@@ -19,7 +19,7 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNTU2NjA2LCJleHAiOjE2NzM1NjAyMDZ9.FjRE-IlbYPMLxLMwDRoRdBlnsYL9e-j4usBQdwjPQXU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNjEwMTIxLCJleHAiOjE2NzM2MTM3MjF9.BdoquVE8n6B82ZyfJ67VhZo7MKHfmY5T54MxPO9tv58
 Content-Type: application/json
 
 {
@@ -31,9 +31,14 @@ Content-Type: application/json
   "description": "ola"
 }
 
+##### CLIENT Occurrences
+GET http://localhost:8080/occurrences/api/clients/client1/occurrences?limit=5
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNjEwMTIxLCJleHAiOjE2NzM2MTM3MjF9.BdoquVE8n6B82ZyfJ67VhZo7MKHfmY5T54MxPO9tv58
+Accept: application/json
+
 ### Create Ocurrence for client2
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNTU3NDE4LCJleHAiOjE2NzM1NjEwMTh9.g-p7fIVSXRYy2l11pZjbh2e9hyFfQqPwQK7YC8JDrfo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNjExNDMwLCJleHAiOjE2NzM2MTUwMzB9.I3KSkduIZuy4FTkW_IA4vsKmbopHWJ7XGyT-c3WmPiw
 Content-Type: application/json
 
 {
@@ -102,10 +107,7 @@ GET http://localhost:8080/occurrences/api/documents/1/exists HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzY3NjIzLCJleHAiOjE2NzMzNzEyMjN9.4G4h_l14WhJdVWOMgDqANLBKhE7qXGfKD09fof1eizk
 Content-Type: application/x-www-form-urlencoded
 
-##### CLIENT Occurrences
-GET http://localhost:8080/occurrences/api/clients/client1/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNTU2NjA2LCJleHAiOjE2NzM1NjAyMDZ9.FjRE-IlbYPMLxLMwDRoRdBlnsYL9e-j4usBQdwjPQXU
-Accept: application/json
+
 
 ### Create Expert
 POST http://localhost:8080/occurrences/api/experts
@@ -166,8 +168,8 @@ GET http://localhost:8080/occurrences/api/experts/expert2
 Accept: application/json
 
 ### Assign expert to occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/assign
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNTY0NzczLCJleHAiOjE2NzM1NjgzNzN9.VrJP5XLdkjlTKWNhMdJss6IMNVBby_L3yHJA7RpAISM
+PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/2/assign
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNjExNDgxLCJleHAiOjE2NzM2MTUwODF9.33nsqxedz1nejgmOETBS0c78TJMV36FHowcdm5xfgVA
 Content-Type: application/json
 
 ### Unassign expert from occurrence
@@ -301,7 +303,7 @@ Accept: application/json
 
 ### Get Expert Occurrences
 GET http://localhost:8080/occurrences/api/experts/expert1/occurrences/assigned
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNTY2NDM2LCJleHAiOjE2NzM1NzAwMzZ9.-tkTiPz_K13VBFxJes4qyloRJzOf90pCRNz0Paayfok
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNjExNDgxLCJleHAiOjE2NzM2MTUwODF9.33nsqxedz1nejgmOETBS0c78TJMV36FHowcdm5xfgVA
 Accept: application/json
 
 ### Get Repairer Occurrences

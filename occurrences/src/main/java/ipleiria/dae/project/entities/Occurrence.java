@@ -24,14 +24,27 @@ import java.util.List;
                 query = "SELECT o FROM Occurrence o WHERE o.client = :client ORDER BY o.id"
         ),
         @NamedQuery(
+                name = "countClientOccurrences",
+                query = "SELECT COUNT(*) FROM Occurrence o WHERE o.client = :client"
+        ),
+        @NamedQuery(
                 name = "getExpertOccurrences",
                 query = "SELECT o FROM Occurrence o WHERE o IN" +
                             "   (SELECT o FROM Expert e JOIN e.occurrences o WHERE e.username = :username)"+
                         " ORDER BY o.id"
         ),
         @NamedQuery(
+                name = "countExpertOccurrences",
+                query = "SELECT COUNT(*) FROM Occurrence o WHERE o IN" +
+                        "   (SELECT o FROM Expert e JOIN e.occurrences o WHERE e.username = :username)"
+        ),
+        @NamedQuery(
                 name = "getRepairerOccurrences",
                 query = "SELECT o FROM Occurrence o WHERE o.repairer = :repairer ORDER BY o.id"
+        ),
+        @NamedQuery(
+                name = "countRepairerOccurrences",
+                query = "SELECT COUNT(*) FROM Occurrence o WHERE o.repairer = :repairer"
         ),
 })
 public class Occurrence implements Serializable {

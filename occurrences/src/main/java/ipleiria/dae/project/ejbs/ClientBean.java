@@ -183,4 +183,15 @@ public class ClientBean {
                 .setMaxResults(limit)
                 .getResultList();
     }
+
+    public Long countOccurrences(String username) {
+        Client client = find(username);
+        if(client == null){
+            throw new MyEntityNotFoundException("Client not found");
+        }
+
+        return em.createNamedQuery("countClientOccurrences", Long.class)
+                .setParameter("client", client)
+                .getSingleResult();
+    }
 }
