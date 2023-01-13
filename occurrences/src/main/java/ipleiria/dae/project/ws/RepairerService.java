@@ -53,10 +53,20 @@ public class RepairerService {
     @Authenticated
     @RolesAllowed({"Repairer"})
     @Path("/{username}/occurrences/{occurrence_code}/start")
-    public Response startOccurrence(@PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
+    public Response startOccurrence(@Context HttpServletRequest request, @PathParam("username") String username, @PathParam("occurrence_code") long occurrence_code)
             throws MyEntityNotFoundException {
         try {
-            repairerBean.startOccurrence(username, occurrence_code);
+            // Get the input stream from the request
+            InputStream inputStream = request.getInputStream();
+
+            // Read the message body from the input stream
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(inputStream);
+
+            // Extract the values from the JSON object
+            String description = rootNode.get("description").asText();
+
+            repairerBean.startOccurrence(username, occurrence_code, description);
             return Response.ok().build();
         } catch (MyEntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)

@@ -48,6 +48,23 @@ public class OccurrenceService {
     }
 
     @GET
+    @Path("/insuranceCompany/{insuranceCompany}")
+    public Response getAllOccurrences(@BeanParam @Valid PageRequest pageRequest, @PathParam("insuranceCompany") String insuranceCompany) {
+        var count = occurrenceBean.countByInsuranceCompany(insuranceCompany);
+        var offset = pageRequest.getOffset();
+        var limit = pageRequest.getLimit();
+
+        if (offset > count) {
+            return Response.ok(new PaginatedDTOs<>(count)).build();
+        }
+
+        var occurrences = occurrenceBean.getAllByInsuranceCompany(limit, pageRequest.getPage(), insuranceCompany);
+        var paginatedDTO = new PaginatedDTOs<>(OccurrenceDTO.from(occurrences), count, offset, limit);
+
+        return Response.ok(paginatedDTO).build();
+    }
+
+    @GET
     @Path("/{id}")
     public Response getOccurrenceDetails(@PathParam("id") long id) {
         Occurrence occurrence = occurrenceBean.find(id);

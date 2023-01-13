@@ -28,11 +28,20 @@ import java.util.List;
                 query = "SELECT COUNT(*) FROM Occurrence o WHERE o.client = :client"
         ),
         @NamedQuery(
+                name = "getOccurrencesByInsuranceCompany",
+                query = "SELECT o FROM Occurrence o WHERE o.insuranceCompanyName = :insuranceCompanyName ORDER BY o.id"
+        ),
+        @NamedQuery(
+                name = "countOccurrencesByInsuranceCompany",
+                query = "SELECT COUNT(*) FROM Occurrence o WHERE o.insuranceCompanyName = :insuranceCompanyName"
+        ),
+        @NamedQuery(
                 name = "getExpertOccurrences",
                 query = "SELECT o FROM Occurrence o WHERE o IN" +
                             "   (SELECT o FROM Expert e JOIN e.occurrences o WHERE e.username = :username)"+
                         " ORDER BY o.id"
         ),
+
         @NamedQuery(
                 name = "countExpertOccurrences",
                 query = "SELECT COUNT(*) FROM Occurrence o WHERE o IN" +
@@ -64,6 +73,8 @@ public class Occurrence implements Serializable {
     @NotNull
     private Insurance insurance;
     @NotNull
+    private String insuranceCompanyName;
+    @NotNull
     private State state;
     @ManyToOne
     @JoinColumn(name = "client_username")
@@ -86,6 +97,7 @@ public class Occurrence implements Serializable {
         this.objectInsured = objectInsured;
         this.description = description;
         this.insurance = insurance;
+        this.insuranceCompanyName = insurance.getInsuranceCompany();
         this.coverageType = coverageType;
         this.state = state;
         this.client = client;
@@ -107,6 +119,11 @@ public class Occurrence implements Serializable {
 
     public void setInsurance(Insurance insurance) {
         this.insurance = insurance;
+        insuranceCompanyName = insurance.getInsuranceCompany();
+    }
+
+    public String getInsuranceCompanyName() {
+        return insuranceCompanyName;
     }
 
     public Client getClient() {

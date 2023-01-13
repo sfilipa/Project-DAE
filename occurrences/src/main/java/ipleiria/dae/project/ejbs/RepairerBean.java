@@ -25,6 +25,7 @@ import java.sql.Blob;
 import java.sql.SQLException;
 import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -145,7 +146,7 @@ public class RepairerBean {
         }
     }
 
-    public void unassignOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException {
+    public void unassignOccurrence(String username, long occurrenceCode, String link) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -154,22 +155,29 @@ public class RepairerBean {
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
             validateOccurrence(repairer, occurrence, null);
-//            if(occurrence.getState() != State.REPAIRER_WAITING_LIST && occurrence.getState() != State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT){
-//                return -3; //devolver exception (pois se estiver no .ACTIVE, não posso fazer unassign de um repairer que já está mesmo a reparar)
-//            }
 
-            //validateRepairerIsAssignedToOccurrence(repairer, occurrence);
+            // Validate if the occurrence is in correct state
+            List<State> validStates = new ArrayList<>();
+            validStates.add(State.REPAIRER_WAITING_LIST);
+            validStates.add(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
+
+            validateRepairerIsAssignedToOccurrence(repairer, occurrence);
 
             occurrence.setState(State.APPROVED);
             occurrence.setRepairer(null);
             repairer.removeOccurrence(occurrence);
+
+            // Send email to the repairer that the occurrence is no longer assigned to him
+            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " started",
+                    "The occurrence " + occurrence.getId() + " has been started by " + repairer.getUsername() + ".\n"+
+                            "You can see the occurrence at " + link);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
 
-    public void startOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException {
+    public void startOccurrence(String username, long occurrenceCode, String link) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -184,7 +192,8 @@ public class RepairerBean {
 
             // Send email to the client that the occurrence was started
             emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " started",
-                    "The occurrence " + occurrence.getId() + " has been started by " + repairer.getUsername() + ".\n\n" + occurrence.getDescription());
+                    "The occurrence " + occurrence.getId() + " has been started by " + repairer.getUsername() + ".\n\n"+
+                            occurrence.getDescription() + '\n'+ "You can see the occurrence at " + link);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -211,7 +220,14 @@ public class RepairerBean {
             occurrence.setFinalDate(finalDateStr);
 
             // Get Occurrence Description
-            String occurrenceDescription = occurrence.getDescription();
+            String[] descriptionReceived = occurrence.getDescription().split("&");
+
+            if(descriptionReceived.length != 2){
+                throw new IllegalArgumentException("Occurrence description is not valid");
+            }
+
+            String link = descriptionReceived[0];
+            String occurrenceDescription = descriptionReceived[1];
 
             // Build Occurrence Description
             String newOccurrenceDescription = occurrenceDescription + "\n[" + repairer.getUsername() + "]: " + description;
@@ -219,7 +235,8 @@ public class RepairerBean {
 
             // Send email to the client that the occurrence was failed
             emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " failed",
-                    "The occurrence " + occurrence.getId() + " has been failed by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription);
+                    "The occurrence " + occurrence.getId() + " has been failed by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription +
+                            "\nYou can see the occurrence at " + link);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
@@ -246,7 +263,14 @@ public class RepairerBean {
             occurrence.setFinalDate(finalDateStr);
 
             // Get Occurrence Description
-            String occurrenceDescription = occurrence.getDescription();
+            String[] descriptionReceived = occurrence.getDescription().split("&");
+
+            if(descriptionReceived.length != 2){
+                throw new IllegalArgumentException("Occurrence description is not valid");
+            }
+
+            String link = descriptionReceived[0];
+            String occurrenceDescription = descriptionReceived[1];
 
             // Build Occurrence Description
             String newOccurrenceDescription = occurrenceDescription + "\n[" + repairer.getUsername() + "]: " + description;
@@ -254,7 +278,8 @@ public class RepairerBean {
 
             // Send email to the client that the occurrence was finished
             emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " finished",
-                    "The occurrence " + occurrence.getId() + " has been finished by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription);
+                    "The occurrence " + occurrence.getId() + " has been finished by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription +
+                            "\nYou can see the occurrence at " + link);
 
             // Transform Documents into a Blob
             blobBean.transformDocumentsIntoBlob(occurrence);
@@ -299,6 +324,13 @@ public class RepairerBean {
         // Check if Occurrence is in the correct state
         if (occurrence.getState() != state) {
             throw new NotAuthorizedException("Occurrence is not in the correct state, current state is " + occurrence.getState());
+        }
+    }
+
+    private void validateOccurrenceState(Occurrence occurrence, List<State> state) throws NotAuthorizedException {
+        // Check if Occurrence is in the correct state
+        if (!state.contains(occurrence.getState())) {
+            throw new NotAuthorizedException("Occurrence " + occurrence.getId() + " is not in the correct state. Current state is " + occurrence.getState());
         }
     }
 

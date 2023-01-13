@@ -5,12 +5,16 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "expert1",
+  "username": "client1",
   "password": "123"
 }
 
 ##### Get Occurrences
 GET http://localhost:8080/occurrences/api/occurrences
+Accept: application/json
+
+##### Get Occurrences By Insurance Company Name
+GET http://localhost:8080/occurrences/api/occurrences/insuranceCompany/Allianz
 Accept: application/json
 
 ##### Get Occurrence Details
@@ -19,7 +23,7 @@ Accept: application/json
 
 ### Create Ocurrence
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNjEwMTIxLCJleHAiOjE2NzM2MTM3MjF9.BdoquVE8n6B82ZyfJ67VhZo7MKHfmY5T54MxPO9tv58
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNjI4NzI1LCJleHAiOjE2NzM2MzIzMjV9.J2VI-_SrgoDHncWjYmOngM376Gr-JUILw3w0tyBn1FU
 Content-Type: application/json
 
 {
@@ -38,7 +42,7 @@ Accept: application/json
 
 ### Create Ocurrence for client2
 POST http://localhost:8080/occurrences/api/occurrences
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNjExNDMwLCJleHAiOjE2NzM2MTUwMzB9.I3KSkduIZuy4FTkW_IA4vsKmbopHWJ7XGyT-c3WmPiw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNjI4NjE1LCJleHAiOjE2NzM2MzIyMTV9.gOkGG3zMpBBNbfrz6R31fjKidX6EolUCwKuQ6Aa2z30
 Content-Type: application/json
 
 {
