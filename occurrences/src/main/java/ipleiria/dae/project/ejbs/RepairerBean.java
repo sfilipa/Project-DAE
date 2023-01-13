@@ -220,7 +220,7 @@ public class RepairerBean {
             occurrence.setFinalDate(finalDateStr);
 
             // Get Occurrence Description
-            String[] descriptionReceived = occurrence.getDescription().split("&");
+            String[] descriptionReceived = description.split("&");
 
             if(descriptionReceived.length != 2){
                 throw new IllegalArgumentException("Occurrence description is not valid");
@@ -230,7 +230,7 @@ public class RepairerBean {
             String occurrenceDescription = descriptionReceived[1];
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n[" + repairer.getUsername() + "]: " + description;
+            String newOccurrenceDescription = occurrence.getDescription() + "\n[" + repairer.getUsername() + "]: " + occurrenceDescription;
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send email to the client that the occurrence was failed
@@ -267,7 +267,7 @@ public class RepairerBean {
             occurrence.setFinalDate(finalDateStr);
 
             // Get Occurrence Description
-            String[] descriptionReceived = occurrence.getDescription().split("&");
+            String[] descriptionReceived = description.split("&");
 
             if(descriptionReceived.length != 2){
                 throw new IllegalArgumentException("Occurrence description is not valid");
@@ -277,7 +277,7 @@ public class RepairerBean {
             String occurrenceDescription = descriptionReceived[1];
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n[" + repairer.getUsername() + "]: " + description;
+            String newOccurrenceDescription = occurrence.getDescription() + "\n[" + repairer.getUsername() + "]: " + occurrenceDescription;
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send email to the client that the occurrence was finished
