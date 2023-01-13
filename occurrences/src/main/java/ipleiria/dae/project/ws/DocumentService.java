@@ -105,6 +105,8 @@ public class DocumentService {
             occurrencesCreated = documentBean.readExcel(filepath);
         } else if (filename != null && filename.endsWith(".csv")) {
             occurrencesCreated = documentBean.readCSVFile(filepath);
+        }else{
+            throw new MyIllegalArgumentException("Wrong file format. The supported formats are: .xlsx .xls and .csv");
         }
 
         return Response.ok(occurrencesCreated + " occurrences were created").build();
