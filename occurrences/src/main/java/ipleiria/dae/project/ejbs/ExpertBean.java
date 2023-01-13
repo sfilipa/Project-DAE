@@ -133,7 +133,7 @@ public class ExpertBean {
         sendDisapprovalEmail(occurrence, expert, newOccurrenceDescription);
 
         // Transform Documents into a Blob
-        blobBean.transformDocumentsIntoBlob(occurrence);
+        blobBean.storeOccurrenceDocumentsBlobInDb(occurrence);
     }
 
     private void sendDisapprovalEmail(Occurrence occurrence, Expert expert, String newOccurrenceDescription) {

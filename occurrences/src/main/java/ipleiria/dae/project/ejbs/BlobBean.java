@@ -17,7 +17,7 @@ public class BlobBean {
     @PersistenceContext
     EntityManager entityManager;
 
-    public Blob convertDocumentsToBlob(Occurrence occurrence) {
+    public SerialBlob convertDocumentsToBlob(Occurrence occurrence) {
         try {
             // Get the List of Document objects from the occurrence object
             List<Document> documents = occurrence.getDocuments();
@@ -43,7 +43,7 @@ public class BlobBean {
         return null;
     }
 
-    public void storeOccurrenceInDb(Occurrence occurrence) {
+    public void storeOccurrenceDocumentsBlobInDb(Occurrence occurrence) {
         // Convert the documents attribute to a Blob
         Blob documentsBlob = convertDocumentsToBlob(occurrence);
 

@@ -10,6 +10,7 @@ import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Hasher;
+import org.apache.poi.hpsf.Blob;
 import org.hibernate.Hibernate;
 import org.json.JSONArray;
 
@@ -21,7 +22,6 @@ import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import javax.sql.rowset.serial.SerialBlob;
 import java.io.*;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
@@ -222,7 +222,7 @@ public class RepairerBean {
                     "The occurrence " + occurrence.getId() + " has been failed by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription);
 
             // Transform Documents into a Blob
-            blobBean.transformDocumentsIntoBlob(occurrence);
+            blobBean.storeOccurrenceDocumentsBlobInDb(occurrence);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
@@ -261,7 +261,7 @@ public class RepairerBean {
                     "The occurrence " + occurrence.getId() + " has been finished by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription);
 
             // Transform Documents into a Blob
-            blobBean.transformDocumentsIntoBlob(occurrence);
+            blobBean.storeOccurrenceDocumentsBlobInDb(occurrence);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
