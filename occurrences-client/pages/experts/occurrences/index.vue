@@ -47,11 +47,13 @@
       <div v-for="occurrence in assignedOccurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
         <Occurrence :occurrence="occurrence"
                     :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
-                    :isAssigned="true" :waitingRefresh="waitingRefresh"
+                    :isAssigned="true"
+                    :waitingRefresh="waitingRefresh"
+                    :current-page="currentPage"
                     @updateOccurrences="updateOccurrences"></Occurrence>
       </div>
 
-      <Paginate :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
+      <Paginate v-if="pageCount>1" :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
     </div>
   </div>
 
@@ -105,6 +107,7 @@ export default {
 
       if(!currentPage){
         currentPage = 1
+        this.currentPage = 1
       }
 
       this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned?page=${currentPage}`)

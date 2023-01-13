@@ -108,7 +108,19 @@ export default {
 }
 
 .login-page{
-  padding: 5% 20%;
+  padding: 5% 25%;
+}
+
+@media only screen and (min-width: 1400px) {
+  .login-page{
+    padding: 5% 20rem;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .login-page{
+    padding: 5% 20%;
+  }
 }
 
 </style>
