@@ -7,6 +7,7 @@ import ipleiria.dae.project.enumerators.State;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.sql.Blob;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,11 +29,20 @@ import java.util.List;
                 query = "SELECT COUNT(*) FROM Occurrence o WHERE o.client = :client"
         ),
         @NamedQuery(
+                name = "getOccurrencesByInsuranceCompany",
+                query = "SELECT o FROM Occurrence o WHERE o.insuranceCompanyName = :insuranceCompanyName ORDER BY o.id"
+        ),
+        @NamedQuery(
+                name = "countOccurrencesByInsuranceCompany",
+                query = "SELECT COUNT(*) FROM Occurrence o WHERE o.insuranceCompanyName = :insuranceCompanyName"
+        ),
+        @NamedQuery(
                 name = "getExpertOccurrences",
                 query = "SELECT o FROM Occurrence o WHERE o IN" +
                             "   (SELECT o FROM Expert e JOIN e.occurrences o WHERE e.username = :username)"+
                         " ORDER BY o.id"
         ),
+
         @NamedQuery(
                 name = "countExpertOccurrences",
                 query = "SELECT COUNT(*) FROM Occurrence o WHERE o IN" +
@@ -64,6 +74,8 @@ public class Occurrence implements Serializable {
     @NotNull
     private Insurance insurance;
     @NotNull
+    private String insuranceCompanyName;
+    @NotNull
     private State state;
     @ManyToOne
     @JoinColumn(name = "client_username")
@@ -75,10 +87,12 @@ public class Occurrence implements Serializable {
     private List<Document> documents;
     @ManyToMany(mappedBy = "occurrences", fetch = FetchType.EAGER)
     private List<Expert> experts;
+    private Blob documentsBlob;
 
     public Occurrence() {
         documents = new LinkedList<>();
         experts = new LinkedList<>();
+        documentsBlob = null;
     }
 
     public Occurrence(String entryDate, String objectInsured, String description, Insurance insurance, CoverageType coverageType, State state, Client client) {
@@ -86,11 +100,13 @@ public class Occurrence implements Serializable {
         this.objectInsured = objectInsured;
         this.description = description;
         this.insurance = insurance;
+        this.insuranceCompanyName = insurance.getInsuranceCompany();
         this.coverageType = coverageType;
         this.state = state;
         this.client = client;
         documents = new LinkedList<>();
         experts = new LinkedList<>();
+        documentsBlob = null;
     }
 
     public long getId() {
@@ -107,6 +123,11 @@ public class Occurrence implements Serializable {
 
     public void setInsurance(Insurance insurance) {
         this.insurance = insurance;
+        insuranceCompanyName = insurance.getInsuranceCompany();
+    }
+
+    public String getInsuranceCompanyName() {
+        return insuranceCompanyName;
     }
 
     public Client getClient() {
@@ -214,4 +235,12 @@ public class Occurrence implements Serializable {
         this.documents.remove(document);
     }
 
+    public void setDocumentsBlob(Blob documentsBlob) {
+        this.documentsBlob = documentsBlob;
+        documents = null;
+    }
+
+    public Blob getDocumentsBlob() {
+        return documentsBlob;
+    }
 }

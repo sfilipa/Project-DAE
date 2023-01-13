@@ -226,9 +226,19 @@ public class ClientService {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
 
+            // Get the input stream from the request
+            InputStream inputStream = request.getInputStream();
+
+            // Read the message body from the input stream
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode rootNode = mapper.readTree(inputStream);
+
+            // Extract the values from the JSON object
+            String link = rootNode.get("description").asText();
+
             clientBean.verifyOccurrenceBelongsToClient(clientUsername, occurrence_code);
 
-            repairerBean.unassignOccurrence(repairerUsername, occurrence_code);
+            repairerBean.unassignOccurrence(repairerUsername, occurrence_code, link);
             return Response.ok().build();
         } catch (MyEntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)

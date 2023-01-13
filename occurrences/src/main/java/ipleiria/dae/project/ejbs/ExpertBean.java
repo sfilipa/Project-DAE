@@ -27,6 +27,8 @@ public class ExpertBean {
     EntityManager em;
     @EJB
     private EmailBean emailBean;
+    @EJB
+    private BlobBean blobBean;
     @Inject
     private Hasher hasher;
 
@@ -121,21 +123,32 @@ public class ExpertBean {
         occurrence.setFinalDate(finalDateStr);
 
         // Get Occurrence Description
-        String occurrenceDescription = occurrence.getDescription();
+        String[] descriptionReceived = occurrence.getDescription().split("&");
+
+        if(descriptionReceived.length != 2){
+            throw new IllegalArgumentException("Occurrence description is not valid");
+        }
+
+        String link = descriptionReceived[0];
+        String occurrenceDescription = descriptionReceived[1];
 
         // Build Occurrence Description
         String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
         occurrence.setDescription(newOccurrenceDescription);
 
         // Send Email to Client
-        sendDisapprovalEmail(occurrence, expert, newOccurrenceDescription);
+        sendDisapprovalEmail(occurrence, expert, newOccurrenceDescription, link);
+
+        // Transform Documents into a Blob
+        blobBean.storeOccurrenceDocumentsBlobInDb(occurrence);
     }
 
-    private void sendDisapprovalEmail(Occurrence occurrence, Expert expert, String newOccurrenceDescription) {
+    private void sendDisapprovalEmail(Occurrence occurrence, Expert expert, String newOccurrenceDescription, String link) {
         emailBean.send(
                 occurrence.getClient().getEmail(),
                 "Occurrence " + occurrence.getId() + " disapproved",
-                "Your occurrence was disapproved by " + expert.getUsername() + ".\n\n" + newOccurrenceDescription
+                "Your occurrence was disapproved by " + expert.getUsername() + ".\n\n" + newOccurrenceDescription  +
+                        "You can access the occurrence at " + link + "\n"
         );
     }
 
@@ -155,14 +168,21 @@ public class ExpertBean {
             occurrence.setState(State.APPROVED);
 
             // Get Occurrence Description
-            String occurrenceDescription = occurrence.getDescription();
+            String[] descriptionReceived = occurrence.getDescription().split("&");
+
+            if(descriptionReceived.length != 2){
+                throw new IllegalArgumentException("Occurrence description is not valid");
+            }
+
+            String link = descriptionReceived[0];
+            String occurrenceDescription = descriptionReceived[1];
 
             // Build Occurrence Description
             String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send Email to Client
-            sendApprovalEmail(occurrence, expert, newOccurrenceDescription);
+            sendApprovalEmail(occurrence, expert, newOccurrenceDescription, link);
 
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
@@ -173,11 +193,12 @@ public class ExpertBean {
         }
     }
 
-    private void sendApprovalEmail(Occurrence occurrence, Expert expert, String newOccurrenceDescription) {
+    private void sendApprovalEmail(Occurrence occurrence, Expert expert, String newOccurrenceDescription, String link) {
         emailBean.send(
                 occurrence.getClient().getEmail(),
                 "Occurrence " + occurrence.getId() + " approved",
-                "Your occurrence was approved by " + expert.getUsername() + ".\n\n" + newOccurrenceDescription
+                "Your occurrence was approved by " + expert.getUsername() + ".\n\n" + newOccurrenceDescription+ '\n'+
+                        "You can access the occurrence at " + link
         );
     }
 
@@ -326,7 +347,14 @@ public class ExpertBean {
             occurrence.setState(State.APPROVED);
 
             // Get Occurrence Description
-            String occurrenceDescription = occurrence.getDescription();
+            String[] descriptionReceived = occurrence.getDescription().split("&");
+
+            if(descriptionReceived.length != 2){
+                throw new IllegalArgumentException("Occurrence description is not valid");
+            }
+
+            String link = descriptionReceived[0];
+            String occurrenceDescription = descriptionReceived[1];
 
             // Build Occurrence Description
             String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
@@ -334,7 +362,8 @@ public class ExpertBean {
 
             // Send Email to Client about the Repairer of the occurrence being rejected by the Expert
             emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " repairer service rejected",
-                    "The repairer " + occurrence.getRepairer().getUsername() + " was rejected to repair the occurrence " + occurrence.getId() + " by " + expert.getUsername() + ".\n\n" + occurrence.getDescription());
+                    "The repairer " + occurrence.getRepairer().getUsername() + " was rejected to repair the occurrence " + occurrence.getId() + " by " + expert.getUsername() + ".\n\n" + occurrence.getDescription()+ '\n'+
+                            "You can access the occurrence at " + link);
         } catch (MyEntityNotFoundException e) {
             throw new MyEntityNotFoundException(e.getMessage());
         } catch (NotAuthorizedException e) {

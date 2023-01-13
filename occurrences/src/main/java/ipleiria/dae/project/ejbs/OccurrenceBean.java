@@ -198,4 +198,18 @@ public class OccurrenceBean {
                 .setMaxResults(limit)
                 .getResultList();
     }
+
+    public Long countByInsuranceCompany(String insuranceCompanyName) {
+        return em.createNamedQuery("countOccurrencesByInsuranceCompany", Long.class)
+                .setParameter("insuranceCompanyName", insuranceCompanyName)
+                .getSingleResult();
+    }
+
+    public List<Occurrence> getAllByInsuranceCompany(int limit, int pageNumber, String insuranceCompany) {
+        return em.createNamedQuery("getOccurrencesByInsuranceCompany", Occurrence.class)
+                .setParameter("insuranceCompanyName", insuranceCompany)
+                .setFirstResult((pageNumber - 1) * limit)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
