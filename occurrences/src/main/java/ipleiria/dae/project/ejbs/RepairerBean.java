@@ -103,7 +103,7 @@ public class RepairerBean {
         em.remove(repairer);
     }
 
-    public void assignOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException, APIBadResponseException {
+    public void assignOccurrence(String username, long occurrenceCode, String link) throws MyEntityNotFoundException, NotAuthorizedException, APIBadResponseException {
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -120,14 +120,16 @@ public class RepairerBean {
                 occurrence.setState(State.REPAIRER_WAITING_LIST);
                 // Send email to the repairer that the occurrence was assigned
                 emailBean.send(repairer.getEmail(), "Occurrence " + occurrence.getId() + " assigned to you",
-                        "A new occurrence has been assigned to you by " + occurrence.getClient().getUsername() + ".\n\n" + occurrence.getDescription());
+                        "A new occurrence has been assigned to you by " + occurrence.getClient().getUsername() + ".\n\n" + occurrence.getDescription() + '\n'+
+                        "You can access the occurrence at " + link);
             } else {
                 occurrence.setState(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
                 // Send email to Experts to approve the repairer
                 List<Expert> experts = expertBean.getAllExperts();
                 for (Expert expert : experts) {
                     emailBean.send(expert.getEmail(), "Occurrence " + occurrence.getId() + " assigned to " + repairer.getUsername() + " waiting approval",
-                            "A new occurrence has been assigned to " + repairer.getUsername() + " by " + occurrence.getClient().getUsername() + " and is waiting for your approval.\n\n" + occurrence.getDescription());
+                            "A new occurrence has been assigned to " + repairer.getUsername() + " by " + occurrence.getClient().getUsername() + " and is waiting for your approval.\n\n" + occurrence.getDescription() + '\n'+
+                                    "You can access the occurrence at " + link);
                 }
             }
 
@@ -341,5 +343,18 @@ public class RepairerBean {
 
         em.lock(repairer, LockModeType.OPTIMISTIC);
         repairer.setPassword(hasher.hash(password));
+    }
+
+    public List<Occurrence> getRepairerAssignedOccurrences(int limit, int pageNumber, String username) {
+        Repairer repairer = find(username);
+        if(repairer == null){
+            throw new MyEntityNotFoundException("Repairer not found");
+        }
+
+        return em.createNamedQuery("getRepairerOccurrences", Occurrence.class)
+                .setParameter("repairer", repairer)
+                .setFirstResult((pageNumber - 1) * limit)
+                .setMaxResults(limit)
+                .getResultList();
     }
 }

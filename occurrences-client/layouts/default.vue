@@ -4,11 +4,11 @@
       <h4 class="uppercase font-bold py-1 nuxt-sidebar-name">
         Incidentalists
       </h4>
-      <div >
+      <div class="sidebar-header-welcome">
         <span>Welcome back,</span>
         <p class="nuxt-sidebar-user-name" style="margin: auto;">{{ this.$auth.user.name }}</p>
       </div>
-      <hr style="margin-bottom: 10%;">
+      <hr class="sidebar-header-welcome" style="margin-bottom: 10%;">
       <nuxt-link to="/" class="flex items-center" style="padding: 10px;">
         <div class="sidebar-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-house" viewBox="0 0 16 16">
@@ -85,7 +85,7 @@
       </nuxt-link>
 
       <div class="sidebar-logout">
-        <hr>
+        <hr class="vertical-hr">
         <a @click="logout" class="flex items-center sidebar-logout-link">
           <div class="sidebar-link"  style="padding: 0 20px; cursor: pointer">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
@@ -208,7 +208,6 @@ a.nuxt-link-exact-active {
   padding: 20px;
   box-shadow: -8px 0 27px -2px #888;
   font-size: 16px;
-  overflow: auto;
   position: relative;
 }
 
@@ -238,6 +237,87 @@ html, body, div#__nuxt, div#__layout, .nuxt-page{
   min-height: 100% !important;
   height: 100% !important;
   width: 100% !important;
+}
+
+@media only screen and (max-width: 1200px) {
+  .nuxt-body{
+    height: 100%;
+  }
+
+  .sidebar-header-welcome{
+    display: none;
+  }
+
+  .nuxt-page{
+    flex-direction: column;
+  }
+
+  .nuxt-sidebar{
+    width: 100%;
+    flex-direction: row;
+    height: fit-content;
+  }
+
+  h4{
+    width: fit-content;
+  }
+
+  .nuxt-sidebar a{
+    margin: 0 1rem !important;
+    height: fit-content;
+  }
+
+  .vertical-hr{
+    border-top: 0;
+    border-left: 1px solid;
+    height: 2rem;
+    margin: 0;
+    width: 0;
+  }
+
+  .sidebar-logout{
+    display: flex;
+    margin: 3px 0;
+  }
+
+
+  .sidebar-link span{
+    width: max-content;
+  }
+
+  .nuxt-sidebar-name{
+    width: 100%;
+  }
+
+}
+
+@media only screen and (max-width: 1050px) {
+  .nuxt-sidebar{
+    font-size: 15px;
+  }
+
+  h4{
+    font-size: 20px;
+  }
+
+  .nuxt-sidebar a{
+    margin: 0 0.5rem !important;
+    height: fit-content;
+  }
+}
+
+@media only screen and (max-width: 870px) {
+
+  .nuxt-sidebar{
+    font-size: 12px;
+    overflow-x: auto;
+    height: 25%;
+  }
+
+  h4{
+    font-size: 17px;
+  }
+
 }
 
 </style>

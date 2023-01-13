@@ -18,7 +18,21 @@ import java.util.List;
         @NamedQuery(
                 name = "getAllOccurrences",
                 query = "SELECT o FROM Occurrence o ORDER BY o.id" // JPQL
-        )
+        ),
+        @NamedQuery(
+                name = "getClientOccurrences",
+                query = "SELECT o FROM Occurrence o WHERE o.client = :client ORDER BY o.id"
+        ),
+        @NamedQuery(
+                name = "getExpertOccurrences",
+                query = "SELECT o FROM Occurrence o WHERE o IN" +
+                            "   (SELECT o FROM Expert e JOIN e.occurrences o WHERE e.username = :username)"+
+                        " ORDER BY o.id"
+        ),
+        @NamedQuery(
+                name = "getRepairerOccurrences",
+                query = "SELECT o FROM Occurrence o WHERE o.repairer = :repairer ORDER BY o.id"
+        ),
 })
 public class Occurrence implements Serializable {
     @Id
@@ -53,9 +67,6 @@ public class Occurrence implements Serializable {
         documents = new LinkedList<>();
         experts = new LinkedList<>();
     }
-
-    //de inicio, todas as occurrences devem ser criadas com o State.PENDING
-
 
     public Occurrence(String entryDate, String objectInsured, String description, Insurance insurance, CoverageType coverageType, State state, Client client) {
         this.entryDate = entryDate;
