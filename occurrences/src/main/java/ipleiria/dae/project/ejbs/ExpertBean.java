@@ -27,6 +27,8 @@ public class ExpertBean {
     EntityManager em;
     @EJB
     private EmailBean emailBean;
+    @EJB
+    private BlobBean blobBean;
     @Inject
     private Hasher hasher;
 
@@ -129,6 +131,9 @@ public class ExpertBean {
 
         // Send Email to Client
         sendDisapprovalEmail(occurrence, expert, newOccurrenceDescription);
+
+        // Transform Documents into a Blob
+        blobBean.transformDocumentsIntoBlob(occurrence);
     }
 
     private void sendDisapprovalEmail(Occurrence occurrence, Expert expert, String newOccurrenceDescription) {

@@ -220,6 +220,10 @@ public class RepairerBean {
             // Send email to the client that the occurrence was failed
             emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " failed",
                     "The occurrence " + occurrence.getId() + " has been failed by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription);
+
+            // Transform Documents into a Blob
+            blobBean.transformDocumentsIntoBlob(occurrence);
+
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
         }
