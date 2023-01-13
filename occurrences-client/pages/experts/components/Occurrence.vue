@@ -157,7 +157,7 @@ export default {
         return
       }
       this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/acceptRepairer`, {
-        description: this.descriptionApprovePending
+        description: 'http://localhost:3000/repairers/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending
       }).then(()=> {
         this.descriptionApprovePending = "";
         this.$emit('updateOccurrences')

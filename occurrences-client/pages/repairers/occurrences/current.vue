@@ -119,7 +119,7 @@ export default {
           this.occurrences = occurrences.data
           this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
             .then((occurrencesAssigned) => {
-              this.occurrencesAssigned = occurrencesAssigned
+              this.occurrencesAssigned = occurrencesAssigned.data
               this.waitingRefresh = false
             })
 

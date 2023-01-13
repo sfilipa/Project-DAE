@@ -319,4 +319,13 @@ export default {
 .register-page{
   padding: 0px 120px;
 }
+
+
+@media only screen and (max-width: 1050px) {
+  .btn-submit, btn-reset{
+    width: 12rem;
+  }
+}
+
+
 </style>

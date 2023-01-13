@@ -50,6 +50,8 @@
                     :isAssigned="true" :waitingRefresh="waitingRefresh"
                     @updateOccurrences="updateOccurrences"></Occurrence>
       </div>
+
+      <Paginate :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
     </div>
   </div>
 
@@ -60,8 +62,10 @@
 <script>
 import Occurrence from "~/pages/experts/components/Occurrence.vue";
 import Unauthorized from "@/pages/components/Unauthorized";
+import Paginate from "@/pages/components/Paginate";
 export default {
   components: {
+    Paginate,
     Unauthorized,
     Occurrence
   },
@@ -73,21 +77,42 @@ export default {
       coverageToFilter: "",
       occurrenceStates: [],
       occurrenceCoverages: [],
-      allDocuments: []
+      allDocuments: [],
+      currentPage: 1,
+      totalCount: 1,
+      perPage: 10,
+      pageCount: 1
+    }
+  },
+  watch: {
+    currentPage(newPage) {
+      this.fetchOccurrences(newPage)
     }
   },
   created () {
-    this.updateOccurrences()
+    this.updateOccurrences(1)
   },
   methods: {
-    updateOccurrences(){
+    updateCurrentPage(currentPage){
+      if(currentPage!=null) {
+        this.currentPage = currentPage
+      }
+    },
+    updateOccurrences(currentPage){
       this.waitingRefresh = true
       this.occurrenceStates = []
       this.occurrenceCoverages = []
-      this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
+
+      if(!currentPage){
+        currentPage = 1
+      }
+
+      this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned?page=${currentPage}`)
         .then((assignedOccurrences) => {
-          this.assignedOccurrences = assignedOccurrences
-          this.waitingRefresh = false
+          this.totalCount = assignedOccurrences.metadata.totalCount
+          this.perPage = assignedOccurrences.metadata.count
+          this.pageCount = assignedOccurrences.metadata.pageCount
+          this.assignedOccurrences = assignedOccurrences.data
 
           this.assignedOccurrences.forEach(occurrence => {
             if(this.occurrenceStates.indexOf(occurrence.state) === -1){
@@ -112,6 +137,8 @@ export default {
                       )
                     })
                 }
+
+                this.waitingRefresh = false
               })
           })
         })

@@ -95,7 +95,7 @@ export default {
       errorMsg: null,
     }
   },
-  created () {
+  mounted () {
     if(this.occurrence.state.toUpperCase() == 'APPROVED') {
       this.$axios.$get(`api/mock/insuranceCompanies/name/${this.occurrence.insuranceCompanyName}/repairers`)
         .then((entrustedRepairers) => {
@@ -122,7 +122,9 @@ export default {
           return
         }
         //Without need for approval
-        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.insuranceRepairer}/assign`)
+        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.insuranceRepairer}/assign`, {
+          description: 'http://localhost:3000/repairers/occurrences/'+this.occurrence.id
+        })
           .then(()=>{
             this.$router.push('/clients/insurances')
             this.$toast.success('Request made!').goAway(3000)

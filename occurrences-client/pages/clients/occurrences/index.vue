@@ -43,6 +43,8 @@
         <Occurrence :occurrence="occurrence" :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"></Occurrence>
       </div>
 
+      <Paginate :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
+
     </div>
   </div>
 
@@ -53,6 +55,7 @@
 <script>
 import Occurrence from "~/pages/clients/components/Occurrence.vue";
 import Unauthorized from "@/pages/components/Unauthorized";
+import Paginate from "@/pages/components/Paginate";
 export default {
   mounted() {
     this.$socket.on('occurrenceApproved', () => {
@@ -77,6 +80,7 @@ export default {
     })
   },
   components: {
+    Paginate,
     Unauthorized,
     Occurrence
   },
@@ -87,20 +91,42 @@ export default {
       coverageToFilter: "",
       occurrenceStates: [],
       occurrenceCoverages: [],
-      allDocuments: []
+      allDocuments: [],
+      currentPage: 1,
+      totalCount: 1,
+      perPage: 10,
+      pageCount: 1
+    }
+  },
+  watch: {
+    currentPage(newPage) {
+      this.fetchOccurrences(newPage)
     }
   },
   created () {
-    this.fetchOccurrences()
+    this.fetchOccurrences(1)
   },
   methods: {
+    updateCurrentPage(currentPage){
+      if(currentPage!=null) {
+        this.currentPage = currentPage
+      }
+    },
     hasDocuments(occurrence_id){
       return this.allDocuments.map(oc => oc.occurrence_id).indexOf(occurrence_id) !== -1
     },
-    fetchOccurrences() {
-      this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences`)
+    fetchOccurrences(currentPage) {
+      if(!currentPage){
+        currentPage = 1
+      }
+
+      this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences?page=${currentPage}`)
       .then((occurrences) => {
-        this.occurrences = occurrences
+        console.log(occurrences)
+        this.totalCount = occurrences.metadata.totalCount
+        this.perPage = occurrences.metadata.count
+        this.pageCount = occurrences.metadata.pageCount
+        this.occurrences = occurrences.data
 
         this.occurrences.forEach(occurrence => {
           if(this.occurrenceStates.indexOf(occurrence.state) === -1){

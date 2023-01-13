@@ -108,8 +108,7 @@ export default {
 }
 
 .login-page{
-  padding: 80px 320px;
+  padding: 5% 20%;
 }
-
 
 </style>
