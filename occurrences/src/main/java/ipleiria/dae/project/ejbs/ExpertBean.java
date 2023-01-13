@@ -123,7 +123,7 @@ public class ExpertBean {
         occurrence.setFinalDate(finalDateStr);
 
         // Get Occurrence Description
-        String[] descriptionReceived = occurrence.getDescription().split("&");
+        String[] descriptionReceived = description.split("&");
 
         if(descriptionReceived.length != 2){
             throw new IllegalArgumentException("Occurrence description is not valid");
@@ -133,7 +133,7 @@ public class ExpertBean {
         String occurrenceDescription = descriptionReceived[1];
 
         // Build Occurrence Description
-        String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
+        String newOccurrenceDescription = occurrence.getDescription() + "\n[" + expert.getUsername() + "]: " + occurrenceDescription;
         occurrence.setDescription(newOccurrenceDescription);
 
         // Send Email to Client
@@ -168,7 +168,7 @@ public class ExpertBean {
             occurrence.setState(State.APPROVED);
 
             // Get Occurrence Description
-            String[] descriptionReceived = occurrence.getDescription().split("&");
+            String[] descriptionReceived = description.split("&");
 
             if(descriptionReceived.length != 2){
                 throw new IllegalArgumentException("Occurrence description is not valid");
@@ -178,7 +178,7 @@ public class ExpertBean {
             String occurrenceDescription = descriptionReceived[1];
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
+            String newOccurrenceDescription = occurrence.getDescription() + "\n[" + expert.getUsername() + "]: " + occurrenceDescription;
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send Email to Client
@@ -295,7 +295,7 @@ public class ExpertBean {
             occurrence.setState(State.REPAIRER_WAITING_LIST);
 
             // Get Occurrence Description
-            String[] descriptionReceived = occurrence.getDescription().split("&");
+            String[] descriptionReceived = description.split("&");
 
             if(descriptionReceived.length != 2){
                 throw new IllegalArgumentException("Occurrence description is not valid");
@@ -305,7 +305,7 @@ public class ExpertBean {
             String occurrenceDescription = descriptionReceived[1];
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
+            String newOccurrenceDescription = occurrence.getDescription() + "\n[" + expert.getUsername() + "]: " + occurrenceDescription;
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send Email to Repairer about being accepted to repair the occurrence
@@ -347,7 +347,7 @@ public class ExpertBean {
             occurrence.setState(State.APPROVED);
 
             // Get Occurrence Description
-            String[] descriptionReceived = occurrence.getDescription().split("&");
+            String[] descriptionReceived = description.split("&");
 
             if(descriptionReceived.length != 2){
                 throw new IllegalArgumentException("Occurrence description is not valid");
@@ -357,7 +357,7 @@ public class ExpertBean {
             String occurrenceDescription = descriptionReceived[1];
 
             // Build Occurrence Description
-            String newOccurrenceDescription = occurrenceDescription + "\n[" + expert.getUsername() + "]: " + description;
+            String newOccurrenceDescription = occurrence.getDescription() + "\n[" + expert.getUsername() + "]: " + occurrenceDescription;
             occurrence.setDescription(newOccurrenceDescription);
 
             // Send Email to Client about the Repairer of the occurrence being rejected by the Expert

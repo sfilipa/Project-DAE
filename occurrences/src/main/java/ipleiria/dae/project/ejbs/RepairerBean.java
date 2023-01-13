@@ -146,7 +146,7 @@ public class RepairerBean {
         }
     }
 
-    public void unassignOccurrence(String username, long occurrenceCode, String link) throws MyEntityNotFoundException, NotAuthorizedException {
+    public void unassignOccurrence(String username, long occurrenceCode) throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             // Find Repairer
             Repairer repairer = find(username);
@@ -154,23 +154,32 @@ public class RepairerBean {
 
             // Find Occurrence
             Occurrence occurrence = em.find(Occurrence.class, occurrenceCode);
-            validateOccurrence(repairer, occurrence, null);
+            validateOccurrenceExists(occurrence);
 
             // Validate if the occurrence is in correct state
             List<State> validStates = new ArrayList<>();
             validStates.add(State.REPAIRER_WAITING_LIST);
             validStates.add(State.WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT);
 
+            validateOccurrenceState(occurrence, validStates);
             validateRepairerIsAssignedToOccurrence(repairer, occurrence);
+
+            State state = occurrence.getState();
+            if(state == State.REPAIRER_WAITING_LIST){
+                // Send email to the repairer that the occurrence is no longer assigned to him
+                emailBean.send(occurrence.getRepairer().getEmail(), "Occurrence " + occurrence.getId() + " started",
+                        "The occurrence " + occurrence.getId() + " was unassigned from you. We're sorry for the inconvenience ");
+            }else{
+                for (Expert e: expertBean.getAllExperts()) {
+                    // Send email to the repairer that the occurrence is no longer assigned to him
+                    emailBean.send(e.getEmail(), "Occurrence " + occurrence.getId() + " started",
+                            "The occurrence " + occurrence.getId() + " was unassigned from " + repairer.getUsername());
+                }
+            }
 
             occurrence.setState(State.APPROVED);
             occurrence.setRepairer(null);
             repairer.removeOccurrence(occurrence);
-
-            // Send email to the repairer that the occurrence is no longer assigned to him
-            emailBean.send(occurrence.getClient().getEmail(), "Occurrence " + occurrence.getId() + " started",
-                    "The occurrence " + occurrence.getId() + " has been started by " + repairer.getUsername() + ".\n"+
-                            "You can see the occurrence at " + link);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());

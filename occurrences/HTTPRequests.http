@@ -5,16 +5,19 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "client1",
+  "username": "expert1",
   "password": "123"
 }
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNjM3NDg5LCJleHAiOjE2NzM2NDEwODl9.S5eXwAdKOAGbnT8pXngmejhKmz_7zGgTVuMWhYUGn-A
+
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNjM3NDYzLCJleHAiOjE2NzM2NDEwNjN9.zBhTl8GeyTxiSgAO7wS0s2hX_2LM_NgMj_ADDwDPCHk
 
 ##### Get Occurrences
 GET http://localhost:8080/occurrences/api/occurrences
 Accept: application/json
 
 ##### Get Occurrences By Insurance Company Name
-GET http://localhost:8080/occurrences/api/occurrences/insuranceCompany/Allianz
+GET http://localhost:8080/occurrences/api/occurrences/insuranceCompany/Fidelidade?page=1
 Accept: application/json
 
 ##### Get Occurrence Details
@@ -172,12 +175,13 @@ GET http://localhost:8080/occurrences/api/experts/expert2
 Accept: application/json
 
 ### Assign expert to occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/2/assign
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNjExNDgxLCJleHAiOjE2NzM2MTUwODF9.33nsqxedz1nejgmOETBS0c78TJMV36FHowcdm5xfgVA
+PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/assign
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNjM3NDg5LCJleHAiOjE2NzM2NDEwODl9.S5eXwAdKOAGbnT8pXngmejhKmz_7zGgTVuMWhYUGn-A
 Content-Type: application/json
 
 ### Unassign expert from occurrence
-PATCH http://localhost:8080/occurrences/api/experts/expert2/occurrences/1/unassign
+PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/unassign
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNjM3NDg5LCJleHAiOjE2NzM2NDEwODl9.S5eXwAdKOAGbnT8pXngmejhKmz_7zGgTVuMWhYUGn-A
 Content-Type: application/json
 
 ### Expert Disapprove Occurrence
@@ -190,26 +194,35 @@ Content-Type: application/json
 
 ### Expert Approve Occurrence
 PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/approve
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNTY0NzczLCJleHAiOjE2NzM1NjgzNzN9.VrJP5XLdkjlTKWNhMdJss6IMNVBby_L3yHJA7RpAISM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNjM3NDg5LCJleHAiOjE2NzM2NDEwODl9.S5eXwAdKOAGbnT8pXngmejhKmz_7zGgTVuMWhYUGn-A
 Content-Type: application/json
 
 {
-  "description": "The problem seems to be with..."
+  "description": "link&The problem seems to be with..."
 }
 
 ### Client assigns Repairer to Occurrence
 PATCH http://localhost:8080/occurrences/api/clients/client1/occurrences/1/repairer1/assign
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNTY0ODM1LCJleHAiOjE2NzM1Njg0MzV9.WEnUvtBvu5kC1Xbujc1ggCJb72eeEk8SceDK3ArKEwQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNjM3NDYzLCJleHAiOjE2NzM2NDEwNjN9.zBhTl8GeyTxiSgAO7wS0s2hX_2LM_NgMj_ADDwDPCHk
 Content-Type: application/json
 
 {
-  "description": "The problem seems to be with..."
+  "description": "link"
 }
+
+### Client unassigns Repairer from Occurrence
+PATCH http://localhost:8080/occurrences/api/clients/client1/occurrences/1/repairer1/unassign
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQxIiwiaWF0IjoxNjczNjM3NDYzLCJleHAiOjE2NzM2NDEwNjN9.zBhTl8GeyTxiSgAO7wS0s2hX_2LM_NgMj_ADDwDPCHk
+
 
 ### Expert Approves Repairer
 PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/acceptRepairer
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNTY0NzczLCJleHAiOjE2NzM1NjgzNzN9.VrJP5XLdkjlTKWNhMdJss6IMNVBby_L3yHJA7RpAISM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJleHBlcnQxIiwiaWF0IjoxNjczNjM3NDg5LCJleHAiOjE2NzM2NDEwODl9.S5eXwAdKOAGbnT8pXngmejhKmz_7zGgTVuMWhYUGn-A
 Content-Type: application/json
+
+{
+  "description": "link&expert approved repairer"
+}
 
 ### Expert Disapproves Repairer
 PATCH http://localhost:8080/occurrences/api/experts/expert1/occurrences/1/rejectRepairer
