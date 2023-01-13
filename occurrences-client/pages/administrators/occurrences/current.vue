@@ -37,7 +37,7 @@
           </option>
         </b-select>
 
-        <span class="me-4 ms-5">Filter by Coverage Type</span>
+        <span class="me-4 ms-4">Filter by Coverage Type</span>
         <b-select class="form-select filter-select" v-model="coverageToFilter">
           <option value="">Select a Coverage Type</option>
           <option v-for="coverage in occurrenceCoverages" :value="coverage">
@@ -166,17 +166,6 @@ export default {
 </script>
 <style scoped>
 
-.filter-select {
-  width: 27%;
-  display: inline-block;
-}
-
-.filters-div {
-  background-color: #313030;
-  padding: 14px;
-  color: white;
-}
-
 .administrator-regist-btn:hover {
   background-color: red !important;
   color: white !important;
@@ -194,6 +183,50 @@ export default {
   border: 1px solid black;
   border-radius: 0px;
   width: 14rem;
+}
+
+.filter-select{
+  width: 27%;
+  display: inline-block;
+}
+
+.filters-div{
+  background-color: #313030;
+  padding: 14px;
+  color: white;
+}
+
+@media only screen and (max-width: 1300px) {
+  .filter-select{
+    width: 24%;
+  }
+}
+
+@media only screen and (max-width: 1100px) {
+  .filter-select{
+    width: 22%;
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .filters-div{
+    font-size: 14px;
+  }
+
+  .filters-div div{
+    display: block !important;
+  }
+
+  .filters-div span{
+    width: 25% !important;
+    display: inline-block;
+    margin: 1rem 0;
+  }
+
+  .filter-select{
+    width: 60%;
+    font-size: 14px;
+  }
 }
 
 </style>

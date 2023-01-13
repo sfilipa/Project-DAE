@@ -61,7 +61,7 @@
           <p class="occurrence-field"><span class="occurrence-label">Object Insured:</span> <span> {{this.occurrence.objectInsured}} </span></p>
           <p class="occurrence-field"><span class="occurrence-label">Coverage Type:</span>  <span> {{ this.occurrence.coverageType }} </span> </p>
           <p class="occurrence-field" style="height: auto; display: flex">
-            <span class="occurrence-label" style="width: 35%">Description:</span>  <span style="white-space: pre; overflow: auto"> {{this.occurrence.description}} </span>
+            <span class="occurrence-label" style="width: 30%">Description:</span>  <span style="white-space: pre; overflow: auto"> {{this.occurrence.description}} </span>
           </p>
           <p class="occurrence-field"><span class="occurrence-label">Entry Date:</span> {{this.occurrence.entryDate}}</p>
           <p class="occurrence-field"><span class="occurrence-label">Final Date:</span> {{this.occurrence.finalDate ? this.occurrence.finalDate:'---'}}</p>
@@ -108,7 +108,7 @@
           </b-form>
 
           <div style="text-align: center; margin: 2rem 0;">
-            <div v-if="!isAssigned && !hasParticipated &&
+            <div v-if="!this.isAssigned() && !this.hasParticipated() &&
                     occurrence.state!=='REPAIRER_WAITING_LIST' &&
                     occurrence.state!=='ACTIVE' &&
                     occurrence.state!=='FAILED' &&
@@ -117,7 +117,7 @@
                     occurrence.insuranceCompanyName === this.company_username">
               <button  class="btn btn-associate-repairers" @click="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>
             </div>
-            <div v-else-if="!hasParticipated &&
+            <div v-else-if="!this.hasParticipated() &&
                         occurrence.state!=='REPAIRER_WAITING_LIST' &&
                         occurrence.state!=='ACTIVE' &&
                         occurrence.state!=='FAILED' &&
@@ -155,8 +155,6 @@ export default {
       waitingRefresh: false,
       descriptionApprovePending: null,
       approveOrDisapprove: "",
-      isAssigned: null,
-      hasParticipated: false,
       company_username: null,
       documents: []
     }
@@ -165,10 +163,6 @@ export default {
     this.$axios.get(`api/occurrences/${this.$route.params.id}`)
       .then((response)=>{
         this.occurrence = response.data
-        this.isAssigned = this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
-        if(this.isAssigned){
-          this.hasParticipated = true
-        }
 
         this.$axios.$get(`api/documents/${this.occurrence.id}/exists`)
           .then((response)=> {
@@ -185,8 +179,6 @@ export default {
       .then((response) => {
         this.company_username = response.company_username;
       })
-
-
   },
   computed: {
     invalidDescriptionFeedback () {
@@ -213,6 +205,12 @@ export default {
     }
   },
   methods: {
+    hasParticipated(){
+      return this.occurrence.description.includes(this.$auth.user.username)
+    },
+    isAssigned(){
+      return this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
+    },
     onSubmit() {
       this.$auth.loginWith('local', {
         data: {
@@ -256,8 +254,6 @@ export default {
         this.$axios.get(`api/occurrences/${this.$route.params.id}`)
           .then((response)=>{
             this.occurrence = response.data
-            this.isAssigned = this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
-            this.hasParticipated = true
           })
         this.$socket.emit('occurrenceApproved', this.occurrence.usernameClient);
       })
@@ -275,8 +271,6 @@ export default {
         this.$axios.get(`api/occurrences/${this.$route.params.id}`)
           .then((response)=>{
             this.occurrence = response.data
-            this.isAssigned = this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
-            this.hasParticipated = true
           })
         this.$socket.emit('occurrenceDisapproved', this.occurrence.usernameClient);
       })
@@ -293,8 +287,6 @@ export default {
         this.$axios.get(`api/occurrences/${this.$route.params.id}`)
           .then((response)=>{
             this.occurrence = response.data
-            this.isAssigned = this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
-            this.hasParticipated = true
           })
         const users = {
           usernameClient: this.occurrence.usernameClient,
@@ -316,8 +308,6 @@ export default {
         this.$axios.get(`api/occurrences/${this.$route.params.id}`)
           .then((response)=>{
             this.occurrence = response.data
-            this.isAssigned = this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
-            this.hasParticipated = true
           })
         this.$socket.emit('occurrenceRepairerDisapproved', this.occurrence.usernameClient);
       })
@@ -329,7 +319,6 @@ export default {
           this.$axios.get(`api/occurrences/${this.$route.params.id}`)
             .then((response)=>{
               this.occurrence = response.data
-              this.isAssigned = true
             })
         })
     },
@@ -340,7 +329,6 @@ export default {
           this.$axios.get(`api/occurrences/${this.$route.params.id}`)
             .then((response)=>{
               this.occurrence = response.data
-              this.isAssigned = false
             })
         })
     },

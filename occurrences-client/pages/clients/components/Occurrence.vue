@@ -151,15 +151,7 @@ export default {
     },
     unassignRepairer(){
       this.waitingResponse = true
-      let descriptionURl = ''
-      if(this.occurrence.state === 'REPAIRER_WAITING_LIST'){
-        descriptionURl = 'http://localhost:3000/repairers/occurrences/'+this.occurrence.id
-      }else if(this.occurrence.state === 'WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT'){
-        descriptionURl = 'http://localhost:3000/experts/occurrences/'+this.occurrence.id
-      }
-      this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.occurrence.usernameRepairer}/unassign`, {
-        description: descriptionURl
-      })
+      this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.occurrence.usernameRepairer}/unassign`)
         .then(()=>{
           this.$router.push('/clients/insurances')
           this.$toast.success('Request made!').goAway(3000)

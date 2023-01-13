@@ -35,7 +35,6 @@
         <div v-for="occurrence in occurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
           <Occurrence :occurrence="occurrence"
                       :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
-                      :isAssigned="isAssigned(occurrence.id)"
                       :waitingRefresh="waitingRefresh"
                       :current-page="currentPage"
                       @updateOccurrences="updateOccurrences"></Occurrence>
@@ -74,7 +73,6 @@ export default {
   data () {
     return {
       occurrences: null,
-      occurrencesAssigned: [],
       waitingRefresh: false,
       stateToFilter: "",
       coverageToFilter: "",
@@ -84,7 +82,8 @@ export default {
       currentPage: 1,
       totalCount: 1,
       perPage: 10,
-      pageCount: 1
+      pageCount: 1,
+      company_username: null
     }
   },
   watch: {
@@ -93,16 +92,17 @@ export default {
     }
   },
   created () {
-    this.updateOccurrences(1)
+    this.$axios.$get(`/api/experts/${this.$auth.user.username}`)
+      .then((response) => {
+        this.company_username = response.company_username;
+        this.updateOccurrences(1)
+      })
   },
   methods: {
     updateCurrentPage(currentPage){
       if(currentPage!=null) {
         this.currentPage = currentPage
       }
-    },
-    isAssigned(occurrence_id){
-      return this.occurrencesAssigned.map(object => object.id).indexOf(occurrence_id) !== -1
     },
     updateOccurrences(currentPage){
       this.waitingRefresh = true
@@ -114,18 +114,13 @@ export default {
         this.currentPage = 1
       }
 
-
-      this.$axios.$get(`/api/occurrences?page=${currentPage}`)
+      this.$axios.$get(`api/occurrences/insuranceCompany/${this.company_username}?page=${currentPage}`)
         .then((occurrences) => {
           this.totalCount = occurrences.metadata.totalCount
           this.perPage = occurrences.metadata.count
           this.pageCount = occurrences.metadata.pageCount
           this.occurrences = occurrences.data
-          this.$axios.$get(`/api/experts/${this.$auth.user.username}/occurrences/assigned`)
-            .then((occurrencesAssigned) => {
-              this.occurrencesAssigned = occurrencesAssigned.data
-              this.waitingRefresh = false
-            })
+
           this.occurrences.forEach(occurrence => {
             if(this.occurrenceStates.indexOf(occurrence.state) === -1){
               this.occurrenceStates.push(occurrence.state)
@@ -151,6 +146,8 @@ export default {
                 }
               })
           })
+
+          this.waitingRefresh = false
         })
     },
     hasDocuments(occurrence_id){
