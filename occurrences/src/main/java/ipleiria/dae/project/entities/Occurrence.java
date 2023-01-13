@@ -87,12 +87,10 @@ public class Occurrence implements Serializable {
     private List<Document> documents;
     @ManyToMany(mappedBy = "occurrences", fetch = FetchType.EAGER)
     private List<Expert> experts;
-    private Blob documentsBlob;
 
     public Occurrence() {
         documents = new LinkedList<>();
         experts = new LinkedList<>();
-        documentsBlob = null;
     }
 
     public Occurrence(String entryDate, String objectInsured, String description, Insurance insurance, CoverageType coverageType, State state, Client client) {
@@ -106,7 +104,6 @@ public class Occurrence implements Serializable {
         this.client = client;
         documents = new LinkedList<>();
         experts = new LinkedList<>();
-        documentsBlob = null;
     }
 
     public long getId() {
@@ -235,12 +232,4 @@ public class Occurrence implements Serializable {
         this.documents.remove(document);
     }
 
-    public void setDocumentsBlob(Blob documentsBlob) {
-        this.documentsBlob = documentsBlob;
-        documents = null;
-    }
-
-    public Blob getDocumentsBlob() {
-        return documentsBlob;
-    }
 }

@@ -1,6 +1,5 @@
 package ipleiria.dae.project.ejbs;
 
-import ipleiria.dae.project.entities.Client;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.enumerators.State;
@@ -16,6 +15,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +28,7 @@ public class ExpertBean {
     @EJB
     private EmailBean emailBean;
     @EJB
-    private BlobBean blobBean;
+    private ZipFilesBean zipFilesBean;
     @Inject
     private Hasher hasher;
 
@@ -101,7 +101,7 @@ public class ExpertBean {
         em.remove(expert);
     }
 
-    public void disapproveOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException {
+    public void disapproveOccurrence(String username, long occurrenceCode, String description) throws MyEntityNotFoundException, NotAuthorizedException, IOException {
         // Find Expert
         Expert expert = find(username);
         validateExpertExists(expert);
@@ -140,7 +140,7 @@ public class ExpertBean {
         sendDisapprovalEmail(occurrence, expert, newOccurrenceDescription, link);
 
         // Transform Documents into a Blob
-        blobBean.storeOccurrenceDocumentsBlobInDb(occurrence);
+        zipFilesBean.compressDocuments(occurrence);
     }
 
     private void sendDisapprovalEmail(Occurrence occurrence, Expert expert, String newOccurrenceDescription, String link) {

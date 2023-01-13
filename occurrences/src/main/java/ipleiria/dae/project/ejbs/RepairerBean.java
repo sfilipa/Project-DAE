@@ -1,6 +1,5 @@
 package ipleiria.dae.project.ejbs;
 
-import ipleiria.dae.project.entities.Document;
 import ipleiria.dae.project.entities.Expert;
 import ipleiria.dae.project.entities.Occurrence;
 import ipleiria.dae.project.entities.Repairer;
@@ -10,9 +9,7 @@ import ipleiria.dae.project.exceptions.MyEntityExistsException;
 import ipleiria.dae.project.exceptions.MyEntityNotFoundException;
 import ipleiria.dae.project.exceptions.NotAuthorizedException;
 import ipleiria.dae.project.security.Hasher;
-import org.apache.poi.hpsf.Blob;
 import org.hibernate.Hibernate;
-import org.json.JSONArray;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -20,10 +17,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
-import javax.sql.rowset.serial.SerialBlob;
 import java.io.*;
-import java.sql.SQLException;
-import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,7 +36,7 @@ public class RepairerBean {
     @EJB
     private ExpertBean expertBean;
     @EJB
-    private BlobBean blobBean;
+    private ZipFilesBean zipFilesBean;
 
     public List<Repairer> getAllRepairers() {
         return (List<Repairer>) em.createNamedQuery("getAllRepairers").getResultList();
@@ -239,10 +233,12 @@ public class RepairerBean {
                             "\nYou can see the occurrence at " + link);
 
             // Transform Documents into a Blob
-            blobBean.storeOccurrenceDocumentsBlobInDb(occurrence);
+            zipFilesBean.compressDocuments(occurrence);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -286,10 +282,12 @@ public class RepairerBean {
                             "\nYou can see the occurrence at " + link);
 
             // Transform Documents into a Blob
-            blobBean.storeOccurrenceDocumentsBlobInDb(occurrence);
+            zipFilesBean.compressDocuments(occurrence);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

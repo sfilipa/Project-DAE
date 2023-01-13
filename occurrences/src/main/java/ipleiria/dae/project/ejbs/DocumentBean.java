@@ -68,6 +68,15 @@ public class DocumentBean {
         return document;
     }
 
+    public void update(long id, String filepath, String filename, Occurrence occurrence) {
+        var document = find(id);
+        if (document == null) {
+            throw new MyEntityNotFoundException("Document not found");
+        }
+        document.setFilepath(filepath);
+        document.setFilename(filename);
+    }
+
     public List<Document> getOccurenceDocuments(long occurenceId) {
         return em.createNamedQuery("getOccurenceDocuments", Document.class).setParameter("id", occurenceId).getResultList();
     }
@@ -254,4 +263,8 @@ public class DocumentBean {
             }
         }
     }
+
+
+
+
 }

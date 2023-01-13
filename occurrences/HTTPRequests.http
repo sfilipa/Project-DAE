@@ -5,7 +5,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "client1",
+  "username": "repairer1",
   "password": "123"
 }
 
@@ -73,28 +73,49 @@ Content-Type: application/json
 
 ###DOCUMENTS
 ### Add Documents to occurrency
-POST http://localhost:8080/occurrences/api/documents/1 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNDcwODMwLCJleHAiOjE2NzM0NzQ0MzB9.1m64jE-1zb1cgN06eUCb-dlmgfshEStnGuQdMw-_q_E
+POST http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM2NTQxMzEsImV4cCI6MTY3MzY1NzczMX0.1M3o1HvRF-iVwTgxYBPofRpHDdhWsmnclq-r5JFud9w
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="file"; filename="occurrences.csv"
+Content-Disposition: form-data; name="file"; filename="occurrences_a_active.csv"
 
-< C:\Users\sfili\Desktop\occurrences.csv
+< C:\dev\occurrences_a_active.csv
+
+--boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="occurrences_a_pending.csv"
+
+< C:\dev\occurrences_a_pending.csv
 
 --boundary
 
 ### Excell
 POST http://localhost:8080/occurrences/api/documents/uploadOccurrencesFromFile HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNDcwODMwLCJleHAiOjE2NzM0NzQ0MzB9.1m64jE-1zb1cgN06eUCb-dlmgfshEStnGuQdMw-_q_E
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM2NTQxMzEsImV4cCI6MTY3MzY1NzczMX0.1M3o1HvRF-iVwTgxYBPofRpHDdhWsmnclq-r5JFud9w
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
-Content-Disposition: form-data; name="file"; filename="occurrences.csv"
+Content-Disposition: form-data; name="file"; filename="occurrences_a_active.csv"
 
-< C:\Users\sfili\Desktop\occurrences.csv
+< C:\dev\occurrences_a_active.csv
 
 --boundary
+
+
+### Excell
+POST http://localhost:8080/occurrences/api/documents/uploadOccurrencesFromFile HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM2NTA0MDcsImV4cCI6MTY3MzY1NDAwN30.SVttTU1rGe7oIOp3wmpThn0aa5iNL1TD3D5myVT1NQI
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="occurrences_a_pending.csv"
+
+< C:\dev\occurrences_a_pending.csv
+
+--boundary
+
 
 ### Gets documents of occurrency with id = 2
 GET http://localhost:8080/occurrences/api/documents/1 HTTP/1.1
@@ -102,16 +123,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczN
 Content-Type: application/x-www-form-urlencoded
 
 ###Download documents with id=1
-GET http://localhost:8080/occurrences/api/documents/download/12 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczNDMyMzU0LCJleHAiOjE2NzM0MzU5NTR9.4jC7QZ0QTYxFkg5iMQ4Yw76uipTTkCEAVnhgSjoZ7Sg
+GET http://localhost:8080/occurrences/api/documents/download/1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM2NTQxMzEsImV4cCI6MTY3MzY1NzczMX0.1M3o1HvRF-iVwTgxYBPofRpHDdhWsmnclq-r5JFud9w
 Content-Type: application/x-www-form-urlencoded
 
 ###See if occurrency with id = 2 has documents
 GET http://localhost:8080/occurrences/api/documents/1/exists HTTP/1.1
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczMzY3NjIzLCJleHAiOjE2NzMzNzEyMjN9.4G4h_l14WhJdVWOMgDqANLBKhE7qXGfKD09fof1eizk
 Content-Type: application/x-www-form-urlencoded
-
-
 
 ### Create Expert
 POST http://localhost:8080/occurrences/api/experts
@@ -226,10 +245,11 @@ Content-Type: application/json
 
 ### Repairer Fails Occurrence
 PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/2/fail
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM2NTQxMzEsImV4cCI6MTY3MzY1NzczMX0.1M3o1HvRF-iVwTgxYBPofRpHDdhWsmnclq-r5JFud9w
 Content-Type: application/json
 
 {
-  "description": "Found a problem could not be fixed because..."
+  "description": "jdklfjdkf&Found a problem could not be fixed because..."
 }
 
 ### Repairer Finishes Occurrence
