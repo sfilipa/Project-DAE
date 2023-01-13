@@ -63,7 +63,7 @@ export default {
 
 .page-item{
   float: left;
-  padding: 0.4rem 0.8rem;
+  padding: 0.4rem 5%;
   background-color: white;
   cursor: pointer;
   border-radius: 0;

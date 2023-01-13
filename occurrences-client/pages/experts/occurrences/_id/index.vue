@@ -1,5 +1,5 @@
 <template>
-  <!--  Login-->
+<!--  Login-->
   <div v-if="this.$auth.user === null || !this.$auth.user.role">
     <b-container class="login-page">
       <h3 class="text-center mb-4">Please sign in first</h3>
@@ -35,8 +35,8 @@
     </b-container>
   </div>
 
-  <!--  Occurrence Details-->
-  <b-container v-else-if="this.role === 'repairer' || this.$auth.user.role.toLowerCase()==='repairer'">
+<!--  Occurrence Details-->
+  <b-container v-else-if="this.role === 'expert' || this.$auth.user.role.toLowerCase()==='expert'">
     <div v-if="this.occurrence === null" class="spinner-div">
       <div class="spinner-border"></div>
     </div>
@@ -81,22 +81,50 @@
             </div>
           </div>
 
-          <b-form @submit.prevent="onSubmitDescription" :disabled="!isFormValid" v-if="occurrence.state.toLowerCase() === 'active' && isAssigned">
-            <p class="fw-bold">Appointments: </p>
+          <b-form @submit.prevent="onSubmitDescription" :disabled="!isFormValid"
+                  v-if="occurrence.state.toLowerCase() === 'pending' && isAssigned">
+            <p class="fw-bold">Appointments on Occurrence: </p>
             <b-form-group :invalid-feedback="invalidDescriptionFeedback" :state="isDescriptionValid">
               <b-textarea :state="isDescriptionValid" class="form-control" style="margin-bottom: 20px;" placeholder="Enter some thoughts on your decision" v-model="descriptionApprovePending" required/>
             </b-form-group>
 
             <div style="display: flex">
-              <button type="submit" value="fail" class="btn btn-active-occurrence" @click="fail(occurrence.id)">Fail</button>
-              <button type="submit" value="finish" class="btn btn-active-occurrence" @click="finish(occurrence.id)" style="margin-left: auto" >Finish</button>
+              <button type="submit" value="disapprove" class="btn btn-approve-occurrence" @click="disapprove(occurrence.id)">Disapprove</button>
+              <button type="submit" value="approve" class="btn btn-approve-occurrence" @click="approve(occurrence.id)" style="margin-left: auto" >Approve</button>
             </div>
           </b-form>
 
-          <div style="text-align: center;">
-            <div v-if="isAssigned &&
-                        occurrence.state==='REPAIRER_WAITING_LIST'">
-              <button  class="btn btn-repairer-button" @click.prevent="start(occurrence.id)" :disabled="waitingRefresh">Start</button>
+          <b-form @submit.prevent="onSubmitDescription" :disabled="!isFormValid"
+                  v-if="occurrence.state.toLowerCase() === 'waiting_for_approval_of_repairer_by_expert' && isAssigned">
+            <p class="fw-bold">Appointments on Repairer: </p>
+            <b-form-group :invalid-feedback="invalidDescriptionFeedback" :state="isDescriptionValid">
+              <b-textarea :state="isDescriptionValid" class="form-control" style="margin-bottom: 20px;" placeholder="Enter some thoughts on your decision" v-model="descriptionApprovePending" required/>
+            </b-form-group>
+
+            <div style="display: flex">
+              <button type="submit" value="disapprove" class="btn btn-approve-occurrence" @click="rejectRepairer(occurrence.id)">Reject</button>
+              <button type="submit" value="approve" class="btn btn-approve-occurrence" @click="acceptRepairer(occurrence.id)" style="margin-left: auto" >Accept</button>
+            </div>
+          </b-form>
+
+          <div style="text-align: center; margin: 2rem 0;">
+            <div v-if="!isAssigned && !hasParticipated &&
+                    occurrence.state!=='REPAIRER_WAITING_LIST' &&
+                    occurrence.state!=='ACTIVE' &&
+                    occurrence.state!=='FAILED' &&
+                    occurrence.state!=='RESOLVED' &&
+                    occurrence.state!=='DISAPPROVED' &&
+                    occurrence.insuranceCompanyName === this.company_username">
+              <button  class="btn btn-associate-repairers" @click="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>
+            </div>
+            <div v-else-if="!hasParticipated &&
+                        occurrence.state!=='REPAIRER_WAITING_LIST' &&
+                        occurrence.state!=='ACTIVE' &&
+                        occurrence.state!=='FAILED' &&
+                        occurrence.state!=='RESOLVED' &&
+                        occurrence.state!=='DISAPPROVED' &&
+                        occurrence.insuranceCompanyName === this.company_username">
+              <button class="btn btn-associate-repairers" @click="unassign(occurrence.id)" :disabled="waitingRefresh">Unassign</button>
             </div>
           </div>
 
@@ -126,16 +154,21 @@ export default {
       role: null,
       waitingRefresh: false,
       descriptionApprovePending: null,
+      approveOrDisapprove: "",
       isAssigned: null,
+      hasParticipated: false,
+      company_username: null,
       documents: []
     }
   },
   mounted() {
     this.$axios.get(`api/occurrences/${this.$route.params.id}`)
       .then((response)=>{
-        console.log(response.data.usernameRepairer)
         this.occurrence = response.data
-        this.isAssigned = (this.occurrence.usernameRepairer === this.$auth.user.username)
+        this.isAssigned = this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
+        if(this.isAssigned){
+          this.hasParticipated = true
+        }
 
         this.$axios.$get(`api/documents/${this.occurrence.id}/exists`)
           .then((response)=> {
@@ -148,6 +181,12 @@ export default {
             }
           })
       })
+    this.$axios.$get(`/api/experts/${this.$auth.user.username}`)
+      .then((response) => {
+        this.company_username = response.company_username;
+      })
+
+
   },
   computed: {
     invalidDescriptionFeedback () {
@@ -181,22 +220,22 @@ export default {
           password: this.password
         }
       })
-        .then(() => {
-          if(this.$auth.user.role.toLowerCase() === 'repairer') {
-            this.role = this.$auth.user.role.toLowerCase()
-            this.$toast.success('You are logged in!').goAway(3000)
-            this.$router.push(`/repairers/occurrences/${this.occurrence.id}`)
-          }else{
-            this.$auth.logout()
-            this.onReset()
-            this.$toast.error('Only repairers allowed').goAway(3000)
-          }
-        })
-        .catch(({ response: err }) => {
-          this.errorMsg = err.data
+      .then(() => {
+        if(this.$auth.user.role.toLowerCase() === 'expert') {
+          this.role = this.$auth.user.role.toLowerCase()
+          this.$toast.success('You are logged in!').goAway(3000)
+          this.$router.push(`/experts/occurrences/${this.occurrence.id}`)
+        }else{
+          this.$auth.logout()
           this.onReset()
-          this.$toast.error('Only repairers allowed').goAway(3000)
-        })
+          this.$toast.error('Only experts allowed').goAway(3000)
+        }
+      })
+      .catch(({ response: err }) => {
+        this.errorMsg = err.data
+        this.onReset()
+        this.$toast.error('Only experts allowed').goAway(3000)
+      })
     },
     onReset() {
       this.username = null
@@ -205,55 +244,118 @@ export default {
     onSubmitDescription() {
       console.log('teste')
     },
-    start(occurence_id)
-    {
-      this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/start`, {
-        description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id})
-        .then(()=> {
-          this.$toast.success('Occurrence started!').goAway(3000)
-          this.$axios.get(`api/occurrences/${this.$route.params.id}`)
-            .then((response)=>{
-              this.occurrence = response.data
-            })
-          this.$socket.emit('repairerStartedOccurrence', this.occurrence.usernameClient);
-        })
-    },
-    fail(occurence_id)
+    approve(occurence_id)
     {
       if(this.descriptionApprovePending === null){
         return
       }
-
-      this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/fail`, {
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/approve`, {
         description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending
+      }).then(()=> {
+        this.descriptionApprovePending = "";
+        this.$axios.get(`api/occurrences/${this.$route.params.id}`)
+          .then((response)=>{
+            this.occurrence = response.data
+            this.isAssigned = this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
+            this.hasParticipated = true
+          })
+        this.$socket.emit('occurrenceApproved', this.occurrence.usernameClient);
       })
-        .then(()=> {
-          this.$toast.success('Occurrence failed!').goAway(3000)
-          this.$axios.get(`api/occurrences/${this.$route.params.id}`)
-            .then((response)=>{
-              this.occurrence = response.data
-            })
-          this.$socket.emit('repairerFailedOccurrence', this.occurrence.usernameClient);
-        })
+
     },
-    finish(occurence_id)
+    disapprove(occurence_id)
     {
       if(this.descriptionApprovePending === null){
         return
       }
-
-      this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/finish`, {
-        description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/disapprove`, {
+        description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending}
+      ).then(()=> {
+        this.descriptionApprovePending = "";
+        this.$axios.get(`api/occurrences/${this.$route.params.id}`)
+          .then((response)=>{
+            this.occurrence = response.data
+            this.isAssigned = this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
+            this.hasParticipated = true
+          })
+        this.$socket.emit('occurrenceDisapproved', this.occurrence.usernameClient);
       })
+    },
+    acceptRepairer(occurence_id)
+    {
+      if(this.descriptionApprovePending === null){
+        return
+      }
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/acceptRepairer`, {
+        description: 'http://localhost:3000/repairers/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending
+      }).then(()=> {
+        this.descriptionApprovePending = "";
+        this.$axios.get(`api/occurrences/${this.$route.params.id}`)
+          .then((response)=>{
+            this.occurrence = response.data
+            this.isAssigned = this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
+            this.hasParticipated = true
+          })
+        const users = {
+          usernameClient: this.occurrence.usernameClient,
+          usernameRepairer: this.occurrence.usernameRepairer
+        }
+        this.$socket.emit('occurrenceRepairerApproved', users);
+      })
+
+    },
+    rejectRepairer(occurence_id)
+    {
+      if(this.descriptionApprovePending === null){
+        return
+      }
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/rejectRepairer`, {
+        description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending}
+      ).then(()=> {
+        this.descriptionApprovePending = "";
+        this.$axios.get(`api/occurrences/${this.$route.params.id}`)
+          .then((response)=>{
+            this.occurrence = response.data
+            this.isAssigned = this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
+            this.hasParticipated = true
+          })
+        this.$socket.emit('occurrenceRepairerDisapproved', this.occurrence.usernameClient);
+      })
+    },
+    assign(occurence_id)
+    {
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/assign`)
         .then(()=> {
-          this.$toast.success('Occurrence finished!').goAway(3000)
           this.$axios.get(`api/occurrences/${this.$route.params.id}`)
             .then((response)=>{
               this.occurrence = response.data
+              this.isAssigned = true
             })
-          this.$socket.emit('repairerFinishedOccurrence', this.occurrence.usernameClient);
         })
     },
+    unassign(occurence_id)
+    {
+      this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/unassign`)
+        .then(()=> {
+          this.$axios.get(`api/occurrences/${this.$route.params.id}`)
+            .then((response)=>{
+              this.occurrence = response.data
+              this.isAssigned = false
+            })
+        })
+    },
+    downloadDocument(documentToDownload){
+      this.$axios.$get(`api/documents/download/${documentToDownload.id}`, { responseType:
+          'arraybuffer'})
+        .then(file => {
+          const url = window.URL.createObjectURL(new Blob([file]))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', documentToDownload.filename)
+          document.body.appendChild(link)
+          link.click()
+        })
+    }
   }
 }
 </script>
@@ -305,12 +407,12 @@ export default {
   opacity: 1;
 }
 
-.btn-active-occurrence:hover{
+.btn-approve-occurrence:hover{
   background-color: red !important;
   color: white !important;
 }
 
-.btn-active-occurrence{
+.btn-approve-occurrence{
   border: 1px solid black;
   width: 45%;
   height: 2.5rem;
@@ -318,15 +420,16 @@ export default {
   background-color: white;
 }
 
-.btn-repairer-button:hover{
+.btn-associate-repairers:hover{
   background-color: red !important;
   color: white !important;
 }
 
-.btn-repairer-button{
+.btn-associate-repairers{
   border: 1px solid black;
+  width: fit-content;
   height: 3rem;
-  width: 10rem;
+  align-self: self-end;
   background-color: white;
 }
 
