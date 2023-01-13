@@ -150,11 +150,11 @@ public class RepairerService {
             throw new ForbiddenException(username + ", You are not allowed to access this resource");
         }
 
+        var count = repairerBean.countAssignedOccurrences(username);
         var offset = pageRequest.getOffset();
         var limit = pageRequest.getLimit();
 
         var occurrences = repairerBean.getRepairerAssignedOccurrences(limit, pageRequest.getPage(), username);
-        var count = occurrences.size();
 
         if (offset > count) {
             return Response.ok(new PaginatedDTOs<>(count)).build();

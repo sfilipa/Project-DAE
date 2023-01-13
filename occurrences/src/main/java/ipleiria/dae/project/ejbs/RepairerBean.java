@@ -361,4 +361,15 @@ public class RepairerBean {
                 .setMaxResults(limit)
                 .getResultList();
     }
+
+    public Long countAssignedOccurrences(String username) {
+        Repairer repairer = find(username);
+        if(repairer == null){
+            throw new MyEntityNotFoundException("Client not found");
+        }
+
+        return em.createNamedQuery("countRepairerOccurrences", Long.class)
+                .setParameter("repairer", repairer)
+                .getSingleResult();
+    }
 }

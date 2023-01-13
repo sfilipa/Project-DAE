@@ -459,4 +459,15 @@ public class ExpertBean {
                 .setMaxResults(limit)
                 .getResultList();
     }
+
+    public Long countAssignedOccurrences(String username) {
+        Expert expert = find(username);
+        if(expert == null){
+            throw new MyEntityNotFoundException("Client not found");
+        }
+
+        return em.createNamedQuery("countExpertOccurrences", Long.class)
+                .setParameter("username", username)
+                .getSingleResult();
+    }
 }

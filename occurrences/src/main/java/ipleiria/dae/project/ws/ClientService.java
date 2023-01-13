@@ -137,11 +137,11 @@ public class ClientService {
     @RolesAllowed({"Client"})
     @Path("{username}/occurrences")
     public Response getClientOccurrences(@PathParam("username") String username, @BeanParam @Valid PageRequest pageRequest){
+        var count = clientBean.countOccurrences(username);
         var offset = pageRequest.getOffset();
         var limit = pageRequest.getLimit();
 
         var occurrences = clientBean.getClientOccurrences(limit, pageRequest.getPage(), username);
-        var count = occurrences.size();
 
         if (offset > count) {
             return Response.ok(new PaginatedDTOs<>(count)).build();
