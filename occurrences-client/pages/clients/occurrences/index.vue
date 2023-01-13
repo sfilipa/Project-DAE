@@ -52,7 +52,11 @@
                       []"></Occurrence>
       </div>
 
-      <Paginate v-if="pageCount>1" :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
+      <Paginate :page-count="pageCount"
+                :current-page="currentPage"
+                :active-limit="activeLimit"
+                @updateLimit="updateLimit"
+                @updateCurrentPage="updateCurrentPage"></Paginate>
 
     </div>
   </div>
@@ -105,6 +109,7 @@ export default {
       totalCount: 1,
       perPage: 10,
       pageCount: 1,
+      activeLimit: 10,
       otherRepairersPerInsurance: [],
       entrustedRepairersPerInsurance: []
     }
@@ -112,12 +117,18 @@ export default {
   watch: {
     currentPage(newPage) {
       this.fetchOccurrences(newPage)
+    },
+    activeLimit() {
+      this.fetchOccurrences(null)
     }
   },
   created () {
     this.fetchOccurrences(1)
   },
   methods: {
+    updateLimit(newLimit){
+      this.activeLimit = newLimit
+    },
     updateCurrentPage(currentPage){
       if(currentPage!=null) {
         this.currentPage = currentPage
@@ -132,14 +143,12 @@ export default {
         this.currentPage = 1
       }
 
-      this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences?page=${currentPage}`)
+      this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences?limit=${this.activeLimit}&page=${currentPage}`)
       .then((occurrences) => {
         this.totalCount = occurrences.metadata.totalCount
         this.perPage = occurrences.metadata.count
         this.pageCount = occurrences.metadata.pageCount
         this.occurrences = occurrences.data
-
-        console.log(this.occurrences)
 
         this.allDocuments = []
         this.entrustedRepairersPerInsurance = []

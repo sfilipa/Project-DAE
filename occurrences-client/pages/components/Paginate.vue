@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex; flex-direction: row;">
-    <div style="margin: auto; width: 27%;">
+    <div class="page-buttons">
       <ul style="list-style-type: none; width: 100%; margin: auto; ">
         <li>
           <button class="btn page-item" style="border-radius: 10px 0 0 10px;" @click="$emit('updateCurrentPage',1);">
@@ -40,21 +40,59 @@
         </li>
       </ul>
     </div>
+
+    <div class="limit-buttons">
+      <div style="margin-left: auto">
+        <span>Per Page: &nbsp;</span>
+        <button class="btn btn-limit" :class="{'btn-limit-active': this.activeLimit === 10}" @click.prevent="$emit('updateLimit', 10)">10</button>
+        <button class="btn btn-limit" :class="{'btn-limit-active': this.activeLimit === 20}" @click.prevent="$emit('updateLimit', 20)">20</button>
+        <button class="btn btn-limit" :class="{'btn-limit-active': this.activeLimit === 50}" @click.prevent="$emit('updateLimit', 50)">50</button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: "Paginate",
-  props: ['currentPage', 'pageCount'],
-  emits: ['updateCurrentPage']
+  props: ['currentPage', 'pageCount', 'activeLimit'],
+  emits: ['updateCurrentPage', 'updateLimit'],
 }
 </script>
 
 <style scoped>
+
+.page-buttons{
+  margin-left: auto;
+  width: 30%;
+}
+
+.limit-buttons{
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-self: end
+}
+
+.btn-limit-active{
+  background-color: red !important;
+  color: white !important;
+}
+
+.btn-limit:hover{
+  background-color: #e3e3e3;
+}
+
+.btn-limit{
+  background-color: white;
+  border-radius: 0;
+  width: 2.8rem;
+  margin: 0 5px;
+}
+
 .active{
   color: white !important;
-  background-color: #ff5b5b !important;
+  background-color: red !important;
 }
 
 .page-item:hover{
@@ -69,5 +107,27 @@ export default {
   border-radius: 0;
   border: 0.1px solid #c8c8c8;
   border-right: 0;
+}
+
+@media only screen and (max-width: 1300px) {
+  .limit-buttons{
+    width: 40%;
+  }
+}
+
+@media only screen and (max-width: 800px) {
+  .limit-buttons{
+    width: 50%;
+  }
+}
+
+@media only screen and (max-width: 790px) {
+  .limit-buttons{
+    width: 50%;
+  }
+
+  .page-buttons{
+    width: 40%;
+  }
 }
 </style>

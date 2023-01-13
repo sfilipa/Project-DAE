@@ -40,7 +40,11 @@
                       @updateOccurrences="updateOccurrences"></Occurrence>
         </div>
 
-        <Paginate v-if="pageCount>1" :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
+        <Paginate :page-count="pageCount"
+                  :current-page="currentPage"
+                  :active-limit="activeLimit"
+                  @updateLimit="updateLimit"
+                  @updateCurrentPage="updateCurrentPage"></Paginate>
       </div>
     </div>
   </b-container>
@@ -78,18 +82,25 @@ export default {
       currentPage: 1,
       totalCount: 1,
       perPage: 10,
-      pageCount: 1
+      pageCount: 1,
+      activeLimit: 10,
     }
   },
   watch: {
     currentPage(newPage) {
       this.updateOccurrences(newPage)
+    },
+    activeLimit() {
+      this.updateOccurrences(null)
     }
   },
   created () {
     this.updateOccurrences(1)
   },
   methods: {
+    updateLimit(newLimit){
+      this.activeLimit = newLimit
+    },
     updateCurrentPage(currentPage){
       if(currentPage!=null) {
         this.currentPage = currentPage
@@ -105,7 +116,7 @@ export default {
         this.currentPage = 1
       }
 
-      this.$axios.$get(`/api/occurrences?page=${currentPage}`)
+      this.$axios.$get(`/api/occurrences?limit=${this.activeLimit}&page=${currentPage}`)
         .then((occurrences) => {
           this.totalCount = occurrences.metadata.totalCount
           this.perPage = occurrences.metadata.count
