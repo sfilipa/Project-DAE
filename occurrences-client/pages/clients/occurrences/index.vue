@@ -40,10 +40,23 @@
       </div>
 
       <div v-for="occurrence in occurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
-        <Occurrence :occurrence="occurrence" :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"></Occurrence>
+        <Occurrence :occurrence="occurrence"
+                    :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
+                    :entrustedRepairers="
+                    entrustedRepairersPerInsurance.map(obj => obj.insurance).indexOf(occurrence.insuranceCompanyName) !==-1 ?
+                    entrustedRepairersPerInsurance.find(obj => obj.insurance === occurrence.insuranceCompanyName).repairers :
+                      []"
+                    :otherRepairers="
+                    otherRepairersPerInsurance.map(obj => obj.insurance).indexOf(occurrence.insuranceCompanyName) !==-1 ?
+                    otherRepairersPerInsurance.find(obj => obj.insurance === occurrence.insuranceCompanyName).repairers :
+                      []"></Occurrence>
       </div>
 
-      <Paginate :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
+      <Paginate :page-count="pageCount"
+                :current-page="currentPage"
+                :active-limit="activeLimit"
+                @updateLimit="updateLimit"
+                @updateCurrentPage="updateCurrentPage"></Paginate>
 
     </div>
   </div>
@@ -95,18 +108,27 @@ export default {
       currentPage: 1,
       totalCount: 1,
       perPage: 10,
-      pageCount: 1
+      pageCount: 1,
+      activeLimit: 10,
+      otherRepairersPerInsurance: [],
+      entrustedRepairersPerInsurance: []
     }
   },
   watch: {
     currentPage(newPage) {
       this.fetchOccurrences(newPage)
+    },
+    activeLimit() {
+      this.fetchOccurrences(null)
     }
   },
   created () {
     this.fetchOccurrences(1)
   },
   methods: {
+    updateLimit(newLimit){
+      this.activeLimit = newLimit
+    },
     updateCurrentPage(currentPage){
       if(currentPage!=null) {
         this.currentPage = currentPage
@@ -118,15 +140,19 @@ export default {
     fetchOccurrences(currentPage) {
       if(!currentPage){
         currentPage = 1
+        this.currentPage = 1
       }
 
-      this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences?page=${currentPage}`)
+      this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences?limit=${this.activeLimit}&page=${currentPage}`)
       .then((occurrences) => {
-        console.log(occurrences)
         this.totalCount = occurrences.metadata.totalCount
         this.perPage = occurrences.metadata.count
         this.pageCount = occurrences.metadata.pageCount
         this.occurrences = occurrences.data
+
+        this.allDocuments = []
+        this.entrustedRepairersPerInsurance = []
+        this.otherRepairersPerInsurance = []
 
         this.occurrences.forEach(occurrence => {
           if(this.occurrenceStates.indexOf(occurrence.state) === -1){
@@ -140,7 +166,6 @@ export default {
           this.$axios.$get(`api/documents/${occurrence.id}/exists`)
             .then((response)=> {
               if (response) {
-                this.allDocuments = []
                 this.$axios.$get(`api/documents/${occurrence.id}`)
                   .then((response) => {
                     this.allDocuments.push(
@@ -152,6 +177,36 @@ export default {
                   })
               }
             })
+
+          if(occurrence.state.toUpperCase() == 'APPROVED') {
+            this.$axios.$get(`api/mock/insuranceCompanies/name/${occurrence.insuranceCompanyName}/repairers`)
+              .then((entrustedRepairers) => {
+                if (this.entrustedRepairersPerInsurance.map(obj => obj.insurance).indexOf(occurrence.insuranceCompanyName) === -1) {
+                  this.entrustedRepairersPerInsurance.push(
+                    {
+                      insurance: occurrence.insuranceCompanyName,
+                      repairers: entrustedRepairers
+                    }
+                  )
+                }
+
+                this.$axios.$get(`api/repairers`)
+                  .then((repairers) => {
+
+                    if (this.otherRepairersPerInsurance.map(obj => obj.insurance).indexOf(occurrence.insuranceCompanyName) === -1) {
+                      this.otherRepairersPerInsurance.push(
+                        {
+                          insurance: occurrence.insuranceCompanyName,
+                          repairers: repairers.filter(function (rep) {
+                            return !entrustedRepairers.includes(rep.username)
+                          })
+                        }
+                      )
+                    }
+
+                  })
+              })
+          }
         })
       })
     }

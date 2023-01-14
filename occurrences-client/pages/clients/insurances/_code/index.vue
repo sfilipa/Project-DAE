@@ -171,11 +171,20 @@
               <span class="me-4 ms-5">Filter by Coverage Type</span>
               <b-select class="form-select filter-select" v-model="coverageToFilter">
                 <option value="">Select a Coverage Type</option>
-                <option v-for="coverage in this.$route.params.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
+                <option v-for="coverage in this.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
               </b-select>
             </div>
             <div v-for="occurrence in getOnGoingOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
-              <Occurrence :occurrence="occurrence" :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"></Occurrence>
+              <Occurrence :occurrence="occurrence"
+                          :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
+                          :entrustedRepairers="
+                          entrustedRepairersPerInsurance.map(obj => obj.insurance).indexOf(occurrence.insuranceCompanyName) !==-1 ?
+                          entrustedRepairersPerInsurance.find(obj => obj.insurance === occurrence.insuranceCompanyName).repairers :
+                            []"
+                          :otherRepairers="
+                          otherRepairersPerInsurance.map(obj => obj.insurance).indexOf(occurrence.insuranceCompanyName) !==-1 ?
+                          otherRepairersPerInsurance.find(obj => obj.insurance === occurrence.insuranceCompanyName).repairers :
+                            []"></Occurrence>
             </div>
           </div>
         </div>
@@ -199,11 +208,20 @@
               <span class="me-4 ms-5">Filter by Coverage Type:</span>
               <b-select class="form-select filter-select" v-model="coverageToFilter">
                 <option value="">Select a Coverage Type</option>
-                <option v-for="coverage in this.$route.params.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
+                <option v-for="coverage in this.insurance.covers" :value="coverage"> {{coverage.charAt(0).toUpperCase() + coverage.split('_').join(' ').slice(1).toLowerCase() }} </option>
               </b-select>
             </div>
             <div v-for="occurrence in getCompletedOccurrences().filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))">
-              <Occurrence :occurrence="occurrence" :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"></Occurrence>
+              <Occurrence :occurrence="occurrence"
+                          :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
+                          :entrustedRepairers="
+                          entrustedRepairersPerInsurance.map(obj => obj.insurance).indexOf(occurrence.insuranceCompanyName) !==-1 ?
+                          entrustedRepairersPerInsurance.find(obj => obj.insurance === occurrence.insuranceCompanyName).repairers :
+                          []"
+                          :otherRepairers="
+                          otherRepairersPerInsurance.map(obj => obj.insurance).indexOf(occurrence.insuranceCompanyName) !==-1 ?
+                          otherRepairersPerInsurance.find(obj => obj.insurance === occurrence.insuranceCompanyName).repairers :
+                          []"></Occurrence>
             </div>
           </div>
         </div>
@@ -274,7 +292,10 @@ export default {
       allDocuments: [],
       stateToFilter: "",
       coverageToFilter: "",
-      occurrenceStates: []
+      occurrenceStates: [],
+      entrustedRepairersPerInsurance: [],
+      otherRepairersPerInsurance: []
+
     }
   },
   mounted() {
@@ -302,7 +323,7 @@ export default {
       }
       let descriptionLen = this.description.length
       if (descriptionLen < 3 || descriptionLen > 255) {
-        return 'The password must be between [3, 255] characters.'
+        return 'The description must be between [3, 255] characters.'
       }
       return ''
     },
@@ -338,15 +359,15 @@ export default {
     },
   },
   created () {
-    this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences`)
+    this.$axios.$get(`/api/clients/${this.$auth.user.username}/occurrences?limit=1000`)
       .then((occurrences) => {
         if(!this.$route.params.code){
-          this.occurrences = occurrences
+          this.occurrences = occurrences.data
           return
         }
 
         const codeParams = this.$route.params.code
-        this.occurrences = occurrences.filter(function(oc){
+        this.occurrences = occurrences.data.filter(function(oc){
           return oc.insuranceCode === codeParams
         })
 
@@ -368,6 +389,36 @@ export default {
                     })
                 }
               })
+
+          if(occurrence.state.toUpperCase() == 'APPROVED') {
+            this.$axios.$get(`api/mock/insuranceCompanies/name/${occurrence.insuranceCompanyName}/repairers`)
+              .then((entrustedRepairers) => {
+                if (this.entrustedRepairersPerInsurance.map(obj => obj.insurance).indexOf(occurrence.insuranceCompanyName) === -1) {
+                  this.entrustedRepairersPerInsurance.push(
+                    {
+                      insurance: occurrence.insuranceCompanyName,
+                      repairers: entrustedRepairers
+                    }
+                  )
+                }
+
+                this.$axios.$get(`api/repairers`)
+                  .then((repairers) => {
+
+                    if (this.otherRepairersPerInsurance.map(obj => obj.insurance).indexOf(occurrence.insuranceCompanyName) === -1) {
+                      this.otherRepairersPerInsurance.push(
+                        {
+                          insurance: occurrence.insuranceCompanyName,
+                          repairers: repairers.filter(function (rep) {
+                            return !entrustedRepairers.includes(rep.username)
+                          })
+                        }
+                      )
+                    }
+
+                  })
+              })
+          }
         })
       })
 
@@ -408,9 +459,9 @@ export default {
           // Socket Emit Occurrence Created
           this.$socket.emit('occurrenceCreated');
 
-          if(this.documents.length === 0) {
+          if(!this.documents || this.documents.length === 0) {
+            this.$router.push('/clients/occurrences')
             this.waitingResponse = false
-            return
           }
 
           // Upload documents
@@ -425,6 +476,9 @@ export default {
             })
             .catch(({response: err}) => {
               this.errorMsg = err.data
+              if(!this.documents || this.documents.length === 0){
+                return
+              }
               this.$toast.error('Documents couldn\'t be uploaded').goAway(3000)
               this.waitingResponse = false
             })

@@ -46,12 +46,16 @@
       <div v-for="occurrence in assignedOccurrences.filter(oc => (stateToFilter.length === 0 || oc.state === stateToFilter) && (coverageToFilter.length === 0 || oc.coverageType === coverageToFilter))" >
         <Occurrence :occurrence="occurrence"
                     :documents="hasDocuments(occurrence.id) ? allDocuments.find(oc => oc.occurrence_id === occurrence.id).documents : []"
-                    :isAssigned="true"
                     :waitingRefresh="waitingRefresh"
+                    :current-page="currentPage"
                     @updateOccurrences="updateOccurrences"></Occurrence>
       </div>
 
-      <Paginate :page-count="pageCount" :current-page="currentPage" @updateCurrentPage="updateCurrentPage"></Paginate>
+      <Paginate :page-count="pageCount"
+                :current-page="currentPage"
+                :active-limit="activeLimit"
+                @updateLimit="updateLimit"
+                @updateCurrentPage="updateCurrentPage"></Paginate>
     </div>
   </div>
 
@@ -81,18 +85,25 @@ export default {
       currentPage: 1,
       totalCount: 1,
       perPage: 10,
-      pageCount: 1
+      pageCount: 1,
+      activeLimit: 10,
     }
   },
   watch: {
     currentPage(newPage) {
-      this.fetchOccurrences(newPage)
+      this.updateOccurrences(newPage)
+    },
+    activeLimit() {
+      this.updateOccurrences(null)
     }
   },
   created () {
     this.updateOccurrences(1)
   },
   methods: {
+    updateLimit(newLimit){
+      this.activeLimit = newLimit
+    },
     updateCurrentPage(currentPage){
       if(currentPage!=null) {
         this.currentPage = currentPage
@@ -105,9 +116,10 @@ export default {
 
       if(!currentPage){
         currentPage = 1
+        this.currentPage = 1
       }
 
-      this.$axios.$get(`/api/repairers/${this.$auth.user.username}/occurrences/assigned?page=${currentPage}`)
+      this.$axios.$get(`/api/repairers/${this.$auth.user.username}/occurrences/assigned?limit=${this.activeLimit}&page=${currentPage}`)
         .then((assignedOccurrences) => {
           this.totalCount = assignedOccurrences.metadata.totalCount
           this.perPage = assignedOccurrences.metadata.count

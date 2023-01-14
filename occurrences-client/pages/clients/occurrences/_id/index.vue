@@ -1,5 +1,5 @@
 <template>
-  <!--  Login-->
+<!--  Login-->
   <div v-if="this.$auth.user === null || !this.$auth.user.role">
     <b-container class="login-page">
       <h3 class="text-center mb-4">Please sign in first</h3>
@@ -35,8 +35,8 @@
     </b-container>
   </div>
 
-  <!--  Occurrence Details-->
-  <b-container v-else-if="this.role === 'repairer' || this.$auth.user.role.toLowerCase()==='repairer'">
+<!--  Occurrence Details-->
+  <b-container v-else-if="this.role === 'client' || this.$auth.user.role.toLowerCase()==='client'">
     <div v-if="this.occurrence === null" class="spinner-div">
       <div class="spinner-border"></div>
     </div>
@@ -44,12 +44,12 @@
     <div v-else>
       <nuxt-link
         class="btn pb-3 pr-5 text-uppercase"
-        :to="`/`">
+        :to="`/clients/occurrences`">
         <div>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
           </svg>
-          &nbsp; Back to HomePage
+          &nbsp; Back to Occurrences
         </div>
       </nuxt-link>
 
@@ -61,7 +61,7 @@
           <p class="occurrence-field"><span class="occurrence-label">Object Insured:</span> <span> {{this.occurrence.objectInsured}} </span></p>
           <p class="occurrence-field"><span class="occurrence-label">Coverage Type:</span>  <span> {{ this.occurrence.coverageType }} </span> </p>
           <p class="occurrence-field" style="height: auto; display: flex">
-            <span class="occurrence-label" style="width: 35%">Description:</span>  <span style="white-space: pre; overflow: auto"> {{this.occurrence.description}} </span>
+            <span class="occurrence-label" style="width: 30%">Description:</span>  <span style="white-space: pre; overflow: auto"> {{this.occurrence.description}} </span>
           </p>
           <p class="occurrence-field"><span class="occurrence-label">Entry Date:</span> {{this.occurrence.entryDate}}</p>
           <p class="occurrence-field"><span class="occurrence-label">Final Date:</span> {{this.occurrence.finalDate ? this.occurrence.finalDate:'---'}}</p>
@@ -81,26 +81,37 @@
             </div>
           </div>
 
-          <b-form @submit.prevent="onSubmitDescription" :disabled="!isFormValid" v-if="occurrence.state.toLowerCase() === 'active' && isAssigned">
-            <p class="fw-bold">Appointments: </p>
-            <b-form-group :invalid-feedback="invalidDescriptionFeedback" :state="isDescriptionValid">
-              <b-textarea :state="isDescriptionValid" class="form-control" style="margin-bottom: 20px;" placeholder="Enter some thoughts on your decision" v-model="descriptionApprovePending" required/>
-            </b-form-group>
+          <div v-if="occurrence.state.toUpperCase() == 'APPROVED'">
+            <hr>
+            <div class="repair-row">
+              <div class="repair-column" style="width: 65%;">
+                <p >Select an entrusted Repair Service</p>
+                <p style="margin-bottom: 0;">Or solicitate a Repair Service (needs approval)
+                  <input :disabled="otherRepairers == null || otherRepairers.length==0" v-model="checked" class="checkbox form-check-input" type="checkbox" id="other" name="other" value="other"></p>
+              </div>
 
-            <div style="display: flex">
-              <button type="submit" value="fail" class="btn btn-active-occurrence" @click="fail(occurrence.id)">Fail</button>
-              <button type="submit" value="finish" class="btn btn-active-occurrence" @click="finish(occurrence.id)" style="margin-left: auto" >Finish</button>
+              <div class="repair-column flex-grow-1" style="padding: 0 5%">
+                <span v-if="entrustedRepairers == null" style="margin-left: 2px">---</span>
+                <span v-else-if="entrustedRepairers.length==0" style="margin-left: 2px">No entrusted repairers available</span>
+                <select v-else class="form-select mb-2"  v-model="insuranceRepairer" @focus="errorMsg = null" :disabled="checked">
+                  <option disabled value="">Select Entrusted Repairer</option>
+                  <option v-for="repairerService in this.entrustedRepairers">{{repairerService}}</option>
+                </select>
+                <div class="repair-row">
+                  <span v-if="otherRepairers == null" style="margin-left: 2px" >---</span>
+                  <span v-else-if="otherRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
+                  <select v-else class="form-select mb-2" v-model="solicitedRepairer" @focus="errorMsg = null" :disabled="!checked">
+                    <option disabled value="">Select Solicited Repairer</option>
+                    <option v-for="repairerService in otherRepairers">{{repairerService.username}}</option>
+                  </select>
+                </div>
+              </div>
             </div>
-          </b-form>
-
-          <div style="text-align: center;">
-            <div v-if="isAssigned &&
-                        occurrence.state==='REPAIRER_WAITING_LIST'">
-              <button  class="btn btn-repairer-button" @click.prevent="start(occurrence.id)" :disabled="waitingRefresh">Start</button>
+            <p class="text-danger text-center select-repairer-error-msg" v-show="errorMsg">{{ errorMsg }}</p>
+            <div class="repair-column" style="align-items: center">
+              <button class="btn btn-associate-repairers select-repairer-error-msg"  @click.prevent="associateRepairer" :disabled="waitingResponse">Assign Repairer</button>
             </div>
           </div>
-
-
         </div>
       </div>
     </div>
@@ -127,15 +138,19 @@ export default {
       waitingRefresh: false,
       descriptionApprovePending: null,
       isAssigned: null,
-      documents: []
+      documents: [],
+      entrustedRepairers: [],
+      otherRepairers: [],
+      checked: false,
+      insuranceRepairer: "",
+      solicitedRepairer: "",
+      waitingResponse: false,
     }
   },
   mounted() {
     this.$axios.get(`api/occurrences/${this.$route.params.id}`)
       .then((response)=>{
-        console.log(response.data.usernameRepairer)
         this.occurrence = response.data
-        this.isAssigned = (this.occurrence.usernameRepairer === this.$auth.user.username)
 
         this.$axios.$get(`api/documents/${this.occurrence.id}/exists`)
           .then((response)=> {
@@ -147,6 +162,21 @@ export default {
                 })
             }
           })
+
+        if(this.occurrence.state.toUpperCase() === 'APPROVED') {
+          this.$axios.$get(`api/mock/insuranceCompanies/name/${this.occurrence.insuranceCompanyName}/repairers`)
+            .then((entrustedRepairers) => {
+              this.entrustedRepairers = []
+              this.entrustedRepairers = entrustedRepairers
+              this.$axios.$get(`api/repairers`)
+                .then((repairers) => {
+                  this.otherRepairers = []
+                  this.otherRepairers = repairers.filter(function (rep) {
+                    return !entrustedRepairers.includes(rep.username)
+                  })
+                })
+            })
+        }
       })
   },
   computed: {
@@ -181,78 +211,73 @@ export default {
           password: this.password
         }
       })
-        .then(() => {
-          if(this.$auth.user.role.toLowerCase() === 'repairer') {
-            this.role = this.$auth.user.role.toLowerCase()
-            this.$toast.success('You are logged in!').goAway(3000)
-            this.$router.push(`/repairers/occurrences/${this.occurrence.id}`)
-          }else{
-            this.$auth.logout()
-            this.onReset()
-            this.$toast.error('Only repairers allowed').goAway(3000)
-          }
-        })
-        .catch(({ response: err }) => {
-          this.errorMsg = err.data
+      .then(() => {
+        if(this.$auth.user.role.toLowerCase() === 'client') {
+          this.role = this.$auth.user.role.toLowerCase()
+          this.$toast.success('You are logged in!').goAway(3000)
+          this.$router.push(`/clients/occurrences/${this.occurrence.id}`)
+        }else{
+          this.$auth.logout()
           this.onReset()
-          this.$toast.error('Only repairers allowed').goAway(3000)
-        })
+          this.$toast.error('Only clients allowed').goAway(3000)
+        }
+      })
+      .catch(({ response: err }) => {
+        this.errorMsg = err.data
+        this.onReset()
+        this.$toast.error('Only clients allowed').goAway(3000)
+      })
     },
     onReset() {
       this.username = null
       this.password = null
     },
-    onSubmitDescription() {
-      console.log('teste')
-    },
-    start(occurence_id)
-    {
-      this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/start`, {
-        description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id})
-        .then(()=> {
-          this.$toast.success('Occurrence started!').goAway(3000)
-          this.$axios.get(`api/occurrences/${this.$route.params.id}`)
-            .then((response)=>{
-              this.occurrence = response.data
-            })
-          this.$socket.emit('repairerStartedOccurrence', this.occurrence.usernameClient);
+    associateRepairer(){
+      this.waitingResponse = true
+      //Enviar mail ao repairer com o link api/occurrences/{id}
+      if(!this.checked){
+        if(this.insuranceRepairer === ""){
+          this.errorMsg = "Select an entrusted repairer first"
+          this.waitingResponse = false
+          return
+        }
+        //Without need for approval
+        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.insuranceRepairer}/assign`, {
+          description: 'http://localhost:3000/repairers/occurrences/'+this.occurrence.id
         })
-    },
-    fail(occurence_id)
-    {
-      if(this.descriptionApprovePending === null){
-        return
-      }
+          .then(()=>{
+            this.$router.push('/clients/insurances')
+            this.$toast.success('Request made!').goAway(3000)
+            this.waitingResponse = false
 
-      this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/fail`, {
-        description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending
-      })
-        .then(()=> {
-          this.$toast.success('Occurrence failed!').goAway(3000)
-          this.$axios.get(`api/occurrences/${this.$route.params.id}`)
-            .then((response)=>{
-              this.occurrence = response.data
-            })
-          this.$socket.emit('repairerFailedOccurrence', this.occurrence.usernameClient);
+            // Emit event to repairer
+            this.$socket.emit('repairerAssignedWithoutNeedForApproval', this.insuranceRepairer);
+          })
+          .catch(()=>{
+            this.waitingResponse = false
+          })
+      }else{
+        if(this.solicitedRepairer === ""){
+          this.errorMsg = "Select a solicitated repairer first"
+          this.waitingResponse = false
+          return
+        }
+        //With need of approval - for expert
+        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.solicitedRepairer}/assign`, {
+          description: 'http://localhost:3000/experts/occurrences/'+this.occurrence.id
         })
-    },
-    finish(occurence_id)
-    {
-      if(this.descriptionApprovePending === null){
-        return
-      }
+          .then(()=>{
+            this.$router.push('/clients/insurances')
+            this.$toast.success('Request made!').goAway(3000)
+            this.waitingResponse = false
 
-      this.$axios.$patch(`/api/repairers/${this.$auth.user.username}/occurrences/${occurence_id}/finish`, {
-        description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending
-      })
-        .then(()=> {
-          this.$toast.success('Occurrence finished!').goAway(3000)
-          this.$axios.get(`api/occurrences/${this.$route.params.id}`)
-            .then((response)=>{
-              this.occurrence = response.data
-            })
-          this.$socket.emit('repairerFinishedOccurrence', this.occurrence.usernameClient);
-        })
+            // Emit event to expert
+            this.$socket.emit('repairerAssignedNeedsApproval');
+          })
+          .catch(()=>{
+            this.waitingResponse = false
+          })
+      }
     },
   }
 }
@@ -260,6 +285,16 @@ export default {
 
 <style scoped>
 
+.repair-column{
+  display: flex;
+  flex-direction: column;
+}
+
+.repair-row{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 
 .document-link{
   cursor: pointer;
@@ -305,29 +340,17 @@ export default {
   opacity: 1;
 }
 
-.btn-active-occurrence:hover{
+.btn-associate-repairers:hover{
   background-color: red !important;
   color: white !important;
 }
 
-.btn-active-occurrence{
+.btn-associate-repairers{
   border: 1px solid black;
-  width: 45%;
-  height: 2.5rem;
-  align-self: self-end;
-  background-color: white;
-}
-
-.btn-repairer-button:hover{
-  background-color: red !important;
-  color: white !important;
-}
-
-.btn-repairer-button{
-  border: 1px solid black;
+  width: fit-content;
   height: 3rem;
-  width: 10rem;
   background-color: white;
+  margin-top: 2rem;
 }
 
 .btn-reset:hover{
@@ -371,7 +394,7 @@ export default {
 
 .occurrence-body-div{
   margin: auto;
-  width: 55%;
+  width: 65%;
   margin-bottom: 2rem;
 }
 

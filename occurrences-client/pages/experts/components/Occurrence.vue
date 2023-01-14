@@ -7,14 +7,14 @@
       <div class="all-occurrences-item-row" style="width: 30%;">
         <p><b>Occurrence {{ occurrence.id }} - Client {{occurrence.usernameClient}}</b></p>
         <p><b>Repairer:</b> {{occurrence.usernameRepairer==undefined ? "not associated" : occurrence.usernameRepairer}}</p>
-        <p style="white-space: pre;"><b>Description:</b> <br>{{ occurrence.description }}</p>
+        <p style="white-space: pre;height: auto;"><b>Description:</b> <span style="overflow: auto; width: inherit; display: inherit;">{{ occurrence.description }}</span></p>
         <p style="margin-bottom: 0;"><b>Entry Date:</b> {{occurrence.entryDate}} &nbsp; </p>
         <p><b>Final Date:</b> {{occurrence.finalDate==undefined?"---":occurrence.finalDate}}</p>
       </div>
 
-      <b-form @submit.prevent="onSubmit" :disabled="!isFormValid" class="flex-grow-1" style="margin: 0 6%"
-              v-if="occurrence.state.toLowerCase() === 'pending' && isAssigned">
-        <p>Appointments on Occurrence: </p>
+      <b-form @submit.prevent="onSubmit" :disabled="!isFormValid" class="flex-grow-1" style="margin: 0 6%; align-self: start"
+              v-if="occurrence.state.toLowerCase() === 'pending' && this.isAssigned()">
+        <p class="fw-bold">Appointments on Occurrence: </p>
         <b-form-group :invalid-feedback="invalidDescriptionFeedback" :state="isDescriptionValid">
           <b-textarea :state="isDescriptionValid" class="form-control" style="margin-bottom: 20px;" placeholder="Enter some thoughts on your decision" v-model="descriptionApprovePending" required/>
         </b-form-group>
@@ -25,9 +25,9 @@
         </div>
       </b-form>
 
-      <b-form @submit.prevent="onSubmit" :disabled="!isFormValid" class="flex-grow-1" style="margin: 0 6%"
+      <b-form @submit.prevent="onSubmit" :disabled="!isFormValid" class="flex-grow-1" style="margin: 0 6%; align-self: start"
               v-if="occurrence.state.toLowerCase() === 'waiting_for_approval_of_repairer_by_expert' && isAssigned">
-        <p>Appointments on Repairer: </p>
+        <p class="fw-bold">Appointments on Repairer: </p>
         <b-form-group :invalid-feedback="invalidDescriptionFeedback" :state="isDescriptionValid">
           <b-textarea :state="isDescriptionValid" class="form-control" style="margin-bottom: 20px;" placeholder="Enter some thoughts on your decision" v-model="descriptionApprovePending" required/>
         </b-form-group>
@@ -40,7 +40,7 @@
 
       <div class="all-occurrences-item-row flex-grow-1" :class="{'all-occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end;">
         <p class="text-uppercase" style="width: 13rem; margin-left: auto;">{{ occurrence.state.split('_').join(' ') }}</p>
-        <div v-if="!isAssigned &&
+        <div v-if="!isAssigned() && !this.hasParticipated() &&
                     occurrence.state!=='REPAIRER_WAITING_LIST' &&
                     occurrence.state!=='ACTIVE' &&
                     occurrence.state!=='FAILED' &&
@@ -49,7 +49,7 @@
                     occurrence.insuranceCompanyName === this.company_username">
           <button  class="btn btn-associate-repairers" @click.prevent="assign(occurrence.id)" :disabled="waitingRefresh">Assign</button>
         </div>
-        <div v-else-if="!isAssigned &&
+        <div v-else-if="!this.hasParticipated() &&
                         occurrence.state!=='REPAIRER_WAITING_LIST' &&
                         occurrence.state!=='ACTIVE' &&
                         occurrence.state!=='FAILED' &&
@@ -59,6 +59,10 @@
           <button class="btn btn-associate-repairers" @click.prevent="unassign(occurrence.id)" :disabled="waitingRefresh">Unassign</button>
         </div>
       </div>
+    </div>
+
+    <div>
+      <nuxt-link :to="{name: `experts-occurrences-id`, params: {id: occurrence.id}}" class="btn btn-check-details">Check Details</nuxt-link>
     </div>
 
     <div v-if="documents.length !== 0">
@@ -81,7 +85,7 @@
 <script>
 export default {
   name: "Occurrence",
-  props: ['occurrence', 'isAssigned', 'waitingRefresh', 'documents'],
+  props: ['occurrence', 'waitingRefresh', 'documents', 'currentPage'],
   emits: ['updateOccurrences'],
   data(){
     return {
@@ -103,7 +107,7 @@ export default {
       }
       let descriptionApprovePendingLen = this.descriptionApprovePending.length
       if (descriptionApprovePendingLen < 3 || descriptionApprovePendingLen > 15) {
-        return 'The username must be between [3, 15] characters.'
+        return 'The description must be between [3, 15] characters.'
       }
       return ''
     },
@@ -121,6 +125,12 @@ export default {
     }
   },
   methods: {
+    hasParticipated(){
+      return this.occurrence.description.includes(this.$auth.user.username)
+    },
+    isAssigned(){
+      return this.occurrence.expertsDTO.map(exp => exp.username).indexOf(this.$auth.user.username) !== -1
+    },
     onSubmit() {
       console.log('teste')
     },
@@ -130,10 +140,10 @@ export default {
         return
       }
       this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/approve`, {
-        description: this.descriptionApprovePending
+        description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending
       }).then(()=> {
         this.descriptionApprovePending = "";
-        this.$emit('updateOccurrences')
+        this.$emit('updateOccurrences', this.currentPage)
         this.$socket.emit('occurrenceApproved', this.occurrence.usernameClient);
       })
 
@@ -144,10 +154,10 @@ export default {
         return
       }
       this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/disapprove`, {
-        description: this.descriptionApprovePending}
+        description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending}
       ).then(()=> {
         this.descriptionApprovePending = "";
-        this.$emit('updateOccurrences')
+        this.$emit('updateOccurrences', this.currentPage)
         this.$socket.emit('occurrenceDisapproved', this.occurrence.usernameClient);
       })
     },
@@ -160,7 +170,7 @@ export default {
         description: 'http://localhost:3000/repairers/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending
       }).then(()=> {
         this.descriptionApprovePending = "";
-        this.$emit('updateOccurrences')
+        this.$emit('updateOccurrences', this.currentPage)
         const users = {
           usernameClient: this.occurrence.usernameClient,
           usernameRepairer: this.occurrence.usernameRepairer
@@ -175,10 +185,10 @@ export default {
         return
       }
       this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/rejectRepairer`, {
-        description: this.descriptionApprovePending}
+        description: 'http://localhost:3000/clients/occurrences/'+this.occurrence.id+'&'+this.descriptionApprovePending}
       ).then(()=> {
         this.descriptionApprovePending = "";
-        this.$emit('updateOccurrences')
+        this.$emit('updateOccurrences', this.currentPage)
         this.$socket.emit('occurrenceRepairerDisapproved', this.occurrence.usernameClient);
       })
     },
@@ -186,14 +196,14 @@ export default {
     {
       this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/assign`)
         .then(()=> {
-          this.$emit('updateOccurrences')
+          this.$emit('updateOccurrences', this.currentPage)
         })
     },
     unassign(occurence_id)
     {
       this.$axios.$patch(`/api/experts/${this.$auth.user.username}/occurrences/${occurence_id}/unassign`)
         .then(()=> {
-          this.$emit('updateOccurrences')
+          this.$emit('updateOccurrences', this.currentPage)
         })
     },
     downloadDocument(documentToDownload){
@@ -213,6 +223,17 @@ export default {
 </script>
 
 <style scoped>
+
+.btn-check-details:hover{
+  border: 1px solid red;
+  color: white !important;
+  background-color: red !important;
+}
+
+.btn-check-details{
+  border: 1px solid black;
+  height: 2.5rem;
+}
 
 .document-link{
   cursor: pointer;

@@ -492,4 +492,20 @@ export default {
 .index-header{
   margin-bottom: 3rem;
 }
+
+@media only screen and (max-width: 1300px) {
+  .profile-body, input{
+    font-size: 15px;
+  }
+
+  .btn-profile-button{
+    width: 10rem;
+    font-size: 15px;
+    height: 2.5rem;
+  }
+
+  .profile-body-div{
+    width: 75%;
+  }
+}
 </style>

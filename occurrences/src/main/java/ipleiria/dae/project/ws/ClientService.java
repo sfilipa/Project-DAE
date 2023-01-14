@@ -219,26 +219,16 @@ public class ClientService {
     @Authenticated
     @RolesAllowed({"Client"})
     @Path("/{clientUsername}/occurrences/{occurrence_code}/{repairerUsername}/unassign")
-    public Response unassignOccurrence(@Context HttpServletRequest request, @PathParam("clientUsername") String clientUsername, @PathParam("repairerUsername") String repairerUsername, @PathParam("occurrence_code") long occurrence_code)
+    public Response unassignOccurrence(@PathParam("clientUsername") String clientUsername, @PathParam("repairerUsername") String repairerUsername, @PathParam("occurrence_code") long occurrence_code)
             throws MyEntityNotFoundException, NotAuthorizedException {
         try {
             if(!securityContext.getUserPrincipal().getName().equals(clientUsername)) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
 
-            // Get the input stream from the request
-            InputStream inputStream = request.getInputStream();
-
-            // Read the message body from the input stream
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(inputStream);
-
-            // Extract the values from the JSON object
-            String link = rootNode.get("description").asText();
-
             clientBean.verifyOccurrenceBelongsToClient(clientUsername, occurrence_code);
 
-            repairerBean.unassignOccurrence(repairerUsername, occurrence_code, link);
+            repairerBean.unassignOccurrence(repairerUsername, occurrence_code);
             return Response.ok().build();
         } catch (MyEntityNotFoundException e) {
             return Response.status(Response.Status.NOT_FOUND)

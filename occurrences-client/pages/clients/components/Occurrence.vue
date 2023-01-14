@@ -25,9 +25,17 @@
         </div>
       </div>
 
-      <div class="occurrences-item-row flex-grow-1" :class="{'occurrences-item-last': occurrence.state == 'Approved'}" style="text-align: end; width: 10rem;">
+      <div class="occurrences-item-row flex-grow-1" style="text-align: end; width: 10rem;">
         <p class="text-uppercase">{{ occurrence.state.split('_').join(' ') }}</p>
+        <div v-if="occurrence.state==='REPAIRER_WAITING_LIST' ||
+                        occurrence.state==='WAITING_FOR_APPROVAL_OF_REPAIRER_BY_EXPERT'">
+          <button class="btn btn-associate-repairers" @click.prevent="unassignRepairer(occurrence.id)" :disabled="waitingResponse">Unassign Repairer</button>
+        </div>
       </div>
+    </div>
+
+    <div>
+      <nuxt-link :to="{name: `clients-occurrences-id`, params: {id: occurrence.id}}" class="btn btn-check-details">Check Details</nuxt-link>
     </div>
 
     <div v-if="this.documents.length !== 0">
@@ -55,18 +63,18 @@
           </div>
 
           <div class="repair-column flex-grow-1" style="padding: 0 5%">
-            <span v-if="entrustedRepairers == null" style="margin-left: 2px">---</span>
-            <span v-else-if="entrustedRepairers.length==0" style="margin-left: 2px">No entrusted repairers available</span>
+            <span v-if="this.entrustedRepairers == null" style="margin-left: 2px">---</span>
+            <span v-else-if="this.entrustedRepairers.length==0" style="margin-left: 2px">No entrusted repairers available</span>
             <select v-else class="form-select mb-2"  v-model="insuranceRepairer" @focus="errorMsg = null" :disabled="checked">
               <option disabled value="">Select Entrusted Repairer</option>
-              <option v-for="repairerService in entrustedRepairers">{{repairerService}}</option>
+              <option v-for="repairerService in this.entrustedRepairers">{{repairerService}}</option>
             </select>
             <div class="repair-row">
-              <span v-if="otherRepairers == null" style="margin-left: 2px" >---</span>
-              <span v-else-if="otherRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
+              <span v-if="this.otherRepairers == null" style="margin-left: 2px" >---</span>
+              <span v-else-if="this.otherRepairers.length==0" style="margin-left: 2px">No other repairers available</span>
               <select v-else class="form-select mb-2" v-model="solicitedRepairer" @focus="errorMsg = null" :disabled="!checked">
                 <option disabled value="">Select Solicited Repairer</option>
-                <option v-for="repairerService in otherRepairers">{{repairerService.username}}</option>
+                <option v-for="repairerService in this.otherRepairers">{{repairerService.username}}</option>
               </select>
             </div>
           </div>
@@ -83,32 +91,14 @@
 <script>
 export default {
   name: "Occurrence",
-  props: ['occurrence', 'documents'],
+  props: ['occurrence', 'documents', 'otherRepairers', 'entrustedRepairers'],
   data(){
     return {
-      entrustedRepairers: null,
-      otherRepairers: null,
       checked: false,
       insuranceRepairer: "",
       solicitedRepairer: "",
       waitingResponse: false,
       errorMsg: null,
-    }
-  },
-  mounted () {
-    if(this.occurrence.state.toUpperCase() == 'APPROVED') {
-      this.$axios.$get(`api/mock/insuranceCompanies/name/${this.occurrence.insuranceCompanyName}/repairers`)
-        .then((entrustedRepairers) => {
-          this.entrustedRepairers = []
-          this.entrustedRepairers = entrustedRepairers
-          this.$axios.$get(`api/repairers`)
-            .then((repairers) => {
-              this.otherRepairers = []
-              this.otherRepairers = repairers.filter(function (rep) {
-                return !entrustedRepairers.includes(rep.username)
-              })
-            })
-        })
     }
   },
   methods: {
@@ -143,7 +133,9 @@ export default {
           return
         }
         //With need of approval - for expert
-        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.solicitedRepairer}/assign`)
+        this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.solicitedRepairer}/assign`, {
+          description: 'http://localhost:3000/experts/occurrences/'+this.occurrence.id
+        })
           .then(()=>{
             this.$router.push('/clients/insurances')
             this.$toast.success('Request made!').goAway(3000)
@@ -156,6 +148,21 @@ export default {
             this.waitingResponse = false
           })
       }
+    },
+    unassignRepairer(){
+      this.waitingResponse = true
+      this.$axios.$patch(`api/clients/${this.$auth.user.username}/occurrences/${this.occurrence.id}/${this.occurrence.usernameRepairer}/unassign`)
+        .then(()=>{
+          this.$router.push('/clients/insurances')
+          this.$toast.success('Request made!').goAway(3000)
+          this.waitingResponse = false
+
+          // Emit event to repairer
+          this.$socket.emit('repairerAssignedWithoutNeedForApproval', this.insuranceRepairer);
+        })
+        .catch(()=>{
+          this.waitingResponse = false
+        })
     },
     downloadDocument(documentToDownload){
       this.$axios.$get(`api/documents/download/${documentToDownload.id}`, { responseType:
@@ -174,6 +181,17 @@ export default {
 </script>
 
 <style scoped>
+
+.btn-check-details:hover{
+  border: 1px solid red;
+  color: white !important;
+  background-color: red !important;
+}
+
+.btn-check-details{
+  border: 1px solid black;
+  height: 2.5rem;
+}
 
 .document-link{
   cursor: pointer;
