@@ -75,7 +75,6 @@ export default {
   watch: {},
   methods: {
     inputDocumentsChanged() {
-      console.log(this.$refs.documents.files)
       this.document = this.$refs.documents.files[0]
     },
     cleanError() {

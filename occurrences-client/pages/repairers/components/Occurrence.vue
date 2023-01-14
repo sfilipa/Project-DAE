@@ -71,8 +71,8 @@ export default {
         return null
       }
       let descriptionApprovePendingLen = this.descriptionApprovePending.length
-      if (descriptionApprovePendingLen < 3 || descriptionApprovePendingLen > 15) {
-        return 'The description must be between [3, 15] characters.'
+      if (descriptionApprovePendingLen < 3 || descriptionApprovePendingLen > 150) {
+        return 'The description must be between [3, 150] characters.'
       }
       return ''
     },
@@ -94,7 +94,7 @@ export default {
       return this.occurrence.usernameRepairer === this.$auth.user.username
     },
     onSubmit() {
-      console.log('teste')
+      return true
     },
     start(occurence_id)
     {
