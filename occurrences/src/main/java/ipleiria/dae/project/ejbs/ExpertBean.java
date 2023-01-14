@@ -140,7 +140,9 @@ public class ExpertBean {
         sendDisapprovalEmail(occurrence, expert, newOccurrenceDescription, link);
 
         //Compress document
-        zipFilesBean.compressDocuments(occurrence);
+        if (occurrence.getDocuments().size() != 0) {
+            zipFilesBean.compressDocuments(occurrence);
+        }
     }
 
     private void sendDisapprovalEmail(Occurrence occurrence, Expert expert, String newOccurrenceDescription, String link) {
