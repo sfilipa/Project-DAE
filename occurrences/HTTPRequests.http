@@ -74,7 +74,7 @@ Content-Type: application/json
 ###DOCUMENTS
 ### Add Documents to occurrency
 POST http://localhost:8080/occurrences/api/documents/2 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM2NTQxMzEsImV4cCI6MTY3MzY1NzczMX0.1M3o1HvRF-iVwTgxYBPofRpHDdhWsmnclq-r5JFud9w
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM3MTE3MDAsImV4cCI6MTY3MzcxNTMwMH0.DtN6Cae4ZTP25srj6-eqdSADhYg6qNmcwVjekb9-nlU
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -93,7 +93,7 @@ Content-Disposition: form-data; name="file"; filename="occurrences_a_pending.csv
 
 ### Excell
 POST http://localhost:8080/occurrences/api/documents/uploadOccurrencesFromFile HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM2NTQxMzEsImV4cCI6MTY3MzY1NzczMX0.1M3o1HvRF-iVwTgxYBPofRpHDdhWsmnclq-r5JFud9w
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM3MDgwNjQsImV4cCI6MTY3MzcxMTY2NH0.AU5o8_vrJ4BX64HLEDZgtUDUGdVEIKLY_RVXeXnUnEg
 Content-Type: multipart/form-data; boundary=boundary
 
 --boundary
@@ -123,8 +123,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjbGllbnQyIiwiaWF0IjoxNjczN
 Content-Type: application/x-www-form-urlencoded
 
 ###Download documents with id=1
-GET http://localhost:8080/occurrences/api/documents/download/1 HTTP/1.1
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM2NTQxMzEsImV4cCI6MTY3MzY1NzczMX0.1M3o1HvRF-iVwTgxYBPofRpHDdhWsmnclq-r5JFud9w
+GET http://localhost:8080/occurrences/api/documents/download/3 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM3MDgwNjQsImV4cCI6MTY3MzcxMTY2NH0.AU5o8_vrJ4BX64HLEDZgtUDUGdVEIKLY_RVXeXnUnEg
 Content-Type: application/x-www-form-urlencoded
 
 ###See if occurrency with id = 2 has documents
@@ -255,7 +255,7 @@ Content-Type: application/json
 
 ### Repairer Fails Occurrence
 PATCH http://localhost:8080/occurrences/api/repairers/repairer1/occurrences/2/fail
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM2NTQxMzEsImV4cCI6MTY3MzY1NzczMX0.1M3o1HvRF-iVwTgxYBPofRpHDdhWsmnclq-r5JFud9w
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJyZXBhaXJlcjEiLCJpYXQiOjE2NzM3MTE3MDAsImV4cCI6MTY3MzcxNTMwMH0.DtN6Cae4ZTP25srj6-eqdSADhYg6qNmcwVjekb9-nlU
 Content-Type: application/json
 
 {

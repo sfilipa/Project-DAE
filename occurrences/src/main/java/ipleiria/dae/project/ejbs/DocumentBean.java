@@ -68,6 +68,10 @@ public class DocumentBean {
         return document;
     }
 
+    public void delete(Document document) {
+        em.remove(document);
+    }
+
     public void update(long id, String filepath, String filename, Occurrence occurrence) {
         var document = find(id);
         if (document == null) {
