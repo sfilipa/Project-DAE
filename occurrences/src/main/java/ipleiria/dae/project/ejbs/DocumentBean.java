@@ -123,45 +123,51 @@ public class DocumentBean {
     }
 
     public int readExcel(String filepath) throws IOException {
-        FileInputStream file = new FileInputStream(new File(filepath));
-        Workbook workbook = new XSSFWorkbook(file);
+        try{
+            FileInputStream file = new FileInputStream(new File(filepath));
+            Workbook workbook = new XSSFWorkbook(file);
 
-        Sheet sheet = workbook.getSheetAt(0);
+            Sheet sheet = workbook.getSheetAt(0);
 
-        Map<Integer, List<String>> data = new HashMap<>();
-        int lineNumber = 0;
-        int i = 0;
-        for (Row row : sheet) {
-            data.put(i, new ArrayList<String>());
-            for (Cell cell : row) {
-                switch (cell.getCellType()) {
-                    case STRING:
-                        data.get(i).add(cell.getStringCellValue());
-                        break;
-                    case NUMERIC:
-                        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-                        data.get(i).add(formatter.format(cell.getDateCellValue()));
-                        break;
-                    case BOOLEAN:
-                        data.get(i).add(String.valueOf(cell.getBooleanCellValue()));
-                        break;
-                    case FORMULA:
-                        break;
-                    default:
-                        data.get(i).add(" ");
+            Map<Integer, List<String>> data = new HashMap<>();
+            int lineNumber = 0;
+            int i = 0;
+            for (Row row : sheet) {
+                data.put(i, new ArrayList<String>());
+                for (Cell cell : row) {
+                    switch (cell.getCellType()) {
+                        case STRING:
+                            data.get(i).add(cell.getStringCellValue());
+                            break;
+                        case NUMERIC:
+                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                            data.get(i).add(formatter.format(cell.getDateCellValue()));
+                            break;
+                        case BOOLEAN:
+                            data.get(i).add(String.valueOf(cell.getBooleanCellValue()));
+                            break;
+                        case FORMULA:
+                            break;
+                        default:
+                            data.get(i).add(" ");
+                    }
                 }
+                i++;
             }
-            i++;
+            if (data.isEmpty()) {
+                throw new MyEntityCreationViolationException("Excel file is empty");
+            }
+            if (data.get(0).contains("usernameClient")) {
+                lineNumber = 1;
+                data.remove(0);
+            }
+            createOccurrence(new ArrayList<>(data.values()), lineNumber);
+            return data.size();
+        } catch (IOException e) {
+            throw new IOException(e.getMessage());
+        }catch (Exception e){
+            throw new MyEntityCreationViolationException("Error reading file");
         }
-        if (data.isEmpty()) {
-            throw new MyEntityCreationViolationException("Excel file is empty");
-        }
-        if (data.get(0).contains("usernameClient")) {
-            lineNumber = 1;
-            data.remove(0);
-        }
-        createOccurrence(new ArrayList<>(data.values()), lineNumber);
-        return data.size();
     }
 
     private void createOccurrence(List<List<String>> records, int lineNumber) {

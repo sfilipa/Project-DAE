@@ -52,7 +52,6 @@ public class AuthService {
     }
 
     @POST
-    @RolesAllowed({"Expert", "Repairer", "Client"})
     @Path("/login")
     public Response authenticate(@Valid Auth auth) throws MyEntityNotFoundException {
         if (userBean.canLogin(auth.getUsername(), auth.getPassword())) {
@@ -63,7 +62,6 @@ public class AuthService {
     }
 
     @POST
-    @RolesAllowed({"Administrator"})
     @Path("/login/admin")
     public Response authenticateAdmin(@Valid Auth auth) throws MyEntityNotFoundException, APIBadResponseException, EntityManagerPersistDBException {
         Administrator administrator = userBean.canAdminLogin(auth.getUsername());
