@@ -175,10 +175,13 @@ export default {
             }
           })
       })
-    this.$axios.$get(`/api/experts/${this.$auth.user.username}`)
-      .then((response) => {
-        this.company_username = response.company_username;
-      })
+
+    if(this.$auth.user) {
+      this.$axios.$get(`/api/experts/${this.$auth.user.username}`)
+        .then((response) => {
+          this.company_username = response.company_username;
+        })
+    }
   },
   computed: {
     invalidDescriptionFeedback () {

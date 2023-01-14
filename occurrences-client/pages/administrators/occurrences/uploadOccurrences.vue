@@ -19,10 +19,10 @@
 
     <!--      Report an Occurrence-->
     <b-form @submit.prevent="onSubmit" class="report-an-occurrence">
-      <p><b>Documents</b></p>
+      <p><b>Document:</b></p>
       <div class="report-an-occurrence-div">
         <div class="report-an-occurrence-div">
-          <input type="file" ref="documents" multiple="multiple" @change="inputDocumentsChanged" @click="cleanError">
+          <input type="file" ref="documents" @change="inputDocumentsChanged" @click="cleanError">
         </div>
       </div>
 
