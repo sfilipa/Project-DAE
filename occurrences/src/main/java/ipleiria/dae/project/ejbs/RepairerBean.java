@@ -242,7 +242,9 @@ public class RepairerBean {
                             "\nYou can see the occurrence at " + link);
 
             //Compress document
-            zipFilesBean.compressDocuments(occurrence);
+            if (occurrence.getDocuments().size() != 0) {
+                zipFilesBean.compressDocuments(occurrence);
+            }
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
@@ -291,7 +293,9 @@ public class RepairerBean {
                             "\nYou can see the occurrence at " + link);
 
             //Compress document
-            zipFilesBean.compressDocuments(occurrence);
+            if (occurrence.getDocuments().size() != 0) {
+                zipFilesBean.compressDocuments(occurrence);
+            }
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(e.getMessage());
