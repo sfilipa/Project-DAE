@@ -241,7 +241,7 @@ public class RepairerBean {
                     "The occurrence " + occurrence.getId() + " has been failed by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription +
                             "\nYou can see the occurrence at " + link);
 
-            // Transform Documents into a Blob
+            //Compress document
             zipFilesBean.compressDocuments(occurrence);
 
         } catch (IllegalArgumentException e) {
@@ -290,7 +290,7 @@ public class RepairerBean {
                     "The occurrence " + occurrence.getId() + " has been finished by " + repairer.getUsername() + ".\n\n" + newOccurrenceDescription +
                             "\nYou can see the occurrence at " + link);
 
-            // Transform Documents into a Blob
+            //Compress document
             zipFilesBean.compressDocuments(occurrence);
 
         } catch (IllegalArgumentException e) {

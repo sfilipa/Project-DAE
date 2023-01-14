@@ -7,7 +7,6 @@ import ipleiria.dae.project.enumerators.State;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.sql.Blob;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;

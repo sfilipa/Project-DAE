@@ -139,7 +139,7 @@ public class ExpertBean {
         // Send Email to Client
         sendDisapprovalEmail(occurrence, expert, newOccurrenceDescription, link);
 
-        // Transform Documents into a Blob
+        //Compress document
         zipFilesBean.compressDocuments(occurrence);
     }
 
