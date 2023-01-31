@@ -1,2 +1,2 @@
-# project-dae-ipleiria
+# Insured Asset Management System
 Project - Cadeira de Desenvolvimento de Aplicações Empresariais
