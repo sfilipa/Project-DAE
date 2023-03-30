@@ -1,0 +1,6 @@
+﻿usernameClient;entryDate;finalDate;state;insuranceCode;coverageType;description;usernameRepairer;experts
+client2;06/01/2023;-;ACTIVE;ALL-1298666;ACCIDENTAL_DAMAGE;acidente;repairer1; expert2,expert3 
+client2;06/01/2023;-;ACTIVE;ALL-1298666;ACCIDENTAL_DAMAGE;acidente mortal;repairer1; expert2,expert3 
+client1;01/11/2022;-;ACTIVE;ALL-1298389;ACCIDENTAL_DAMAGE;roubo;repairer1; expert2,expert3 
+client1;01/11/2022;-;ACTIVE;ALL-1298389;ACCIDENTAL_DAMAGE;roubo;repairer1; expert2,expert3 
+client1;01/11/2022;-;ACTIVE;ALL-1298389;ACCIDENTAL_DAMAGE;roubo;repairer1; expert2,expert3 

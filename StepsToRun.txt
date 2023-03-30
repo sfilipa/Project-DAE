@@ -1,0 +1,13 @@
+Backend: 
+- make down
+- make up
+- make monitor
+
+Front end:
+- npm install
+- Windows: $env:NODE_OPTIONS = "--openssl-legacy-provider" / Linux: export NODE_OPTIONS=--openssl-legacy-provider
+- npm run dev
+
+Web socket server:
+- npm install
+- node index

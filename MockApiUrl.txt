@@ -1,0 +1,7 @@
+URL: https://63a9db1a594f75dc1dc27d9b.mockapi.io/
+
+Insurance Companies: https://63a9db1a594f75dc1dc27d9b.mockapi.io/insuranceCompanies
+
+Insurances: https://63a9db1a594f75dc1dc27d9b.mockapi.io/insurances
+
+Administrators: https://63a9db1a594f75dc1dc27d9b.mockapi.io/administrators
