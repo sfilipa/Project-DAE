@@ -19,6 +19,14 @@ To avoid physical travel by insurance experts to the incident location, the appl
 Once the insurance expert validates the incident's coverage, the client can then select a certified repair service or indicate a new one for repairing the damages. The selected repair service receives a message with a hyperlink to the incident, and they can update it with the repair details and proof of the actual repair. 
 <br><br>
 Finally, the application supports web services that provide information about the incidents, their status, and associated attachments for easy integration with the insurance company's enterprise applications. This project streamlines the insurance claims management process, saves time and resources for all stakeholders, and improves customer satisfaction.
+<h2>Extras</h2>
+The project offers several additional features that enhance the user experience and provide greater functionality. One of these features is the ability to import data from CSV or Excel files, such as lists of occurrences directly from insurance companies. This feature saves time and reduces the need for manual data entry, making it easier to manage and process large amounts of data.
+<br><br>
+Another important feature of the project is the responsive theme, which is adapted to devices with screens of different sizes, including tablets, smartphones, and desktop monitors. This ensures that the application can be accessed and used by anyone, regardless of the device they are using.
+<br><br>
+The project also includes an internal messaging and notification system, which uses websockets to provide real-time updates and alerts to users. This feature improves communication and collaboration among users, enabling them to quickly and easily share information and stay informed about important events.
+<br><br>
+In addition, the system includes a file compression feature that is activated when an occurrence is closed, reducing the amount of storage space required and improving overall system performance. Finally, the project offers a pagination feature that makes it easier to navigate through large amounts of data, improving the user experience and making it easier to find the information you need.
 <br><br>
 <p>&#8702; <a href="https://github.com/sfilipa/Project-DAE/blob/main/DAE-2022-23-1S-ENUNCIADO_PROJETO.pdf">Project Statement</a></p>
 <h1>Tools Used</h1>
