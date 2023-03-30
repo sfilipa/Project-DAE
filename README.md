@@ -1,4 +1,4 @@
-<h1>👨‍🔧 ----</h1>
+<h1>👨‍🔧 Incidentalists</h1>
 
 <div style="border: 1px solid black; padding: 10px;">
 <p>This project was developed as part of the <strong>Enterprise Application Development</strong> course in the Computer Science and Engineering degree during the academic year 2022/2023.
